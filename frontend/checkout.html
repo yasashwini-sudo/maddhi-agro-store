@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<h1 style="text-align:center;">Checkout</h1>
+
+<div class="checkout-container">
+
+  <!-- LEFT -->
+  <div class="checkout-left">
+    <h2>Delivery Details</h2>
+
+    <input id="name" placeholder="Full Name">
+    <input id="phone" placeholder="Phone Number">
+    <textarea id="address" placeholder="Address"></textarea>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="summary-box">
+
+    <h2>Order Summary</h2>
+  
+    <div id="orderItems"></div>
+  
+    <div class="price-row">
+      <span>Subtotal</span>
+      <span>₹<span id="subtotal">0</span></span>
+    </div>
+  
+    <!-- ✅ DISCOUNT -->
+    <div id="discountBox" class="price-row discount" style="display:none;">
+      <span>🎉 First Order Discount (10%)</span>
+      <span>-₹<span id="discount">0</span></span>
+    </div>
+  
+    <div class="price-row total">
+      <span>Total</span>
+      <span>₹<span id="finalTotal">0</span></span>
+    </div>
+  
+    <select id="payment">
+      <option>Cash on Delivery</option>
+      <option>UPI</option>
+    </select>
+  
+    <button onclick="placeOrder()">Place Order</button>
+  
+  </div>
+
+</div>
+
+<script>
+
+// ===== RENDER ORDER =====
+function renderOrder() {
+
+  const container = document.getElementById("orderItems");
+  const subtotalEl = document.getElementById("subtotal");
+  const finalEl = document.getElementById("finalTotal");
+  const discountBox = document.getElementById("discountBox");
+  const discountEl = document.getElementById("discount");
+
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  container.innerHTML = "";
+
+  let subtotal = 0;
+
+  cart.forEach(item => {
+    const itemTotal = item.price * item.quantity;
+    subtotal += itemTotal;
+
+    container.innerHTML += `
+      <p>${item.name} x ${item.quantity} = ₹${itemTotal}</p>
+    `;
+  });
+
+  // ===== DISCOUNT LOGIC =====
+  let discount = 0;
+  const isNewUser = !localStorage.getItem("hasOrdered");
+
+  if (isNewUser && subtotal > 0) {
+    discount = Math.floor(subtotal * 0.10);
+
+    discountBox.style.display = "flex";
+    discountEl.innerText = discount;
+  } else {
+    discountBox.style.display = "none";
+  }
+
+  const finalTotal = subtotal - discount;
+
+  subtotalEl.innerText = subtotal;
+  finalEl.innerText = finalTotal;
+}
+
+
+// ===== PLACE ORDER =====
+function placeOrder() {
+
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const address = document.getElementById("address").value;
+
+  if (!name || !phone || !address) {
+    alert("Please fill all details");
+    return;
+  }
+
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  let subtotal = 0;
+  cart.forEach(item => subtotal += item.price * item.quantity);
+
+  let discount = !localStorage.getItem("hasOrdered") 
+    ? Math.floor(subtotal * 0.10) 
+    : 0;
+
+  let finalTotal = subtotal - discount;
+
+  const order = {
+    name,
+    phone,
+    address,
+    items: cart,
+    total: finalTotal,
+    date: new Date().toLocaleString()
+  };
+
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+  orders.push(order);
+
+  localStorage.setItem("orders", JSON.stringify(orders));
+  localStorage.setItem("hasOrdered", "true");
+
+  localStorage.removeItem("cart");
+
+  alert("Order Placed Successfully 🎉");
+
+  window.location.href = "index.html";
+}
+
+
+// ===== RUN AFTER LOAD (IMPORTANT FIX) =====
+document.addEventListener("DOMContentLoaded", renderOrder);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Product</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">Maddhi Agro 🌿</div>
+  
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#about">About</a>
+  
+      <!-- 👤 USER / ORDERS -->
+      <span id="userSection"></span>
+  
+      <!-- 🛒 CART -->
+      <a href="cart.html">🛒 (<span id="cartCount">0</span>)</a>
+  
+      <!-- 🔐 ADMIN -->
+      <a href="admin.html" id="adminLink" style="display:none;">Admin</a>
+    </div>
+  </div>
+
+<!-- PRODUCT SECTION -->
+<div class="product-page">
+
+  <div class="product-left">
+    <img id="productImage">
+  </div>
+
+  <div class="product-right">
+
+    <h1 id="productName"></h1>
+
+    <p class="price" id="productPrice"></p>
+
+    <p id="productDesc"></p>
+
+    <ul style="margin-top:15px; color:#555; font-size:14px;">
+      <li>✔ 100% Natural & Chemical Free</li>
+      <li>✔ Directly sourced from farms</li>
+      <li>✔ Retains nutrients & antioxidants</li>
+    </ul>
+
+    <button onclick="addToCart(currentProduct)">Add to Cart</button>
+    <button onclick="buyNow(currentProduct)">Buy Now</button>
+
+  </div>
+
+</div>
+
+<!-- WHY SECTION (MOVED OUTSIDE) -->
+<div style="max-width:1100px;margin:40px auto; padding:20px; background:#fff; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+
+  <h2>Why choose this product?</h2>
+
+  <p style="color:#555;">
+    Our cold pressed oils are extracted using traditional wooden press methods,
+    ensuring maximum retention of nutrients, natural aroma and taste.
+    No chemicals, no heat processing — just pure, farm fresh goodness.
+  </p>
+
+</div>
+
+<!-- RECOMMENDED -->
+<h2 class="section-title" style="margin-top:80px;">
+  You may also like
+</h2>
+
+<div class="products" id="recommended"></div>
+
+<script src="script.js"></script>
+
+<script>
+
+let currentProduct = null;
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+fetch("http://localhost:5000/api/products")
+.then(res => res.json())
+.then(data => {
+
+  const product = data.find(p => p._id === id);
+  currentProduct = product;
+
+  document.getElementById("productImage").src =
+    `http://localhost:5000/uploads/${product.image}`;
+
+  document.getElementById("productName").innerText = product.name;
+  document.getElementById("productPrice").innerText = "\u20B9" + product.price;
+  document.getElementById("productDesc").innerText = product.description;
+  document.getElementById("productsContainer").innerHTML = "<p>Loading products...</p>";
+
+  // RECOMMENDED
+  const related = data.filter(p =>
+    p.category === product.category && p._id !== product._id
+  );
+
+  const container = document.getElementById("recommended");
+  container.innerHTML = "";
+
+  related.forEach(p => {
+    container.innerHTML += `
+      <div class="card" onclick="goToProduct('${p._id}')">
+
+        <img src="http://localhost:5000/uploads/${p.image}">
+
+        <h3>${p.name}</h3>
+
+        <p style="font-size:13px;color:#666;">
+          ${p.description?.substring(0, 50)}...
+        </p>
+
+        <p class="price">\u20B9${p.price}</p>
+
+      </div>
+    `;
+  });
+
+});
+
+// NAVIGATION
+function goToProduct(id) {
+  window.location.href = "product.html?id=" + id;
+}
+
+// CART COUNT (CLEAN)
+window.updateCartCount = function() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  let total = 0;
+  cart.forEach(item => total += item.quantity);
+
+  const el = document.getElementById("cartCount");
+  if (el) el.innerText = total;
+}
+
+updateCartCount();
+
+</script>
+
+</body>
+</html>

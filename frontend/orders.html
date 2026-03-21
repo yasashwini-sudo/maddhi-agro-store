@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>My Orders</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo">Maddhi Agro 🌿</div>
+
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#products">Products</a>
+    <a href="index.html#about">About</a>
+
+    <span id="userSection"></span>
+
+    <a href="cart.html" class="cart-link">
+      🛒 (<span id="cartCount">0</span>)
+    </a>
+  </div>
+</div>
+
+<h1 class="section-title">My Orders</h1>
+
+<div id="ordersContainer" class="orders-container"></div>
+
+<script src="script.js"></script>
+
+<script>
+
+function renderOrders() {
+
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+  const container = document.getElementById("ordersContainer");
+
+  if (!container) return;
+
+  if (orders.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <h2>No orders yet 😅</h2>
+        <p>Start shopping and your orders will appear here.</p>
+        <a href="index.html" class="shop-btn">Shop Now</a>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = "";
+
+  orders.reverse().forEach(order => {
+
+    let itemsHTML = "";
+
+    order.items.forEach(item => {
+      itemsHTML += `
+        <li>${item.name} x ${item.quantity}</li>
+      `;
+    });
+
+    container.innerHTML += `
+      <div class="order-card">
+
+        <h3>${order.date}</h3>
+
+        <ul>${itemsHTML}</ul>
+
+        <p class="order-total">Total: ₹${order.total}</p>
+
+      </div>
+    `;
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  renderOrders();
+});
+
+</script>
+
+</body>
+</html>
