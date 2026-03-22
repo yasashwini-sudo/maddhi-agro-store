@@ -102,15 +102,24 @@ class="whatsapp-float" target="_blank">💬</a>
 
 <script>
 
-let allProducts = []
+document.getElementById("productsContainer").innerHTML = "Loading...";
 
-fetch("http://localhost:5000/api/products")
-.then(res => res.json())
-.then(data => {
-  allProducts = data
-  displayProducts(data)
-})
-.catch(err => console.error(err))
+let allProducts = [];
+
+function loadProducts() {
+  fetch("http://localhost:5000/api/products")
+    .then(res => res.json())
+    .then(data => {
+      allProducts = data;
+      displayProducts(data);
+    })
+    .catch(err => {
+      console.log("Retrying...");
+      setTimeout(loadProducts, 2000); // retry after 2 sec
+    });
+}
+
+loadProducts();
 
 function displayProducts(products){
 
@@ -123,7 +132,10 @@ function displayProducts(products){
     card.className = "card"
 
     card.innerHTML = `
-      <img src="http://localhost:5000/uploads/${product.image}">
+      <img 
+  src="http://localhost:5000/uploads/${product.image}" 
+  onerror="this.src='https://via.placeholder.com/200'"
+>
       <h3>${product.name}</h3>
       <p class="price">₹${product.price}</p>
       <button class="add">Add to Cart</button>
@@ -139,23 +151,16 @@ function displayProducts(products){
   })
 }
 
-function filterProducts(category, btn){
+function filterProducts(category, btn) {
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
 
-  document.querySelectorAll(".filter-btn")
-    .forEach(b => b.classList.remove("active"))
-
-  btn.classList.add("active")
-
-  if(category === "all"){
-    displayProducts(allProducts)
-    return
+  if (category === "all") {
+    displayProducts(allProducts);
+  } else {
+    const filtered = allProducts.filter(p => p.category === category);
+    displayProducts(filtered);
   }
-
-  const filtered = allProducts.filter(p =>
-    p.category?.toLowerCase() === category.toLowerCase()
-  )
-
-  displayProducts(filtered)
 }
 
 function addToCart(product){
