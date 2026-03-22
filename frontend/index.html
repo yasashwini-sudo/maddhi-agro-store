@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <body>
 
@@ -17,8 +16,8 @@
 
   <div class="nav-links">
     <a href="index.html">Home</a>
-    <a href="index.html#products">Products</a>
-    <a href="index.html#about">About</a>
+    <a href="#products">Products</a>
+    <a href="#about">About</a>
 
     <a href="orders.html">My Orders</a>
 
@@ -83,7 +82,7 @@
 
 <!-- PRODUCTS -->
 <h2 class="section-title" id="products">Our Products</h2>
-<div id="productsContainer" class="products"></div>
+<div id="productsContainer" class="products">Loading...</div>
 
 <!-- ABOUT -->
 <section class="about" id="about">
@@ -100,57 +99,74 @@
 <a href="https://wa.me/9059052688?text=Hi, I want to order"
 class="whatsapp-float" target="_blank">💬</a>
 
+<!-- ✅ IMPORTANT: LOAD SCRIPT.JS -->
+<script src="script.js"></script>
+
 <script>
 
-document.getElementById("productsContainer").innerHTML = "Loading...";
+// API URL
+src="http://localhost:5000/uploads/${product.image}"
 
 let allProducts = [];
 
+// LOAD PRODUCTS
 function loadProducts() {
-  fetch("http://localhost:5000/api/products")
+  fetch(`${API_URL}/api/products`)
     .then(res => res.json())
     .then(data => {
+      console.log("PRODUCTS:", data); // 👈 ADD THIS
       allProducts = data;
       displayProducts(data);
     })
     .catch(err => {
-      console.log("Retrying...");
-      setTimeout(loadProducts, 2000); // retry after 2 sec
+      console.log("Error loading products:", err);
     });
 }
 
 loadProducts();
 
+
+// DISPLAY PRODUCTS
 function displayProducts(products){
 
-  const container = document.getElementById("productsContainer")
-  container.innerHTML = ""
+  const container = document.getElementById("productsContainer");
+  container.innerHTML = "";
 
   products.forEach(product => {
 
-    const card = document.createElement("div")
-    card.className = "card"
+    const card = document.createElement("div");
+    card.className = "card";
 
     card.innerHTML = `
       <img 
-  src="http://localhost:5000/uploads/${product.image}" 
-  onerror="this.src='https://via.placeholder.com/200'"
->
+        src="${API_URL}/uploads/${product.image}" 
+        onerror="this.src='https://via.placeholder.com/200'"
+      >
       <h3>${product.name}</h3>
       <p class="price">₹${product.price}</p>
-      <button class="add">Add to Cart</button>
-    `
+      <button class="add-btn">Add to Cart</button>
+    `;
 
+    // PRODUCT PAGE
     card.querySelector("img").onclick = () => {
-      window.location.href = "product.html?id=" + product._id
-    }
+      window.location.href = "product.html?id=" + product._id;
+    };
 
-    card.querySelector(".add").onclick = () => addToCart(product)
+    // ✅ FIXED ADD TO CART
+    card.querySelector(".add-btn").onclick = () => {
+      if (typeof addToCart === "function") {
+        addToCart(product);
+      } else {
+        console.error("addToCart not found");
+      }
+    };
 
-    container.appendChild(card)
-  })
+    container.appendChild(card);
+  });
 }
 
+
+// FILTER
 function filterProducts(category, btn) {
   document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
@@ -163,33 +179,25 @@ function filterProducts(category, btn) {
   }
 }
 
-function addToCart(product){
-  let cart = JSON.parse(localStorage.getItem("cart")) || []
 
-  const existing = cart.find(p => p._id === product._id)
-
-  if(existing){
-    existing.quantity++
-  } else {
-    cart.push({...product, quantity:1})
-  }
-
-  localStorage.setItem("cart", JSON.stringify(cart))
-  updateCartCount()
-}
-
+// CART COUNT
 function updateCartCount(){
-  let cart = JSON.parse(localStorage.getItem("cart")) || []
-  let count = 0
-  cart.forEach(i => count += i.quantity)
-  document.getElementById("cartCount").innerText = count
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let count = 0;
+  cart.forEach(i => count += i.quantity);
+
+  const el = document.getElementById("cartCount");
+  if (el) el.innerText = count;
 }
 
+
+// SCROLL
 function scrollToProducts(){
-  document.getElementById("products").scrollIntoView({behavior:"smooth"})
+  document.getElementById("products").scrollIntoView({behavior:"smooth"});
 }
 
-updateCartCount()
+// INIT
+updateCartCount();
 
 </script>
 
