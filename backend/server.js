@@ -15,6 +15,8 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+// test backend push
+
 // ✅ ONLY ONCE
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
