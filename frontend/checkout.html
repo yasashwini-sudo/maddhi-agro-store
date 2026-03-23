@@ -64,20 +64,18 @@
     <a href="index.html">Home</a>
     <a href="index.html#products">Products</a>
     <a href="index.html#about">About</a>
-
-    <!-- ✅ ADD THIS BACK -->
     <a href="orders.html">My Orders</a>
-
     <span id="userSection"></span>
-
     <a href="cart.html">🛒 (<span id="cartCount">0</span>)</a>
   </div>
 </div>
 
-<!-- ✅ IMPORTANT: LOAD SCRIPT -->
 <script src="script.js"></script>
 
 <script>
+
+  // ✅ GLOBAL API URL (VERY IMPORTANT)
+  const API_URL = "https://maddhi-agro-store.onrender.com";
 
   // ===== RENDER ORDER =====
   function renderOrder() {
@@ -87,8 +85,6 @@
     const finalEl = document.getElementById("finalTotal");
   
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  
-    console.log("CHECKOUT CART:", cart); // DEBUG
   
     if (!cart || cart.length === 0) {
       container.innerHTML = "<p>Your cart is empty</p>";
@@ -127,7 +123,6 @@
     finalEl.innerText = finalTotal;
   }
   
-  
   // ===== PLACE ORDER =====
   window.placeOrder = async function () {
   
@@ -161,7 +156,7 @@
     };
   
     try {
-      const res = await fetch("http://localhost:5000/api/orders", {
+      const res = await fetch(`${API_URL}/api/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -185,10 +180,9 @@
     }
   };
   
-  
-  // ✅ IMPORTANT: RUN THIS
   renderOrder();
-  
-  </script>
+
+</script>
+
 </body>
 </html>

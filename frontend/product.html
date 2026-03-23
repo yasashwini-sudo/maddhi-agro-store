@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <title>Product</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <body>
 
@@ -18,12 +18,8 @@
     <a href="index.html">Home</a>
     <a href="index.html#products">Products</a>
     <a href="index.html#about">About</a>
-
-    <!-- ✅ ADD THIS BACK -->
     <a href="orders.html">My Orders</a>
-
     <span id="userSection"></span>
-
     <a href="cart.html">🛒 (<span id="cartCount">0</span>)</a>
   </div>
 </div>
@@ -56,7 +52,7 @@
 
 </div>
 
-<!-- WHY SECTION (MOVED OUTSIDE) -->
+<!-- WHY SECTION -->
 <div style="max-width:1100px;margin:40px auto; padding:20px; background:#fff; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
 
   <h2>Why choose this product?</h2>
@@ -80,27 +76,38 @@
 
 <script>
 
+// ✅ GLOBAL API URL
+const API_URL = "https://maddhi-agro-store.onrender.com";
+
 let currentProduct = null;
 
+// GET PRODUCT ID FROM URL
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-fetch("http://localhost:5000/api/products")
+// FETCH PRODUCTS
+fetch(`${API_URL}/api/products`)
 .then(res => res.json())
 .then(data => {
 
   const product = data.find(p => p._id === id);
+
+  if (!product) {
+    document.body.innerHTML = "<h2 style='text-align:center;'>Product not found</h2>";
+    return;
+  }
+
   currentProduct = product;
 
+  // MAIN PRODUCT
   document.getElementById("productImage").src =
-    `http://localhost:5000/uploads/${product.image}`;
+    `${API_URL}/uploads/${product.image}`;
 
   document.getElementById("productName").innerText = product.name;
-  document.getElementById("productPrice").innerText = "\u20B9" + product.price;
+  document.getElementById("productPrice").innerText = "₹" + product.price;
   document.getElementById("productDesc").innerText = product.description;
-  document.getElementById("productsContainer").innerHTML = "<p>Loading products...</p>";
 
-  // RECOMMENDED
+  // RECOMMENDED PRODUCTS
   const related = data.filter(p =>
     p.category === product.category && p._id !== product._id
   );
@@ -111,30 +118,30 @@ fetch("http://localhost:5000/api/products")
   related.forEach(p => {
     container.innerHTML += `
       <div class="card" onclick="goToProduct('${p._id}')">
-
-        <img src="http://localhost:5000/uploads/${p.image}">
-
+        <img src="${API_URL}/uploads/${p.image}">
         <h3>${p.name}</h3>
-
         <p style="font-size:13px;color:#666;">
-          ${p.description?.substring(0, 50)}...
+          ${p.description?.substring(0, 50) || ""}...
         </p>
-
-        <p class="price">\u20B9${p.price}</p>
-
+        <p class="price">₹${p.price}</p>
       </div>
     `;
   });
 
+})
+.catch(err => {
+  console.error("Error loading product:", err);
 });
+
 
 // NAVIGATION
 function goToProduct(id) {
   window.location.href = "product.html?id=" + id;
 }
 
-// CART COUNT (CLEAN)
-window.updateCartCount = function() {
+
+// CART COUNT
+function updateCartCount() {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   let total = 0;

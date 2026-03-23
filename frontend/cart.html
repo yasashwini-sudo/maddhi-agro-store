@@ -54,8 +54,9 @@
 <script src="script.js"></script>
 
 <script>
+  const API_URL = "https://maddhi-agro-store.onrender.com";
 // ===== LOAD RECOMMENDED =====
-fetch("http://localhost:5000/api/products")
+fetch(`${API_URL}/api/products`)
 .then(res => res.json())
 .then(data => {
 
@@ -67,7 +68,7 @@ fetch("http://localhost:5000/api/products")
   data.slice(0,4).forEach(p => {
     container.innerHTML += `
       <div class="card" onclick="goToProduct('${p._id}')">
-        <img src="http://localhost:5000/uploads/${p.image}">
+        <img src="${API_URL}/uploads/${p.image}">
         <h3>${p.name}</h3>
         <p class="price">₹${p.price}</p>
       </div>
