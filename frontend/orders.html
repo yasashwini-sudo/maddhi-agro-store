@@ -20,7 +20,7 @@
 
     <span id="userSection"></span>
 
-    <a href="cart.html" class="cart-link">
+    <a href="cart.html">
       🛒 (<span id="cartCount">0</span>)
     </a>
   </div>
@@ -34,52 +34,56 @@
 
 <script>
 
-function renderOrders() {
 
-  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+async function loadOrders() {
+
   const container = document.getElementById("ordersContainer");
 
   if (!container) return;
 
-  if (orders.length === 0) {
-    container.innerHTML = `
-      <div class="empty">
-        <h2>No orders yet 😅</h2>
-        <p>Start shopping and your orders will appear here.</p>
-        <a href="index.html" class="shop-btn">Shop Now</a>
-      </div>
-    `;
-    return;
-  }
+  container.innerHTML = "Loading...";
 
-  container.innerHTML = "";
+  try {
+    const res = await fetch(API_URL + "/api/orders");
+    const orders = await res.json();
 
-  orders.reverse().forEach(order => {
+    console.log("ORDERS:", orders);
 
-    let itemsHTML = "";
+    if (!orders || orders.length === 0) {
+      container.innerHTML = "<h2>No orders yet 🛒</h2>";
+      return;
+    }
 
-    order.items.forEach(item => {
-      itemsHTML += `
-        <li>${item.name} x ${item.quantity}</li>
-      `;
+    container.innerHTML = "";
+
+    orders.reverse().forEach(order => {
+
+      let itemsHTML = "";
+
+      if (order.items && order.items.length > 0) {
+        order.items.forEach(item => {
+          itemsHTML += "<li>" + item.name + " x " + item.quantity + "</li>";
+        });
+      }
+
+      container.innerHTML +=
+        "<div class='order-card'>" +
+          "<h3>" + (order.date || "Recent Order") + "</h3>" +
+          "<ul>" + itemsHTML + "</ul>" +
+          "<h4>Total: ₹" + order.total + "</h4>" +
+        "</div>";
     });
 
-    container.innerHTML += `
-      <div class="order-card">
-
-        <h3>${order.date}</h3>
-
-        <ul>${itemsHTML}</ul>
-
-        <p class="order-total">Total: ₹${order.total}</p>
-
-      </div>
-    `;
-  });
+  } catch (err) {
+    console.error("ERROR:", err);
+    container.innerHTML = "Failed to load orders ❌";
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  renderOrders();
+  updateNavbar();
+  updateCartCount();
+  loadOrders();
 });
 
 </script>

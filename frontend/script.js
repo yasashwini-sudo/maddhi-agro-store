@@ -165,8 +165,7 @@ function updateNavbar() {
 
   if (user) {
     userSection.innerHTML = `
-      Hi, ${user.name}
-      <a href="orders.html">Orders</a>
+      <span class="user-name">Hi, ${user.name}</span>
       <a href="#" onclick="logout()">Logout</a>
     `;
   } else {
