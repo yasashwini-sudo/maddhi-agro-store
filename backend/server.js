@@ -10,16 +10,14 @@ const orderRoutes = require("./routes/orderRoutes");
 
 const app = express();
 
-connectDB();
-
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// test backend push
-
-// ✅ ONLY ONCE
+// Static folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Routes
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 
@@ -29,6 +27,17 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// ✅ START SERVER ONLY AFTER DB CONNECTS
+const startServer = async () => {
+  try {
+    await connectDB(); // 👈 wait for DB
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Server start failed:", error);
+  }
+};
+
+startServer();
