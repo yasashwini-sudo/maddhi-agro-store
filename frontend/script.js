@@ -1,5 +1,5 @@
 // ===== API URL =====
-const API_URL = "https://maddhi-agro-store.onrender.com";
+window.API_URL = "https://maddhi-agro-store.onrender.com";
 
 
 // ===== CART HELPERS =====
