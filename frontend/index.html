@@ -18,12 +18,8 @@
     <a href="index.html">Home</a>
     <a href="index.html#products">Products</a>
     <a href="index.html#about">About</a>
-
-    <!-- ✅ ADD THIS BACK -->
     <a href="orders.html">My Orders</a>
-
     <span id="userSection"></span>
-
     <a href="cart.html">🛒 (<span id="cartCount">0</span>)</a>
   </div>
 </div>
@@ -41,7 +37,6 @@
 <h2 class="section-title">Why Choose Maddhi Agro</h2>
 
 <div class="why-section">
-
   <div class="why-card">
     <div class="icon">🌿</div>
     <h3>100% Natural</h3>
@@ -65,7 +60,6 @@
     <h3>Farm Fresh</h3>
     <p>Directly sourced and processed.</p>
   </div>
-
 </div>
 
 <!-- FILTERS -->
@@ -95,15 +89,11 @@
 <!-- WHATSAPP -->
 <a href="https://wa.me/9059052688?text=Hi, I want to order"
 class="whatsapp-float" target="_blank">💬</a>
-<!-- pushing test -->
-<!-- ✅ IMPORTANT: LOAD SCRIPT.JS -->
+
+<!-- ✅ SCRIPT -->
 <script src="script.js"></script>
 
 <script>
-  const API_URL = "https://maddhi-agro-store.onrender.com";
-
-// API URL
-src="${API_URL}/uploads/${product.image}"
 
 let allProducts = [];
 
@@ -112,7 +102,7 @@ function loadProducts() {
   fetch(`${API_URL}/api/products`)
     .then(res => res.json())
     .then(data => {
-      console.log("PRODUCTS:", data); // 👈 ADD THIS
+      console.log("PRODUCTS:", data);
       allProducts = data;
       displayProducts(data);
     })
@@ -126,12 +116,10 @@ loadProducts();
 
 // DISPLAY PRODUCTS
 function displayProducts(products){
-
   const container = document.getElementById("productsContainer");
   container.innerHTML = "";
 
   products.forEach(product => {
-
     const card = document.createElement("div");
     card.className = "card";
 
@@ -145,18 +133,12 @@ function displayProducts(products){
       <button class="add-btn">Add to Cart</button>
     `;
 
-    // PRODUCT PAGE
     card.querySelector("img").onclick = () => {
       window.location.href = "product.html?id=" + product._id;
     };
 
-    // ✅ FIXED ADD TO CART
     card.querySelector(".add-btn").onclick = () => {
-      if (typeof addToCart === "function") {
-        addToCart(product);
-      } else {
-        console.error("addToCart not found");
-      }
+      addToCart(product);
     };
 
     container.appendChild(card);
