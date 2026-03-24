@@ -1,9 +1,7 @@
 {
     "routes": [
-      { "src": "/cart.html", "dest": "/cart.html" },
-      { "src": "/orders.html", "dest": "/orders.html" },
-      { "src": "/product.html", "dest": "/product.html" },
-      { "src": "/checkout.html", "dest": "/checkout.html" },
+      { "src": "/api/(.*)", "dest": "https://maddhi-agro-store.onrender.com/api/$1" },
+      { "src": "/(.*\\.html)", "dest": "/$1" },
       { "src": "/(.*)", "dest": "/index.html" }
     ]
   }
