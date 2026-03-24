@@ -12,22 +12,18 @@ const {
 
 const upload = require("../config/upload");
 
-// CREATE PRODUCT
+
+// 🔥 CREATE PRODUCT
 router.post("/", upload.single("image"), createProduct);
 
-// GET PRODUCTS
+
+// 🔥 GET ALL PRODUCTS
 router.get("/", getProducts);
 
-// DELETE PRODUCT
-router.delete("/:id", deleteProduct);
 
-// UPDATE PRODUCT
-router.put("/:id", updateProduct);
-
-// SEARCH PRODUCTS
+// 🔥 SEARCH PRODUCTS (keep this BEFORE /:id to avoid conflicts)
 router.get("/search/:keyword", async (req, res) => {
   try {
-
     const keyword = req.params.keyword;
 
     const products = await Product.find({
@@ -41,30 +37,35 @@ router.get("/search/:keyword", async (req, res) => {
   }
 });
 
-router.post("/bulk", async (req, res) => {
-    try {
-      const products = await Product.insertMany(req.body);
-      res.json(products);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
 
-  router.get("/delete-all", async (req, res) => {
-    const Product = require("../models/Product");
-  
+// 🔥 DELETE ALL PRODUCTS (IMPORTANT: BEFORE /:id)
+router.delete("/all", async (req, res) => {
+  try {
     await Product.deleteMany({});
-  
-    res.json({ message: "All products deleted successfully" });
-  });
-  
-  router.get("/", getProducts);
-  
-  router.post("/", upload.single("image"), createProduct);
-  
-  router.delete("/:id", deleteProduct);
-  
-  router.put("/:id", updateProduct);
+    res.json({ message: "All products deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// 🔥 DELETE ONE PRODUCT
+router.delete("/:id", deleteProduct);
+
+
+// 🔥 UPDATE PRODUCT
+router.put("/:id", updateProduct);
+
+
+// 🔥 BULK INSERT PRODUCTS
+router.post("/bulk", async (req, res) => {
+  try {
+    const products = await Product.insertMany(req.body);
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 module.exports = router;
-
