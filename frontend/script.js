@@ -100,8 +100,8 @@ function renderCart() {
     div.className = "cart-item";
 
     div.innerHTML = `
-      <img src="${API_URL}/uploads/${item.image}" 
-           onerror="this.src='https://via.placeholder.com/150'" />
+      <img src="${API_URL}/uploads/${item.image || 'default.png'}" 
+     onerror="this.src='https://via.placeholder.com/150'" /> 
       <div class="cart-info">
         <h3>${item.name}</h3>
         <p>₹${item.price}</p>
