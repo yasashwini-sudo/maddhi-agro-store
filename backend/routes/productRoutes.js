@@ -38,15 +38,6 @@ router.get("/search/:keyword", async (req, res) => {
 });
 
 
-// 🔥 DELETE ALL PRODUCTS (IMPORTANT: BEFORE /:id)
-router.delete("/all", async (req, res) => {
-  try {
-    await Product.deleteMany({});
-    res.json({ message: "All products deleted" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 
 // 🔥 DELETE ONE PRODUCT
