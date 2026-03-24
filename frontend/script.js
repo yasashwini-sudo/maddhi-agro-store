@@ -29,13 +29,26 @@ window.addToCart = function (product) {
   saveCart(cart);
   updateCartCount();
 
-  alert("Added to cart ✅");
+  showToast("Added to cart ✅");
 };
+
+
+// ===== SIMPLE TOAST (instead of alert) =====
+function showToast(message) {
+  let toast = document.createElement("div");
+  toast.innerText = message;
+  toast.className = "toast";
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 2000);
+}
 
 
 // ===== GO TO CHECKOUT =====
 window.goToCheckout = function () {
-  console.log("Going to checkout...");
   window.location.href = "checkout.html";
 };
 
@@ -74,7 +87,7 @@ function renderCart() {
   let total = 0;
 
   if (cart.length === 0) {
-    container.innerHTML = "<h2>Your cart is empty 🛒</h2>"; // ✅ FIXED
+    container.innerHTML = "<h2>Your cart is empty 🛒</h2>";
     totalEl.innerText = 0;
     return;
   }
@@ -87,7 +100,8 @@ function renderCart() {
     div.className = "cart-item";
 
     div.innerHTML = `
-      <img src="${API_URL}/uploads/${item.image}" />
+      <img src="${API_URL}/uploads/${item.image}" 
+           onerror="this.src='https://via.placeholder.com/150'" />
       <div class="cart-info">
         <h3>${item.name}</h3>
         <p>₹${item.price}</p>
