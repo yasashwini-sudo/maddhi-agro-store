@@ -25,6 +25,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+// ✅ FIRST
 router.delete("/all", async (req, res) => {
   try {
     await Product.deleteMany({});
@@ -33,5 +34,8 @@ router.delete("/all", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// ❌ AFTER THIS
+router.delete("/:id", deleteProduct);
 
 module.exports = router;
