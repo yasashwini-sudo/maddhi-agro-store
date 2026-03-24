@@ -25,4 +25,13 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.delete("/all", async (req, res) => {
+  try {
+    await Product.deleteMany({});
+    res.json({ message: "All products deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
