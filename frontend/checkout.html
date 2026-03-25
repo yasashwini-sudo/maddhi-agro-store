@@ -1,120 +1,195 @@
-<script>
+<!DOCTYPE html>
+<html>
 
-  // ===== RENDER ORDER =====
-  function renderOrder() {
-  
-    const container = document.getElementById("orderItems");
-    const subtotalEl = document.getElementById("subtotal");
-    const finalEl = document.getElementById("finalTotal");
-  
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  
-    if (!cart || cart.length === 0) {
-      container.innerHTML = "<p>Your cart is empty</p>";
-      subtotalEl.innerText = 0;
-      finalEl.innerText = 0;
-      return;
-    }
-  
-    container.innerHTML = "";
-  
-    let subtotal = 0;
-  
-    cart.forEach(item => {
-      const itemTotal = item.price * item.quantity;
-      subtotal += itemTotal;
-  
-      container.innerHTML += `
-        <p>${item.name} x ${item.quantity} = ₹${itemTotal}</p>
-      `;
-    });
-  
-    let discount = 0;
-    const isNewUser = !localStorage.getItem("hasOrdered");
-  
-    if (isNewUser && subtotal > 0) {
-      discount = Math.floor(subtotal * 0.10);
-  
-      document.getElementById("discountBox").style.display = "flex";
-      document.getElementById("discount").innerText = discount;
-    }
-  
-    const finalTotal = subtotal - discount;
-  
-    subtotalEl.innerText = subtotal;
-    finalEl.innerText = finalTotal;
-  }
-  
-  
-  // ===== PLACE ORDER =====
-  async function placeOrder() {
-  
-    const token = localStorage.getItem("token");
-  
-    // 🔴 CHECK LOGIN FIRST
-    if (!token) {
-      alert("Please login before placing order");
-      return;
-    }
-  
-    const name = document.getElementById("name").value;
-    const phone = document.getElementById("phone").value;
-    const address = document.getElementById("address").value;
-  
-    if (!name || !phone || !address) {
-      alert("Please fill all details");
-      return;
-    }
-  
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  
-    let subtotal = 0;
-    cart.forEach(item => subtotal += item.price * item.quantity);
-  
-    let discount = !localStorage.getItem("hasOrdered")
-      ? Math.floor(subtotal * 0.10)
-      : 0;
-  
-    let finalTotal = subtotal - discount;
-  
-    const order = {
-      name,
-      phone,
-      address,
-      items: cart,
-      total: finalTotal,
-      date: new Date().toLocaleString()
-    };
-  
-    try {
-      const res = await fetch(`${API_URL}/api/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token // ✅ THIS WAS MISSING
-        },
-        body: JSON.stringify(order)
-      });
-  
-      const data = await res.json();
-  
-      if (data.success) {
-        localStorage.setItem("hasOrdered", "true");
-        localStorage.removeItem("cart");
-  
-        alert("Order Placed Successfully 🎉");
-        window.location.href = "index.html";
-      } else {
-        alert("Order failed ❌");
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="logo">Maddhi Agro 🌿</div>
+
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#about">About</a>
+      <a href="orders.html">My Orders</a>
+      <span id="userSection"></span>
+      <a href="cart.html">🛒 (<span id="cartCount">0</span>)</a>
+    </div>
+  </div>
+
+  <main>
+    <h1 style="text-align:center;">Checkout</h1>
+
+    <div class="checkout-container">
+      <div class="checkout-left">
+        <h2>Delivery Details</h2>
+
+        <input id="name" placeholder="Full Name">
+        <input id="phone" placeholder="Phone Number">
+        <textarea id="address" placeholder="Address"></textarea>
+      </div>
+
+      <div class="summary-box">
+        <h2>Order Summary</h2>
+
+        <div id="orderItems"></div>
+
+        <div class="price-row">
+          <span>Subtotal</span>
+          <span>₹<span id="subtotal">0</span></span>
+        </div>
+
+        <div id="discountBox" class="price-row discount" style="display:none;">
+          <span>🎉 First Order Discount (10%)</span>
+          <span>-₹<span id="discount">0</span></span>
+        </div>
+
+        <div class="price-row total">
+          <span>Total</span>
+          <span>₹<span id="finalTotal">0</span></span>
+        </div>
+
+        <select id="payment">
+          <option>Cash on Delivery</option>
+          <option>UPI</option>
+        </select>
+
+        <button onclick="placeOrder()">Place Order</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+
+  <script>
+    function renderOrder() {
+      const container = document.getElementById("orderItems");
+      const subtotalEl = document.getElementById("subtotal");
+      const finalEl = document.getElementById("finalTotal");
+      const discountBox = document.getElementById("discountBox");
+      const discountEl = document.getElementById("discount");
+
+      if (!container || !subtotalEl || !finalEl) return;
+
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      if (discountBox) discountBox.style.display = "none";
+      if (discountEl) discountEl.innerText = 0;
+
+      if (!cart.length) {
+        container.innerHTML = "<p>Your cart is empty</p>";
+        subtotalEl.innerText = 0;
+        finalEl.innerText = 0;
+        return;
       }
-  
-    } catch (err) {
-      console.error(err);
-      alert("Server error ❌");
+
+      container.innerHTML = "";
+      let subtotal = 0;
+
+      cart.forEach(item => {
+        const itemTotal = (item.price || 0) * (item.quantity || 0);
+        subtotal += itemTotal;
+
+        container.innerHTML += `
+          <p>${item.name} x ${item.quantity} = ₹${itemTotal}</p>
+        `;
+      });
+
+      let discount = 0;
+      const isNewUser = !localStorage.getItem("hasOrdered");
+
+      if (isNewUser && subtotal > 0) {
+        discount = Math.floor(subtotal * 0.10);
+
+        if (discountBox) discountBox.style.display = "flex";
+        if (discountEl) discountEl.innerText = discount;
+      }
+
+      const finalTotal = subtotal - discount;
+
+      subtotalEl.innerText = subtotal;
+      finalEl.innerText = finalTotal;
     }
-  }
-  
-  // INIT
-  renderOrder();
-  
+
+    async function placeOrder() {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Please login before placing order");
+        return;
+      }
+
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const address = document.getElementById("address").value.trim();
+
+      if (!name || !phone || !address) {
+        alert("Please fill all details");
+        return;
+      }
+
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      if (!cart.length) {
+        alert("Your cart is empty");
+        return;
+      }
+
+      let subtotal = 0;
+      cart.forEach(item => {
+        subtotal += (item.price || 0) * (item.quantity || 0);
+      });
+
+      const discount = !localStorage.getItem("hasOrdered")
+        ? Math.floor(subtotal * 0.10)
+        : 0;
+
+      const finalTotal = subtotal - discount;
+
+      const order = {
+        name,
+        phone,
+        address,
+        items: cart,
+        total: finalTotal,
+        date: new Date().toLocaleString()
+      };
+
+      try {
+        const res = await fetch(`${API_URL}/api/orders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": token
+          },
+          body: JSON.stringify(order)
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          localStorage.setItem("hasOrdered", "true");
+          localStorage.removeItem("cart");
+
+          alert("Order Placed Successfully 🎉");
+          window.location.href = "index.html";
+        } else {
+          alert(data.msg || "Order failed ❌");
+        }
+      } catch (err) {
+        console.error("Order error:", err);
+        alert("Server error ❌");
+      }
+    }
+
+    renderOrder();
   </script>
+
+</body>
+</html>

@@ -1,7 +1,6 @@
 // ===== API URL =====
 window.API_URL = "https://maddhi-agro-store.onrender.com";
 
-
 // ===== CART HELPERS =====
 function getCart() {
   return JSON.parse(localStorage.getItem("cart")) || [];
@@ -10,7 +9,6 @@ function getCart() {
 function saveCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
-
 
 // ===== ADD TO CART =====
 window.addToCart = function (product) {
@@ -32,8 +30,7 @@ window.addToCart = function (product) {
   showToast("Added to cart ✅");
 };
 
-
-// ===== SIMPLE TOAST (instead of alert) =====
+// ===== TOAST =====
 function showToast(msg) {
   const toast = document.createElement("div");
   toast.innerText = msg;
@@ -44,8 +41,6 @@ function showToast(msg) {
   toast.style.background = "green";
   toast.style.color = "white";
   toast.style.padding = "10px 20px";
-
-  // 👉 ADD HERE
   toast.style.borderRadius = "8px";
   toast.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
 
@@ -54,12 +49,10 @@ function showToast(msg) {
   setTimeout(() => toast.remove(), 3000);
 }
 
-
 // ===== GO TO CHECKOUT =====
 window.goToCheckout = function () {
   window.location.href = "checkout.html";
 };
-
 
 // ===== BUY NOW =====
 window.buyNow = function (product) {
@@ -68,7 +61,6 @@ window.buyNow = function (product) {
   saveCart([{ ...product, quantity: 1 }]);
   window.location.href = "checkout.html";
 };
-
 
 // ===== CART COUNT =====
 function updateCartCount() {
@@ -80,7 +72,6 @@ function updateCartCount() {
   const el = document.getElementById("cartCount");
   if (el) el.innerText = count;
 }
-
 
 // ===== RENDER CART =====
 function renderCart() {
@@ -109,7 +100,7 @@ function renderCart() {
 
     div.innerHTML = `
       <img src="${API_URL}/uploads/${item.image || 'default.png'}" 
-     onerror="this.src='https://via.placeholder.com/150'" /> 
+      onerror="this.src='https://via.placeholder.com/150'" /> 
       <div class="cart-info">
         <h3>${item.name}</h3>
         <p>₹${item.price}</p>
@@ -125,7 +116,6 @@ function renderCart() {
 
   totalEl.innerText = total;
 }
-
 
 // ===== CHANGE QTY =====
 window.changeQty = function(id, change) {
@@ -144,41 +134,8 @@ window.changeQty = function(id, change) {
   renderCart();
   updateCartCount();
 
-  shoSwToast("Cart updated 🔄");
+  showToast("Cart updated 🔄"); // ✅ FIXED
 };
-
-
-// ===== CHECKOUT CALCULATION =====
-function calculateTotals() {
-  const cart = getCart();
-
-  let subtotal = 0;
-  cart.forEach(item => subtotal += item.price * item.quantity);
-
-  const isNewUser = !localStorage.getItem("hasOrdered");
-
-  let discount = 0;
-  if (isNewUser && subtotal > 0) {
-    discount = Math.floor(subtotal * 0.10);
-
-    const box = document.getElementById("discountBox");
-    if (box) box.style.display = "flex";
-
-    const discountEl = document.getElementById("discount");
-    if (discountEl) discountEl.innerText = discount;
-  }
-
-  const finalTotal = subtotal - discount;
-
-  const subtotalEl = document.getElementById("subtotal");
-  const finalEl = document.getElementById("finalTotal");
-
-  if (subtotalEl) subtotalEl.innerText = subtotal;
-  if (finalEl) finalEl.innerText = finalTotal;
-
-  return { subtotal, discount, finalTotal };
-}
-
 
 // ===== NAVBAR =====
 function updateNavbar() {
@@ -199,7 +156,6 @@ function updateNavbar() {
   }
 }
 
-
 // ===== LOGIN =====
 window.loginUser = async function () {
   const email = prompt("Enter email");
@@ -215,7 +171,6 @@ window.loginUser = async function () {
     });
 
     const data = await res.json();
-    console.log("LOGIN RESPONSE:", data); // 👈 DEBUG
 
     if (res.ok && data.token) {
       localStorage.setItem("token", data.token);
@@ -232,14 +187,12 @@ window.loginUser = async function () {
   }
 };
 
-
 // ===== LOGOUT =====
 window.logout = function () {
   localStorage.removeItem("user");
   localStorage.removeItem("token");
   location.reload();
 };
-
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
