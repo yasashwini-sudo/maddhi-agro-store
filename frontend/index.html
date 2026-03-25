@@ -64,11 +64,12 @@
 
 <!-- FILTERS -->
 <div class="filters">
-  <button class="category-btn" onclick="filterProducts('All'); setActive(this)">All</button>
-<button class="category-btn" onclick="filterProducts('Oils'); setActive(this)">Oils</button>
-<button class="category-btn" onclick="filterProducts('Ghee'); setActive(this)">Ghee</button>
-<button class="category-btn" onclick="filterProducts('Spices'); setActive(this)">Spices</button>
-<button class="category-btn" onclick="filterProducts('Salt'); setActive(this)">Salt</button>
+  <!-- ✅ Default active added -->
+  <button class="category-btn active" onclick="filterProducts('All'); setActive(this)">All</button>
+  <button class="category-btn" onclick="filterProducts('Oils'); setActive(this)">Oils</button>
+  <button class="category-btn" onclick="filterProducts('Ghee'); setActive(this)">Ghee</button>
+  <button class="category-btn" onclick="filterProducts('Spices'); setActive(this)">Spices</button>
+  <button class="category-btn" onclick="filterProducts('Salt'); setActive(this)">Salt</button>
 </div>
 
 <!-- PRODUCTS -->
@@ -90,10 +91,11 @@
 <a href="https://wa.me/9059052688?text=Hi, I want to order"
 class="whatsapp-float" target="_blank">💬</a>
 
-<!-- ✅ SCRIPT -->
+<!-- SCRIPT -->
 <script src="script.js"></script>
 
 <script>
+// ===== RENDER PRODUCTS =====
 function renderProducts(products){
   const container = document.getElementById("productsContainer");
   container.innerHTML = "";
@@ -109,7 +111,7 @@ function renderProducts(products){
 
     card.innerHTML = `
       <img 
-        src="${API_URL}/uploads/${product.image}" 
+        src="${product.image ? API_URL + '/uploads/' + product.image : 'https://via.placeholder.com/200'}"
         onerror="this.src='https://via.placeholder.com/200'"
       >
       <h3>${product.name}</h3>
@@ -136,7 +138,7 @@ function renderProducts(products){
   });
 }
 
-// SCROLL
+// ===== SCROLL =====
 function scrollToProducts(){
   document.getElementById("products").scrollIntoView({behavior:"smooth"});
 }

@@ -21,9 +21,9 @@ router.post("/", auth, async (req, res) => {
 });
 
 // GET ALL ORDERS (optional: protect if needed)
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
-    const orders = await Order.find();
+    const orders = await Order.find({ user: req.user.id });
     res.json(orders);
   } catch (err) {
     res.status(500).json([]);
