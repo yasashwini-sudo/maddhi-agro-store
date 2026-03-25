@@ -34,16 +34,24 @@ window.addToCart = function (product) {
 
 
 // ===== SIMPLE TOAST (instead of alert) =====
-function showToast(message) {
-  let toast = document.createElement("div");
-  toast.innerText = message;
-  toast.className = "toast";
+function showToast(msg) {
+  const toast = document.createElement("div");
+  toast.innerText = msg;
+
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.right = "20px";
+  toast.style.background = "green";
+  toast.style.color = "white";
+  toast.style.padding = "10px 20px";
+
+  // 👉 ADD HERE
+  toast.style.borderRadius = "8px";
+  toast.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
 
   document.body.appendChild(toast);
 
-  setTimeout(() => {
-    toast.remove();
-  }, 2000);
+  setTimeout(() => toast.remove(), 3000);
 }
 
 
