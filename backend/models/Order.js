@@ -6,7 +6,13 @@ const orderSchema = new mongoose.Schema({
   address: String,
   items: Array,
   total: Number,
-  date: String
+  date: String,
+
+  // 👉 ADD THIS
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }
 });
 
 module.exports = mongoose.model("Order", orderSchema);

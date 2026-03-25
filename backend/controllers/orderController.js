@@ -8,6 +8,14 @@ const createOrder = (req, res) => {
       order: orderData
     });
   };
+
+  const userId = req.user.id; // from token
+
+const order = await Order.create({
+  user: userId,
+  items,
+  total
+});
   
   module.exports = {
     createOrder

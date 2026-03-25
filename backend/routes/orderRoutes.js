@@ -1,11 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/Order");
+const auth = require("../middleware/auth");
 
-// CREATE ORDER
-router.post("/", async (req, res) => {
+// CREATE ORDER (protected)
+router.post("/", auth, async (req, res) => {
   try {
-    const newOrder = new Order(req.body);
+    const newOrder = new Order({
+      ...req.body,
+      user: req.user.id // 👈 attach logged-in user
+    });
+
     await newOrder.save();
 
     res.json({ success: true });
@@ -15,7 +20,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// GET ALL ORDERS
+// GET ALL ORDERS (optional: protect if needed)
 router.get("/", async (req, res) => {
   try {
     const orders = await Order.find();
@@ -24,7 +29,5 @@ router.get("/", async (req, res) => {
     res.status(500).json([]);
   }
 });
-
-
 
 module.exports = router;
