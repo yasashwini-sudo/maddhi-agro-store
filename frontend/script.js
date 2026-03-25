@@ -221,9 +221,16 @@ function filterProducts(category) {
   let filtered = allProducts;
 
   if (category !== "All") {
-    filtered = allProducts.filter(p =>
-      p.category?.toLowerCase() === category.toLowerCase()
-    );
+    filtered = allProducts.filter(p => {
+      const cat = p.category?.toLowerCase();
+  
+      if (category === "Oils") return cat === "oil";
+      if (category === "Spices") return cat === "spice";
+      if (category === "Ghee") return cat === "ghee";
+      if (category === "Salt") return cat === "salt";
+  
+      return true;
+    });
   }
 
   renderProducts(filtered);
