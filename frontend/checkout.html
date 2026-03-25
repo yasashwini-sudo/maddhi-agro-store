@@ -1,194 +1,120 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-  <meta charset="UTF-8">
-  <title>Checkout</title>
-  <link rel="stylesheet" href="style.css">
-
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-
-<body>
-
-<!-- ✅ NAVBAR (TOP ALWAYS) -->
-<div class="navbar">
-  <div class="logo">Maddhi Agro 🌿</div>
-
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="index.html#products">Products</a>
-    <a href="index.html#about">About</a>
-    <a href="orders.html">My Orders</a>
-    <span id="userSection"></span>
-    <a href="cart.html">🛒 (<span id="cartCount">0</span>)</a>
-  </div>
-</div>
-
-<!-- ✅ MAIN CONTENT -->
-<main>
-
-<h1 style="text-align:center;">Checkout</h1>
-
-<div class="checkout-container">
-
-  <!-- LEFT -->
-  <div class="checkout-left">
-    <h2>Delivery Details</h2>
-
-    <input id="name" placeholder="Full Name">
-    <input id="phone" placeholder="Phone Number">
-    <textarea id="address" placeholder="Address"></textarea>
-  </div>
-
-  <!-- RIGHT -->
-  <div class="summary-box">
-
-    <h2>Order Summary</h2>
-
-    <div id="orderItems"></div>
-
-    <div class="price-row">
-      <span>Subtotal</span>
-      <span>₹<span id="subtotal">0</span></span>
-    </div>
-
-    <div id="discountBox" class="price-row discount" style="display:none;">
-      <span>🎉 First Order Discount (10%)</span>
-      <span>-₹<span id="discount">0</span></span>
-    </div>
-
-    <div class="price-row total">
-      <span>Total</span>
-      <span>₹<span id="finalTotal">0</span></span>
-    </div>
-
-    <select id="payment">
-      <option>Cash on Delivery</option>
-      <option>UPI</option>
-    </select>
-
-    <button onclick="placeOrder()">Place Order</button>
-
-  </div>
-
-</div>
-
-</main>
-
-<!-- ✅ SCRIPTS -->
-<script src="script.js"></script>
-
 <script>
 
-// ===== RENDER ORDER =====
-function renderOrder() {
-
-  const container = document.getElementById("orderItems");
-  const subtotalEl = document.getElementById("subtotal");
-  const finalEl = document.getElementById("finalTotal");
-
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  if (!cart || cart.length === 0) {
-    container.innerHTML = "<p>Your cart is empty</p>";
-    subtotalEl.innerText = 0;
-    finalEl.innerText = 0;
-    return;
-  }
-
-  container.innerHTML = "";
-
-  let subtotal = 0;
-
-  cart.forEach(item => {
-    const itemTotal = item.price * item.quantity;
-    subtotal += itemTotal;
-
-    container.innerHTML += `
-      <p>${item.name} x ${item.quantity} = ₹${itemTotal}</p>
-    `;
-  });
-
-  // ===== DISCOUNT =====
-  let discount = 0;
-  const isNewUser = !localStorage.getItem("hasOrdered");
-
-  if (isNewUser && subtotal > 0) {
-    discount = Math.floor(subtotal * 0.10);
-
-    document.getElementById("discountBox").style.display = "flex";
-    document.getElementById("discount").innerText = discount;
-  }
-
-  const finalTotal = subtotal - discount;
-
-  subtotalEl.innerText = subtotal;
-  finalEl.innerText = finalTotal;
-}
-
-
-// ===== PLACE ORDER =====
-async function placeOrder() {
-
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const address = document.getElementById("address").value;
-
-  if (!name || !phone || !address) {
-    alert("Please fill all details");
-    return;
-  }
-
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  let subtotal = 0;
-  cart.forEach(item => subtotal += item.price * item.quantity);
-
-  let discount = !localStorage.getItem("hasOrdered")
-    ? Math.floor(subtotal * 0.10)
-    : 0;
-
-  let finalTotal = subtotal - discount;
-
-  const order = {
-    name,
-    phone,
-    address,
-    items: cart,
-    total: finalTotal,
-    date: new Date().toLocaleString()
-  };
-
-  try {
-    const res = await fetch(`${API_URL}/api/orders`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(order)
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      localStorage.setItem("hasOrdered", "true");
-      localStorage.removeItem("cart");
-
-      alert("Order Placed Successfully 🎉");
-      window.location.href = "index.html";
+  // ===== RENDER ORDER =====
+  function renderOrder() {
+  
+    const container = document.getElementById("orderItems");
+    const subtotalEl = document.getElementById("subtotal");
+    const finalEl = document.getElementById("finalTotal");
+  
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  
+    if (!cart || cart.length === 0) {
+      container.innerHTML = "<p>Your cart is empty</p>";
+      subtotalEl.innerText = 0;
+      finalEl.innerText = 0;
+      return;
     }
-
-  } catch (err) {
-    console.error(err);
-    alert("Server error ❌");
+  
+    container.innerHTML = "";
+  
+    let subtotal = 0;
+  
+    cart.forEach(item => {
+      const itemTotal = item.price * item.quantity;
+      subtotal += itemTotal;
+  
+      container.innerHTML += `
+        <p>${item.name} x ${item.quantity} = ₹${itemTotal}</p>
+      `;
+    });
+  
+    let discount = 0;
+    const isNewUser = !localStorage.getItem("hasOrdered");
+  
+    if (isNewUser && subtotal > 0) {
+      discount = Math.floor(subtotal * 0.10);
+  
+      document.getElementById("discountBox").style.display = "flex";
+      document.getElementById("discount").innerText = discount;
+    }
+  
+    const finalTotal = subtotal - discount;
+  
+    subtotalEl.innerText = subtotal;
+    finalEl.innerText = finalTotal;
   }
-}
-
-// INIT
-renderOrder();
-
-</script>
-
-</body>
-</html>
+  
+  
+  // ===== PLACE ORDER =====
+  async function placeOrder() {
+  
+    const token = localStorage.getItem("token");
+  
+    // 🔴 CHECK LOGIN FIRST
+    if (!token) {
+      alert("Please login before placing order");
+      return;
+    }
+  
+    const name = document.getElementById("name").value;
+    const phone = document.getElementById("phone").value;
+    const address = document.getElementById("address").value;
+  
+    if (!name || !phone || !address) {
+      alert("Please fill all details");
+      return;
+    }
+  
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  
+    let subtotal = 0;
+    cart.forEach(item => subtotal += item.price * item.quantity);
+  
+    let discount = !localStorage.getItem("hasOrdered")
+      ? Math.floor(subtotal * 0.10)
+      : 0;
+  
+    let finalTotal = subtotal - discount;
+  
+    const order = {
+      name,
+      phone,
+      address,
+      items: cart,
+      total: finalTotal,
+      date: new Date().toLocaleString()
+    };
+  
+    try {
+      const res = await fetch(`${API_URL}/api/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token // ✅ THIS WAS MISSING
+        },
+        body: JSON.stringify(order)
+      });
+  
+      const data = await res.json();
+  
+      if (data.success) {
+        localStorage.setItem("hasOrdered", "true");
+        localStorage.removeItem("cart");
+  
+        alert("Order Placed Successfully 🎉");
+        window.location.href = "index.html";
+      } else {
+        alert("Order failed ❌");
+      }
+  
+    } catch (err) {
+      console.error(err);
+      alert("Server error ❌");
+    }
+  }
+  
+  // INIT
+  renderOrder();
+  
+  </script>

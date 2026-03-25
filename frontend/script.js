@@ -143,6 +143,8 @@ window.changeQty = function(id, change) {
   saveCart(cart);
   renderCart();
   updateCartCount();
+
+  shoSwToast("Cart updated 🔄");
 };
 
 
@@ -203,25 +205,32 @@ window.loginUser = async function () {
   const email = prompt("Enter email");
   const password = prompt("Enter password");
 
-  const res = await fetch(`${API_URL}/api/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
-  });
+  try {
+    const res = await fetch(`${API_URL}/api/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
+    console.log("LOGIN RESPONSE:", data); // 👈 DEBUG
 
-  if (data.token) {
-    localStorage.setItem("token", data.token);
-  
-    // 👉 ADD THIS
-    localStorage.setItem("user", JSON.stringify({ name: email }));
-  
-    showToast("Login successful 🎉");
-    location.reload();
+    if (res.ok && data.token) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify({ name: email }));
+
+      showToast("Login successful 🎉");
+      location.reload();
+    } else {
+      showToast(data.msg || "Login failed ❌");
+    }
+  } catch (err) {
+    console.error(err);
+    showToast("Server error ❌");
   }
+};
 
 
 // ===== LOGOUT =====
