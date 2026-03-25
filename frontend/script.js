@@ -192,25 +192,42 @@ function updateNavbar() {
     `;
   } else {
     userSection.innerHTML = `
-      <a href="#" onclick="fakeLogin()">Login</a>
+      <a href="#" onclick="loginUser()">Login</a>
     `;
   }
 }
 
 
 // ===== LOGIN =====
-window.fakeLogin = function () {
-  const name = prompt("Enter your name");
-  if (name) {
-    localStorage.setItem("user", JSON.stringify({ name }));
+window.loginUser = async function () {
+  const email = prompt("Enter email");
+  const password = prompt("Enter password");
+
+  const res = await fetch(`${API_URL}/api/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.json();
+
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+  
+    // 👉 ADD THIS
+    localStorage.setItem("user", JSON.stringify({ name: email }));
+  
+    showToast("Login successful 🎉");
     location.reload();
   }
-};
 
 
 // ===== LOGOUT =====
 window.logout = function () {
   localStorage.removeItem("user");
+  localStorage.removeItem("token");
   location.reload();
 };
 
