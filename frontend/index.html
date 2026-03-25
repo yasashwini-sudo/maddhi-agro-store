@@ -64,11 +64,11 @@
 
 <!-- FILTERS -->
 <div class="filters">
-  <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
-  <button class="filter-btn" onclick="filterProducts('oil', this)">Oils</button>
-  <button class="filter-btn" onclick="filterProducts('ghee', this)">Ghee</button>
-  <button class="filter-btn" onclick="filterProducts('spice', this)">Spices</button>
-  <button class="filter-btn" onclick="filterProducts('salt', this)">Salt</button>
+  <button class="category-btn" onclick="filterProducts('All'); setActive(this)">All</button>
+<button class="category-btn" onclick="filterProducts('Oils'); setActive(this)">Oils</button>
+<button class="category-btn" onclick="filterProducts('Ghee'); setActive(this)">Ghee</button>
+<button class="category-btn" onclick="filterProducts('Spices'); setActive(this)">Spices</button>
+<button class="category-btn" onclick="filterProducts('Salt'); setActive(this)">Salt</button>
 </div>
 
 <!-- PRODUCTS -->
@@ -92,33 +92,16 @@ class="whatsapp-float" target="_blank">💬</a>
 
 <!-- ✅ SCRIPT -->
 <script src="script.js"></script>
+
 <script>
-
-let allProducts = [];
-
-// LOAD PRODUCTS
-function loadProducts() {
-  fetch(`${API_URL}/api/products`)
-  .then(res => res.json())
-  .then(data => {
-    if (data.length === 0) {
-      container.innerHTML = "<h2>No products available 😔</h2>";
-    } else {
-      displayProducts(data);
-    }
-  })
-    .catch(err => {
-      console.log("Error loading products:", err);
-    });
-}
-
-loadProducts();
-
-
-// DISPLAY PRODUCTS
-function displayProducts(products){
+function renderProducts(products){
   const container = document.getElementById("productsContainer");
   container.innerHTML = "";
+
+  if (!products || products.length === 0) {
+    container.innerHTML = "<h2>No products available 😔</h2>";
+    return;
+  }
 
   products.forEach(product => {
     const card = document.createElement("div");
@@ -132,9 +115,9 @@ function displayProducts(products){
       <h3>${product.name}</h3>
       <p class="price">₹${product.price}</p>
       <div class="btn-group">
-  <button class="add-btn">Add</button>
-  <button class="buy-btn">Buy</button>
-</div>
+        <button class="add-btn">Add</button>
+        <button class="buy-btn">Buy</button>
+      </div>
     `;
 
     card.querySelector("img").onclick = () => {
@@ -146,48 +129,17 @@ function displayProducts(products){
     };
 
     card.querySelector(".buy-btn").onclick = () => {
-  buyNow(product);
-};
-
+      buyNow(product);
+    };
 
     container.appendChild(card);
   });
 }
 
-
-// FILTER
-function filterProducts(category, btn) {
-  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-
-  if (category === "all") {
-    displayProducts(allProducts);
-  } else {
-    const filtered = allProducts.filter(p => p.category === category);
-    displayProducts(filtered);
-  }
-}
-
-
-// CART COUNT
-function updateCartCount(){
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  let count = 0;
-  cart.forEach(i => count += i.quantity);
-
-  const el = document.getElementById("cartCount");
-  if (el) el.innerText = count;
-}
-
-
 // SCROLL
 function scrollToProducts(){
   document.getElementById("products").scrollIntoView({behavior:"smooth"});
 }
-
-// INIT
-updateCartCount();
-
 </script>
 
 </body>

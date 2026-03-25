@@ -195,8 +195,43 @@ window.logout = function () {
 };
 
 // ===== INIT =====
+async function loadProducts() {
+  try {
+    const res = await fetch(`${API_URL}/api/products`);
+    const products = await res.json();
+
+    // 🔥 IMPORTANT
+    window.allProducts = products;
+
+    renderProducts(products);
+  } catch (err) {
+    console.error("Error loading products:", err);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
   updateNavbar();
   renderCart();
+  loadProducts();
 });
+function filterProducts(category) {
+  const allProducts = window.allProducts || [];
+
+  let filtered = allProducts;
+
+  if (category !== "All") {
+    filtered = allProducts.filter(p =>
+      p.category?.toLowerCase() === category.toLowerCase()
+    );
+  }
+
+  renderProducts(filtered);
+}
+
+function setActive(btn) {
+  document.querySelectorAll(".category-btn")
+    .forEach(b => b.classList.remove("active"));
+
+  btn.classList.add("active");
+}
