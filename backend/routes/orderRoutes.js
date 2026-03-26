@@ -8,6 +8,7 @@ const auth = require("../middleware/auth");
 
 router.post("/", auth, async (req, res) => {
   try {
+    console.log("USER:", req.user);
     const newOrder = new Order({
       ...req.body,
       user: req.user.id // 🔥 IMPORTANT

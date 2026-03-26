@@ -8,7 +8,7 @@ const orderSchema = new mongoose.Schema({
   total: Number,
   date: String,
 
-  // 👉 ADD THIS
+  // 🔥 ADD THIS
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"
