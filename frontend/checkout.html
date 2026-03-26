@@ -1,120 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="navbar">
+  <div class="logo">Maddhi Agro 🌿</div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="cart.html">Cart</a>
+    <a href="orders.html">My Orders</a>
+  </div>
+</div>
+
+<h1 style="text-align:center;">Checkout</h1>
+
+<div style="max-width:600px;margin:auto">
+
+  <input id="name" placeholder="Name"><br><br>
+  <input id="phone" placeholder="Phone"><br><br>
+  <textarea id="address" placeholder="Address"></textarea><br><br>
+
+  <h3>Order Summary</h3>
+  <div id="orderItems"></div>
+
+  <h2>Total: ₹<span id="finalTotal">0</span></h2>
+
+  <button onclick="placeOrder()">Place Order</button>
+
+</div>
+
+<script src="script.js"></script>
+
 <script>
-  function renderOrder() {
-    const container = document.getElementById("orderItems");
-    const subtotalEl = document.getElementById("subtotal");
-    const finalEl = document.getElementById("finalTotal");
-    const discountBox = document.getElementById("discountBox");
-    const discountEl = document.getElementById("discount");
-  
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  
-    if (!cart.length) {
-      container.innerHTML = "<p>Your cart is empty</p>";
-      subtotalEl.innerText = 0;
-      finalEl.innerText = 0;
-      return;
-    }
-  
-    container.innerHTML = "";
-    let subtotal = 0;
-  
-    cart.forEach(item => {
-      const itemTotal = item.price * item.quantity;
-      subtotal += itemTotal;
-  
-      container.innerHTML += `
-        <p>${item.name} x ${item.quantity} = ₹${itemTotal}</p>
-      `;
+
+function renderOrder() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const container = document.getElementById("orderItems");
+
+  let total = 0;
+  container.innerHTML = "";
+
+  cart.forEach(item => {
+    const t = item.price * item.quantity;
+    total += t;
+
+    container.innerHTML += `<p>${item.name} x ${item.quantity} = ₹${t}</p>`;
+  });
+
+  document.getElementById("finalTotal").innerText = total;
+}
+
+async function placeOrder() {
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    return;
+  }
+
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const address = document.getElementById("address").value;
+
+  if (!name || !phone || !address) {
+    alert("Fill all details");
+    return;
+  }
+
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const order = {
+    name,
+    phone,
+    address,
+    items: cart,
+    total: cart.reduce((a, b) => a + b.price * b.quantity, 0),
+    date: new Date().toLocaleString()
+  };
+
+  console.log("ORDER:", order);
+
+  try {
+    const res = await fetch(`${API_URL}/api/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify(order)
     });
-  
-    let discount = 0;
-    const isNewUser = !localStorage.getItem("hasOrdered");
-  
-    if (isNewUser) {
-      discount = Math.floor(subtotal * 0.10);
-      discountBox.style.display = "flex";
-      discountEl.innerText = discount;
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Order placed 🎉");
+      localStorage.removeItem("cart");
+      window.location.href = "index.html";
+    } else {
+      alert("Order failed");
     }
-  
-    const finalTotal = subtotal - discount;
-  
-    subtotalEl.innerText = subtotal;
-    finalEl.innerText = finalTotal;
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
   }
-  
-  // ===== PLACE ORDER =====
-  async function placeOrder() {
-  
-    const token = localStorage.getItem("token"); // ✅ FIX
-  
-    if (!token) {
-      alert("Please login first");
-      return;
-    }
-  
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const address = document.getElementById("address").value.trim();
-  
-    if (!name || !phone || !address) {
-      alert("Please fill all details");
-      return;
-    }
-  
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  
-    if (!cart.length) {
-      alert("Your cart is empty");
-      return;
-    }
-  
-    let subtotal = 0;
-    cart.forEach(item => subtotal += item.price * item.quantity);
-  
-    const discount = !localStorage.getItem("hasOrdered")
-      ? Math.floor(subtotal * 0.10)
-      : 0;
-  
-    const finalTotal = subtotal - discount;
-  
-    const order = {
-      name,
-      phone,
-      address,
-      items: cart,
-      total: finalTotal,
-      date: new Date().toLocaleString()
-    };
-  
-    console.log("SENDING ORDER:", order); // 🔍 DEBUG
-  
-    try {
-      const res = await fetch(`${API_URL}/api/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token // ✅ FIXED
-        },
-        body: JSON.stringify(order)
-      });
-  
-      const data = await res.json();
-  
-      if (res.ok && data.success) {
-        localStorage.setItem("hasOrdered", "true");
-        localStorage.removeItem("cart");
-  
-        alert("Order Placed Successfully 🎉");
-        window.location.href = "index.html";
-      } else {
-        alert(data.msg || "Order failed ❌");
-      }
-  
-    } catch (err) {
-      console.error("ORDER ERROR:", err);
-      alert("Server error ❌");
-    }
-  }
-  
-  renderOrder();
-  </script>
+}
+
+renderOrder();
+
+</script>
+
+</body>
+</html>
