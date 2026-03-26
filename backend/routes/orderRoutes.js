@@ -1,17 +1,24 @@
 const express = require("express");
 const router = express.Router();
+
 const Order = require("../models/Order");
 const auth = require("../middleware/auth");
 
-// CREATE ORDER (protected)
-const auth = require("../middleware/auth");
-
+// ===============================
+// CREATE ORDER (PROTECTED)
+// ===============================
 router.post("/", auth, async (req, res) => {
   try {
     console.log("USER:", req.user);
+
     const newOrder = new Order({
-      ...req.body,
-      user: req.user.id // 🔥 IMPORTANT
+      name: req.body.name,
+      phone: req.body.phone,
+      address: req.body.address,
+      items: req.body.items,
+      total: req.body.total,
+      date: req.body.date,
+      user: req.user.id // ✅ correct
     });
 
     await newOrder.save();
@@ -19,26 +26,21 @@ router.post("/", auth, async (req, res) => {
     res.json({ success: true });
 
   } catch (err) {
-    console.error(err);
+    console.error("ORDER ERROR:", err);
     res.status(500).json({ success: false });
   }
 });
 
-    await newOrder.save();
 
-    res.json({ success: true });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false });
-  }
-});
-
-// GET ALL ORDERS (optional: protect if needed)
+// ===============================
+// GET USER ORDERS
+// ===============================
 router.get("/", auth, async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user.id });
     res.json(orders);
   } catch (err) {
+    console.error("FETCH ORDER ERROR:", err);
     res.status(500).json([]);
   }
 });
