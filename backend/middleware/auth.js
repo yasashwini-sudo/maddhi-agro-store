@@ -2,20 +2,19 @@ const jwt = require("jsonwebtoken");
 
 module.exports = function (req, res, next) {
   try {
-    const authHeader = req.header("Authorization");
+    const token = req.header("Authorization")?.replace("Bearer ", "");
 
-    if (!authHeader) {
+    if (!token) {
       return res.status(401).json({ msg: "No token" });
     }
 
-    const token = authHeader.replace("Bearer ", "");
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret");
 
-    req.user = decoded; // 🔥 VERY IMPORTANT
+    req.user = decoded; // 🔥 MUST BE THIS
 
     next();
   } catch (err) {
+    console.error("AUTH ERROR:", err);
     res.status(401).json({ msg: "Invalid token" });
   }
 };
