@@ -174,7 +174,7 @@ window.loginUser = async function () {
 
     if (res.ok && data.token) {
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify({ name: email }));
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       showToast("Login successful 🎉");
       location.reload();

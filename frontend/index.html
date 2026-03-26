@@ -21,6 +21,7 @@
     <a href="orders.html">My Orders</a>
     <span id="userSection"></span>
     <a href="cart.html">🛒 (<span id="cartCount">0</span>)</a>
+
   </div>
 </div>
 
@@ -96,7 +97,7 @@ class="whatsapp-float" target="_blank">💬</a>
 
 <script>
 // ===== RENDER PRODUCTS =====
-function renderProducts(products){
+window.renderProducts = function(products){
   const container = document.getElementById("productsContainer");
   container.innerHTML = "";
 
@@ -142,6 +143,21 @@ function renderProducts(products){
 function scrollToProducts(){
   document.getElementById("products").scrollIntoView({behavior:"smooth"});
 }
+</script>
+<!-- ✅ AUTH POPUP -->
+<div id="authBox" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%);
+background:white; padding:20px; border-radius:10px; box-shadow:0 5px 20px rgba(0,0,0,0.3); z-index:999;">
+
+  <h3 id="authTitle">Login</h3>
+
+  <input id="authName" placeholder="Name (signup only)" style="display:none;"><br><br>
+  <input id="authEmail" placeholder="Email"><br><br>
+  <input id="authPassword" placeholder="Password" type="password"><br><br>
+
+  <button onclick="submitAuth()">Submit</button>
+  <p onclick="toggleAuth()" style="cursor:pointer; color:blue;">Switch to Signup</p>
+
+</div>
 </script>
 
 </body>

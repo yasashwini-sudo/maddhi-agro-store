@@ -20,41 +20,54 @@
 
 <h1 style="text-align:center;">Checkout</h1>
 
-<div style="max-width:600px;margin:auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1)">
+<div style="max-width:600px;margin:auto">
 
-  <input id="name" placeholder="Name" style="width:100%;margin-bottom:10px;padding:10px;">
-  <input id="phone" placeholder="Phone" style="width:100%;margin-bottom:10px;padding:10px;">
-  <textarea id="address" placeholder="Address" style="width:100%;margin-bottom:10px;padding:10px;"></textarea>
+  <input id="name" placeholder="Name"><br><br>
+  <input id="phone" placeholder="Phone"><br><br>
+  <textarea id="address" placeholder="Address"></textarea><br><br>
 
   <h3>Order Summary</h3>
   <div id="orderItems"></div>
 
   <h2>Total: ₹<span id="finalTotal">0</span></h2>
 
-  <button onclick="placeOrder()" style="width:100%;padding:12px;background:#2e7d32;color:white;border:none;border-radius:8px;cursor:pointer;">
-    Place Order
-  </button>
+  <!-- ✅ PAYMENT OPTIONS ADDED -->
+  <select id="payment">
+    <option>Cash on Delivery</option>
+    <option>UPI</option>
+    <option>Card</option>
+  </select><br><br>
+
+  <button onclick="placeOrder()">Place Order</button>
 
 </div>
 
 <script src="script.js"></script>
 
 <script>
+
 function renderOrder() {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const container = document.getElementById("orderItems");
 
-  let total = 0;
+  let subtotal = 0;
   container.innerHTML = "";
 
   cart.forEach(item => {
     const t = item.price * item.quantity;
-    total += t;
+    subtotal += t;
 
     container.innerHTML += `<p>${item.name} x ${item.quantity} = ₹${t}</p>`;
   });
 
-  document.getElementById("finalTotal").innerText = total;
+  // ✅ DISCOUNT LOGIC BACK
+  let discount = !localStorage.getItem("hasOrdered")
+    ? Math.floor(subtotal * 0.10)
+    : 0;
+
+  let finalTotal = subtotal - discount;
+
+  document.getElementById("finalTotal").innerText = finalTotal;
 }
 
 async function placeOrder() {
@@ -69,20 +82,38 @@ async function placeOrder() {
   const name = document.getElementById("name").value.trim();
   const phone = document.getElementById("phone").value.trim();
   const address = document.getElementById("address").value.trim();
+  const payment = document.getElementById("payment").value;
 
   if (!name || !phone || !address) {
-    alert("Fill all details");
+    alert("Please fill all details");
     return;
   }
 
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  if (!cart.length) {
+    alert("Your cart is empty");
+    return;
+  }
+
+  let subtotal = 0;
+  cart.forEach(item => {
+    subtotal += item.price * item.quantity;
+  });
+
+  let discount = !localStorage.getItem("hasOrdered")
+    ? Math.floor(subtotal * 0.10)
+    : 0;
+
+  let finalTotal = subtotal - discount;
 
   const order = {
     name,
     phone,
     address,
     items: cart,
-    total: cart.reduce((a, b) => a + b.price * b.quantity, 0),
+    total: finalTotal,
+    payment,
     date: new Date().toLocaleString()
   };
 
@@ -98,21 +129,28 @@ async function placeOrder() {
 
     const data = await res.json();
 
-    if (data.success) {
-      alert("Order placed 🎉");
+    if (res.ok && data.success) {
+
+      // ✅ IMPORTANT LINE ADDED
+      localStorage.setItem("hasOrdered", "true");
+
       localStorage.removeItem("cart");
-      window.location.href = "orders.html";
+
+      alert("Order Placed Successfully 🎉");
+      window.location.href = "index.html";
+
     } else {
-      alert("Order failed");
+      alert(data.msg || "Order failed ❌");
     }
 
   } catch (err) {
-    console.error(err);
-    alert("Server error");
+    console.error("Order error:", err);
+    alert("Server error ❌");
   }
 }
 
 renderOrder();
+
 </script>
 
 </body>
