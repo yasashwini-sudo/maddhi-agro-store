@@ -18,27 +18,41 @@
   </div>
 </div>
 
-<h1 style="text-align:center;">Checkout</h1>
+<h1 style="text-align:center; margin-top:20px;">Checkout</h1>
 
-<div style="max-width:600px;margin:auto">
+<!-- ✅ NEW LAYOUT -->
+<div class="checkout-container">
 
-  <input id="name" placeholder="Name"><br><br>
-  <input id="phone" placeholder="Phone"><br><br>
-  <textarea id="address" placeholder="Address"></textarea><br><br>
+  <!-- LEFT SIDE -->
+  <div class="checkout-left">
+    <h2>Delivery Details</h2>
 
-  <h3>Order Summary</h3>
-  <div id="orderItems"></div>
+    <input id="name" placeholder="Full Name">
+    <input id="phone" placeholder="Phone Number">
+    <textarea id="address" placeholder="Address"></textarea>
+  </div>
 
-  <h2>Total: ₹<span id="finalTotal">0</span></h2>
+  <!-- RIGHT SIDE -->
+  <div class="checkout-right">
+    <div class="summary-box">
 
-  <!-- ✅ PAYMENT OPTIONS ADDED -->
-  <select id="payment">
-    <option>Cash on Delivery</option>
-    <option>UPI</option>
-    <option>Card</option>
-  </select><br><br>
+      <h2>Order Summary</h2>
 
-  <button onclick="placeOrder()">Place Order</button>
+      <div id="orderItems"></div>
+
+      <h2>Total: ₹<span id="finalTotal">0</span></h2>
+
+      <!-- PAYMENT -->
+      <select id="payment">
+        <option>Cash on Delivery</option>
+        <option>UPI</option>
+        <option>Card</option>
+      </select>
+
+      <button class="place-order-btn" onclick="placeOrder()">Place Order</button>
+
+    </div>
+  </div>
 
 </div>
 
@@ -46,6 +60,7 @@
 
 <script>
 
+// ===== RENDER ORDER =====
 function renderOrder() {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const container = document.getElementById("orderItems");
@@ -60,7 +75,7 @@ function renderOrder() {
     container.innerHTML += `<p>${item.name} x ${item.quantity} = ₹${t}</p>`;
   });
 
-  // ✅ DISCOUNT LOGIC BACK
+  // ✅ DISCOUNT
   let discount = !localStorage.getItem("hasOrdered")
     ? Math.floor(subtotal * 0.10)
     : 0;
@@ -70,6 +85,8 @@ function renderOrder() {
   document.getElementById("finalTotal").innerText = finalTotal;
 }
 
+
+// ===== PLACE ORDER =====
 async function placeOrder() {
 
   const token = localStorage.getItem("token");
@@ -131,7 +148,7 @@ async function placeOrder() {
 
     if (res.ok && data.success) {
 
-      // ✅ IMPORTANT LINE ADDED
+      // ✅ FIRST ORDER TRACK
       localStorage.setItem("hasOrdered", "true");
 
       localStorage.removeItem("cart");
@@ -149,6 +166,7 @@ async function placeOrder() {
   }
 }
 
+// INIT
 renderOrder();
 
 </script>
