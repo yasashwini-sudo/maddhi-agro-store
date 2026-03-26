@@ -37,7 +37,12 @@ router.post("/", auth, async (req, res) => {
 // ===============================
 router.get("/", auth, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user.id });
+    const orders = await Order.find({
+      $or: [
+        { user: req.user.id },   // new orders
+        { user: { $exists: false } } // old orders
+      ]
+    });
     res.json(orders);
   } catch (err) {
     console.error("FETCH ORDER ERROR:", err);
