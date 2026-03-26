@@ -1,22 +1,18 @@
-// controllers/orderController.js
+const Order = require("../models/Order");
 
-const createOrder = (req, res) => {
-    const orderData = req.body;
-  
-    res.status(201).json({
-      message: "Order created successfully",
-      order: orderData
+const createOrder = async (req, res) => {
+  try {
+    const order = await Order.create({
+      user: req.user.id,
+      items: req.body.items,
+      total: req.body.total
     });
-  };
 
-  const userId = req.user.id; // from token
+    res.status(201).json(order);
 
-const order = await Order.create({
-  user: userId,
-  items,
-  total
-});
-  
-  module.exports = {
-    createOrder
-  };
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { createOrder };

@@ -20,25 +20,26 @@
 
 <h1 style="text-align:center;">Checkout</h1>
 
-<div style="max-width:600px;margin:auto">
+<div style="max-width:600px;margin:auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1)">
 
-  <input id="name" placeholder="Name"><br><br>
-  <input id="phone" placeholder="Phone"><br><br>
-  <textarea id="address" placeholder="Address"></textarea><br><br>
+  <input id="name" placeholder="Name" style="width:100%;margin-bottom:10px;padding:10px;">
+  <input id="phone" placeholder="Phone" style="width:100%;margin-bottom:10px;padding:10px;">
+  <textarea id="address" placeholder="Address" style="width:100%;margin-bottom:10px;padding:10px;"></textarea>
 
   <h3>Order Summary</h3>
   <div id="orderItems"></div>
 
   <h2>Total: ₹<span id="finalTotal">0</span></h2>
 
-  <button onclick="placeOrder()">Place Order</button>
+  <button onclick="placeOrder()" style="width:100%;padding:12px;background:#2e7d32;color:white;border:none;border-radius:8px;cursor:pointer;">
+    Place Order
+  </button>
 
 </div>
 
 <script src="script.js"></script>
 
 <script>
-
 function renderOrder() {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const container = document.getElementById("orderItems");
@@ -58,81 +59,60 @@ function renderOrder() {
 
 async function placeOrder() {
 
-const token = localStorage.getItem("token"); // ✅ FIX
+  const token = localStorage.getItem("token");
 
-if (!token) {
-  alert("Please login first");
-  return;
-}
-
-const name = document.getElementById("name").value.trim();
-const phone = document.getElementById("phone").value.trim();
-const address = document.getElementById("address").value.trim();
-
-if (!name || !phone || !address) {
-  alert("Please fill all details");
-  return;
-}
-
-const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-if (!cart.length) {
-  alert("Your cart is empty");
-  return;
-}
-
-let subtotal = 0;
-cart.forEach(item => {
-  subtotal += (item.price || 0) * (item.quantity || 0);
-});
-
-const discount = !localStorage.getItem("hasOrdered")
-  ? Math.floor(subtotal * 0.10)
-  : 0;
-
-const finalTotal = subtotal - discount;
-
-const order = {
-  name,
-  phone,
-  address,
-  items: cart,
-  total: finalTotal,
-  date: new Date().toLocaleString()
-};
-
-console.log("ORDER:", order); // debug
-
-try {
-  const res = await fetch(`${API_URL}/api/orders`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token // ✅ FIX
-    },
-    body: JSON.stringify(order)
-  });
-
-  const data = await res.json();
-
-  if (res.ok && data.success) {
-    localStorage.setItem("hasOrdered", "true");
-    localStorage.removeItem("cart");
-
-    alert("Order Placed Successfully 🎉");
-    window.location.href = "index.html";
-  } else {
-    alert(data.msg || "Order failed ❌");
+  if (!token) {
+    alert("Please login first");
+    return;
   }
 
-} catch (err) {
-  console.error("Order error:", err);
-  alert("Server error ❌");
-}
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const address = document.getElementById("address").value.trim();
+
+  if (!name || !phone || !address) {
+    alert("Fill all details");
+    return;
+  }
+
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const order = {
+    name,
+    phone,
+    address,
+    items: cart,
+    total: cart.reduce((a, b) => a + b.price * b.quantity, 0),
+    date: new Date().toLocaleString()
+  };
+
+  try {
+    const res = await fetch(`${API_URL}/api/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify(order)
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Order placed 🎉");
+      localStorage.removeItem("cart");
+      window.location.href = "orders.html";
+    } else {
+      alert("Order failed");
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
 }
 
 renderOrder();
-
 </script>
 
 </body>
