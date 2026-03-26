@@ -2,40 +2,85 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+// ===============================
 // REGISTER
+// ===============================
 exports.register = async (req, res) => {
-    try {
-      const { name, email, password } = req.body;
-  
-      const hashed = await bcrypt.hash(password, 10);
-  
-      const user = await User.create({
-        name,
-        email,
-        password: hashed
-      });
-  
-      res.json({ message: "User created" });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  };
+  try {
+    let { name, email, password } = req.body;
 
+    // 🔥 Normalize email
+    email = email.toLowerCase().trim();
+
+    // Check if user exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ msg: "User already exists" });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    password = await bcrypt.hash(password, salt);
+
+    // Create user
+    user = new User({
+      name,
+      email,
+      password
+    });
+
+    await user.save();
+
+    res.json({ message: "User created" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+
+// ===============================
 // LOGIN
+// ===============================
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
+    // 🔥 Normalize email
+    email = email.toLowerCase().trim();
+
+    // Find user
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: "User not found" });
 
+    if (!user) {
+      return res.status(400).json({ msg: "User not found" });
+    }
+
+    // Check password
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: "Wrong password" });
 
-    const token = jwt.sign({ id: user._id }, "secretkey");
+    if (!isMatch) {
+      return res.status(400).json({ msg: "Invalid password" });
+    }
 
-    res.json({ token });
+    // Create token
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || "secret",
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      token,
+      user: {
+        name: user.name,
+        email: user.email
+      }
+    });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
   }
 };
