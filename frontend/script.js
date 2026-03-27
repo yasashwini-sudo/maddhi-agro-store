@@ -1,6 +1,7 @@
 // ===== API URL =====
 window.API_URL = "https://maddhi-agro-store.onrender.com";
 
+
 // ===== CART HELPERS =====
 function getCart() {
   return JSON.parse(localStorage.getItem("cart")) || [];
@@ -9,6 +10,7 @@ function getCart() {
 function saveCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
+
 
 // ===== ADD TO CART =====
 window.addToCart = function (product) {
@@ -26,9 +28,9 @@ window.addToCart = function (product) {
 
   saveCart(cart);
   updateCartCount();
-
   showToast("Added to cart ✅");
 };
+
 
 // ===== TOAST =====
 function showToast(msg) {
@@ -38,7 +40,7 @@ function showToast(msg) {
   toast.style.position = "fixed";
   toast.style.bottom = "20px";
   toast.style.right = "20px";
-  toast.style.background = "green";
+  toast.style.background = "#2e7d32";
   toast.style.color = "white";
   toast.style.padding = "10px 20px";
   toast.style.borderRadius = "8px";
@@ -49,29 +51,28 @@ function showToast(msg) {
   setTimeout(() => toast.remove(), 3000);
 }
 
-// ===== GO TO CHECKOUT =====
-window.goToCheckout = function () {
-  window.location.href = "checkout.html";
-};
 
-// ===== BUY NOW =====
+// ===== NAVIGATION =====
+window.goToCheckout = () => window.location.href = "checkout.html";
+
 window.buyNow = function (product) {
   if (!product) return;
-
   saveCart([{ ...product, quantity: 1 }]);
   window.location.href = "checkout.html";
 };
 
+
 // ===== CART COUNT =====
 function updateCartCount() {
   const cart = getCart();
-
   let count = 0;
+
   cart.forEach(item => count += item.quantity);
 
   const el = document.getElementById("cartCount");
   if (el) el.innerText = count;
 }
+
 
 // ===== RENDER CART =====
 function renderCart() {
@@ -99,8 +100,9 @@ function renderCart() {
     div.className = "cart-item";
 
     div.innerHTML = `
-      <img src="${API_URL}/uploads/${item.image || 'default.png'}" 
-      onerror="this.src='https://via.placeholder.com/150'" /> 
+      <img src="${API_URL}/uploads/${item.image || 'default.png'}"
+      onerror="this.src='https://via.placeholder.com/150'" />
+      
       <div class="cart-info">
         <h3>${item.name}</h3>
         <p>₹${item.price}</p>
@@ -116,6 +118,7 @@ function renderCart() {
 
   totalEl.innerText = total;
 }
+
 
 // ===== CHANGE QTY =====
 window.changeQty = function(id, change) {
@@ -134,10 +137,11 @@ window.changeQty = function(id, change) {
   renderCart();
   updateCartCount();
 
-  showToast("Cart updated 🔄"); // ✅ FIXED
+  showToast("Cart updated 🔄");
 };
 
-// ===== NAVBAR =====
+
+// ===== AUTH (CLEAN VERSION) =====
 function updateNavbar() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userSection = document.getElementById("userSection");
@@ -146,20 +150,39 @@ function updateNavbar() {
 
   if (user) {
     userSection.innerHTML = `
-      <span class="user-name">Hi, ${user.name}</span>
-      <a href="#" onclick="logout()">Logout</a>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-weight:500;">👋 ${user.name}</span>
+        <button onclick="logout()" style="
+          background:#e53935;
+          color:white;
+          border:none;
+          padding:6px 10px;
+          border-radius:6px;
+          cursor:pointer;
+        ">Logout</button>
+      </div>
     `;
   } else {
     userSection.innerHTML = `
-      <a href="#" onclick="loginUser()">Login</a>
+      <button onclick="loginUser()" style="
+        background:#2e7d32;
+        color:white;
+        border:none;
+        padding:6px 12px;
+        border-radius:6px;
+        cursor:pointer;
+      ">Login</button>
     `;
   }
 }
+
 
 // ===== LOGIN =====
 window.loginUser = async function () {
   const email = prompt("Enter email");
   const password = prompt("Enter password");
+
+  if (!email || !password) return;
 
   try {
     const res = await fetch(`${API_URL}/api/login`, {
@@ -187,6 +210,7 @@ window.loginUser = async function () {
   }
 };
 
+
 // ===== LOGOUT =====
 window.logout = function () {
   localStorage.removeItem("user");
@@ -194,27 +218,26 @@ window.logout = function () {
   location.reload();
 };
 
-// ===== INIT =====
+
+// ===== LOAD PRODUCTS =====
 async function loadProducts() {
   try {
     const res = await fetch(`${API_URL}/api/products`);
     const products = await res.json();
 
-    // 🔥 IMPORTANT
     window.allProducts = products;
 
-    renderProducts(products);
+    if (typeof renderProducts === "function") {
+      renderProducts(products);
+    }
+
   } catch (err) {
     console.error("Error loading products:", err);
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  updateCartCount();
-  updateNavbar();
-  renderCart();
-  loadProducts();
-});
+
+// ===== FILTER =====
 function filterProducts(category) {
   const allProducts = window.allProducts || [];
 
@@ -223,12 +246,12 @@ function filterProducts(category) {
   if (category !== "All") {
     filtered = allProducts.filter(p => {
       const cat = p.category?.toLowerCase();
-  
+
       if (category === "Oils") return cat === "oil";
       if (category === "Spices") return cat === "spice";
       if (category === "Ghee") return cat === "ghee";
       if (category === "Salt") return cat === "salt";
-  
+
       return true;
     });
   }
@@ -236,6 +259,8 @@ function filterProducts(category) {
   renderProducts(filtered);
 }
 
+
+// ===== ACTIVE BUTTON =====
 function setActive(btn) {
   document.querySelectorAll(".category-btn")
     .forEach(b => b.classList.remove("active"));
@@ -243,26 +268,11 @@ function setActive(btn) {
   btn.classList.add("active");
 }
 
-function checkAuth() {
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
 
-  const userSection = document.getElementById("userSection");
-
-  if (token && user) {
-    userSection.innerHTML = `
-      <span>Hi, ${user.email}</span>
-      <button onclick="logout()">Logout</button>
-    `;
-  } else {
-    userSection.innerHTML = `
-      <button onclick="openAuth()">Login</button>
-    `;
-  }
-}
-
-function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  location.reload();
-}
+// ===== INIT =====
+document.addEventListener("DOMContentLoaded", () => {
+  updateCartCount();
+  updateNavbar();
+  renderCart();
+  loadProducts();
+});
