@@ -7,35 +7,56 @@ const path = require("path");
 const connectDB = require("./config/db");
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
-
-// ✅ ADD THIS
 const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-// Middlewares
+// ===============================
+// MIDDLEWARES
+// ===============================
 app.use(cors({
-  origin: "*"
+  origin: "*", // later restrict to your frontend domain
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
-app.use(express.json());
 
-// Static folder
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ===============================
+// STATIC FILES
+// ===============================
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes
+// ===============================
+// ROUTES
+// ===============================
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 
-// ✅ ADD THIS HERE
+// AUTH ROUTES
 app.use("/api", authRoutes);
 
+// ===============================
+// HEALTH CHECK
+// ===============================
 app.get("/", (req, res) => {
-  res.send("API Running");
+  res.send("API Running 🚀");
 });
 
+// ===============================
+// ERROR HANDLING (OPTIONAL BUT PRO)
+// ===============================
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ msg: "Something went wrong" });
+});
+
+// ===============================
+// START SERVER AFTER DB CONNECT
+// ===============================
 const PORT = process.env.PORT || 5000;
 
-// ✅ START SERVER ONLY AFTER DB CONNECTS
 const startServer = async () => {
   try {
     await connectDB();
@@ -43,8 +64,10 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
+
   } catch (error) {
     console.error("Server start failed:", error);
+    process.exit(1);
   }
 };
 
