@@ -20,7 +20,6 @@
 
 <h1 style="text-align:center; margin-top:20px;">Checkout</h1>
 
-<!-- ✅ NEW LAYOUT -->
 <div class="checkout-container">
 
   <!-- LEFT SIDE -->
@@ -42,7 +41,6 @@
 
       <h2>Total: ₹<span id="finalTotal">0</span></h2>
 
-      <!-- PAYMENT -->
       <select id="payment">
         <option>Cash on Delivery</option>
         <option>UPI</option>
@@ -75,7 +73,6 @@ function renderOrder() {
     container.innerHTML += `<p>${item.name} x ${item.quantity} = ₹${t}</p>`;
   });
 
-  // ✅ DISCOUNT
   let discount = !localStorage.getItem("hasOrdered")
     ? Math.floor(subtotal * 0.10)
     : 0;
@@ -135,6 +132,8 @@ async function placeOrder() {
   };
 
   try {
+
+    // ✅ CLEAN + CORRECT AUTH FETCH
     const res = await fetch(`${API_URL}/api/orders`, {
       method: "POST",
       headers: {
@@ -148,9 +147,7 @@ async function placeOrder() {
 
     if (res.ok && data.success) {
 
-      // ✅ FIRST ORDER TRACK
       localStorage.setItem("hasOrdered", "true");
-
       localStorage.removeItem("cart");
 
       alert("Order Placed Successfully 🎉");
@@ -164,6 +161,12 @@ async function placeOrder() {
     console.error("Order error:", err);
     alert("Server error ❌");
   }
+}
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+if (user) {
+  document.getElementById("name").value = user.name || "";
 }
 
 // INIT

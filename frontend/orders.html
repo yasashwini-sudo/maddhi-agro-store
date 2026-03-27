@@ -33,24 +33,25 @@ async function loadOrders() {
 
   const token = localStorage.getItem("token");
 
+  // If not logged in → redirect
   if (!token) {
-    document.getElementById("ordersContainer").innerHTML =
-      "<p style='text-align:center;'>Please login to see orders</p>";
+    alert("Please login first");
+    window.location.href = "index.html";
     return;
   }
 
   try {
-    const token = localStorage.getItem("token");
 
-const res = await fetch(`${API_URL}/api/orders`, {
-  headers: {
-    Authorization: "Bearer " + token
-  }
-});
+    // ✅ YOUR AUTHORIZATION FETCH (clean version)
+    const res = await fetch(`${API_URL}/api/orders`, {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
 
     const orders = await res.json();
 
-    console.log("ORDERS:", orders); // 🔍 DEBUG
+    console.log("ORDERS:", orders); // debug
 
     const container = document.getElementById("ordersContainer");
 

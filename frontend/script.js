@@ -242,3 +242,27 @@ function setActive(btn) {
 
   btn.classList.add("active");
 }
+
+function checkAuth() {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const userSection = document.getElementById("userSection");
+
+  if (token && user) {
+    userSection.innerHTML = `
+      <span>Hi, ${user.email}</span>
+      <button onclick="logout()">Logout</button>
+    `;
+  } else {
+    userSection.innerHTML = `
+      <button onclick="openAuth()">Login</button>
+    `;
+  }
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  location.reload();
+}
