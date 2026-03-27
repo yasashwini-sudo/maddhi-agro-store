@@ -15,7 +15,7 @@ const app = express();
 // MIDDLEWARES
 // ===============================
 app.use(cors({
-  origin: "*", // later restrict to your frontend domain
+  origin: ["https://madhi-agro-storee.netlify.app"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
