@@ -2,15 +2,22 @@
 <html>
 <head>
   <title>Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<body style="text-align:center; margin-top:100px;">
+
+<body style="text-align:center; margin-top:100px; font-family:Poppins;">
 
   <h2>Login</h2>
 
-  <input id="name" placeholder="Enter your name"><br><br>
+  <!-- UPDATED INPUTS -->
+  <input id="email" placeholder="Enter email"><br><br>
+  <input id="password" type="password" placeholder="Enter password"><br><br>
 
   <button onclick="login()">Login</button>
+
+  <p>Don't have account? <a href="signup.html">Signup</a></p>
+
+  <!-- NAVBAR (UNCHANGED) -->
   <div class="navbar">
     <div class="logo">Maddhi Agro 🌿</div>
   
@@ -18,29 +25,60 @@
       <a href="index.html">Home</a>
       <a href="index.html#products">Products</a>
       <a href="index.html#about">About</a>
-  
-      <!-- ✅ ADD THIS BACK -->
       <a href="orders.html">My Orders</a>
-  
       <span id="userSection"></span>
-  
       <a href="cart.html">🛒 (<span id="cartCount">0</span>)</a>
     </div>
   </div>
 
   <script>
-    function login(){
-      const name = document.getElementById("name").value;
 
-      if(!name){
-        alert("Enter name");
+const API_URL = "https://maddhi-agro-store.onrender.com";// 🔥 replace this
+
+    async function login(){
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if(!email || !password){
+        alert("Enter all fields");
         return;
       }
 
-      localStorage.setItem("user", JSON.stringify({ name }));
+      try {
 
-      window.location.href = "index.html";
+        const res = await fetch(`${API_URL}/api/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        console.log("LOGIN DATA:", data);
+
+        if(res.ok && data.token){
+
+          // ✅ STORE BOTH (IMPORTANT)
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+
+          alert("Login successful 🎉");
+
+          window.location.href = "index.html";
+
+        } else {
+          alert(data.msg || "Login failed ❌");
+        }
+
+      } catch(err){
+        console.error(err);
+        alert("Server error ❌");
+      }
     }
+
   </script>
 
 </body>
