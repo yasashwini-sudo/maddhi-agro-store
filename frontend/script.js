@@ -17,7 +17,6 @@ window.addToCart = function (product) {
   if (!product) return;
 
   let cart = getCart();
-
   const existing = cart.find(item => item._id === product._id);
 
   if (existing) {
@@ -37,17 +36,19 @@ function showToast(msg) {
   const toast = document.createElement("div");
   toast.innerText = msg;
 
-  toast.style.position = "fixed";
-  toast.style.bottom = "20px";
-  toast.style.right = "20px";
-  toast.style.background = "#2e7d32";
-  toast.style.color = "white";
-  toast.style.padding = "10px 20px";
-  toast.style.borderRadius = "8px";
-  toast.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
+  Object.assign(toast.style, {
+    position: "fixed",
+    bottom: "20px",
+    right: "20px",
+    background: "#2e7d32",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+    zIndex: 9999
+  });
 
   document.body.appendChild(toast);
-
   setTimeout(() => toast.remove(), 3000);
 }
 
@@ -141,8 +142,11 @@ window.changeQty = function(id, change) {
 };
 
 
-// ===== AUTH MODAL SYSTEM =====
+// ===============================
+// ===== AUTH SYSTEM =====
+// ===============================
 let isSignup = false;
+
 
 // OPEN MODAL
 window.openAuth = function () {
@@ -153,6 +157,7 @@ window.openAuth = function () {
 window.closeAuth = function () {
   document.getElementById("authModal").style.display = "none";
 };
+
 
 // TOGGLE LOGIN ↔ SIGNUP
 window.toggleAuth = function () {
@@ -195,23 +200,25 @@ window.submitAuth = async function () {
     });
 
     const data = await res.json();
+    console.log("AUTH RESPONSE:", data);
 
     if (!res.ok) {
-      alert(data.msg || "Error ❌");
+      alert(data.message || data.msg || "Error ❌");
       return;
     }
 
     if (isSignup) {
-      alert(data.message || "Signup successful 🎉");
-    
+      alert("Signup successful 🎉 Now login");
       toggleAuth(); // switch to login
       return;
     }
 
+    // LOGIN SUCCESS
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
     alert("Login successful 🎉");
+
     closeAuth();
     updateNavbar();
 

@@ -64,6 +64,10 @@ exports.login = async (req, res) => {
       return res.status(400).json({ msg: "Invalid password" });
     }
 
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields required" });
+    }
+
     // Create token
     const token = jwt.sign(
       { id: user._id },
@@ -81,6 +85,6 @@ exports.login = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ message: err.message });
   }
 };
