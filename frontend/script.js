@@ -141,7 +141,87 @@ window.changeQty = function(id, change) {
 };
 
 
-// ===== AUTH (CLEAN VERSION) =====
+// ===== AUTH MODAL SYSTEM =====
+let isSignup = false;
+
+// OPEN MODAL
+window.openAuth = function () {
+  document.getElementById("authModal").style.display = "flex";
+};
+
+// CLOSE MODAL
+window.closeAuth = function () {
+  document.getElementById("authModal").style.display = "none";
+};
+
+// TOGGLE LOGIN ↔ SIGNUP
+window.toggleAuth = function () {
+  isSignup = !isSignup;
+
+  document.getElementById("authTitle").innerText = isSignup ? "Signup" : "Login";
+  document.getElementById("authName").style.display = isSignup ? "block" : "none";
+
+  document.querySelector(".switch-text").innerText =
+    isSignup ? "Already have account? Login" : "Don't have account? Signup";
+};
+
+
+// SUBMIT AUTH
+window.submitAuth = async function () {
+
+  const name = document.getElementById("authName").value.trim();
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value.trim();
+
+  if (!email || !password || (isSignup && !name)) {
+    alert("Fill all fields");
+    return;
+  }
+
+  const url = isSignup
+    ? `${API_URL}/api/register`
+    : `${API_URL}/api/login`;
+
+  const body = isSignup
+    ? { name, email, password }
+    : { email, password };
+
+  try {
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.msg || "Error ❌");
+      return;
+    }
+
+    if (isSignup) {
+      alert("Signup successful! Now login 👍");
+      toggleAuth();
+      return;
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    alert("Login successful 🎉");
+    closeAuth();
+    updateNavbar();
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error ❌");
+  }
+};
+
+
+// ===== NAVBAR UPDATE =====
 function updateNavbar() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userSection = document.getElementById("userSection");
@@ -164,7 +244,7 @@ function updateNavbar() {
     `;
   } else {
     userSection.innerHTML = `
-      <button onclick="loginUser()" style="
+      <button onclick="openAuth()" style="
         background:#2e7d32;
         color:white;
         border:none;
@@ -175,40 +255,6 @@ function updateNavbar() {
     `;
   }
 }
-
-
-// ===== LOGIN =====
-window.loginUser = async function () {
-  const email = prompt("Enter email");
-  const password = prompt("Enter password");
-
-  if (!email || !password) return;
-
-  try {
-    const res = await fetch(`${API_URL}/api/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.token) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      showToast("Login successful 🎉");
-      location.reload();
-    } else {
-      showToast(data.msg || "Login failed ❌");
-    }
-  } catch (err) {
-    console.error(err);
-    showToast("Server error ❌");
-  }
-};
 
 
 // ===== LOGOUT =====
@@ -257,15 +303,6 @@ function filterProducts(category) {
   }
 
   renderProducts(filtered);
-}
-
-
-// ===== ACTIVE BUTTON =====
-function setActive(btn) {
-  document.querySelectorAll(".category-btn")
-    .forEach(b => b.classList.remove("active"));
-
-  btn.classList.add("active");
 }
 
 

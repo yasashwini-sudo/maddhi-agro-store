@@ -4,6 +4,10 @@ module.exports = function (req, res, next) {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
 
+    // 🔍 Debug logs
+    console.log("TOKEN RECEIVED:", token);
+    console.log("SECRET USED:", process.env.JWT_SECRET);
+
     if (!token) {
       return res.status(401).json({ msg: "No token" });
     }

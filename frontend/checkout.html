@@ -15,6 +15,7 @@
     <a href="index.html">Home</a>
     <a href="cart.html">Cart</a>
     <a href="orders.html">My Orders</a>
+    <span id="userSection"></span>
   </div>
 </div>
 
@@ -58,121 +59,142 @@
 
 <script>
 
-// ===== RENDER ORDER =====
-function renderOrder() {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const container = document.getElementById("orderItems");
-
-  let subtotal = 0;
-  container.innerHTML = "";
-
-  cart.forEach(item => {
-    const t = item.price * item.quantity;
-    subtotal += t;
-
-    container.innerHTML += `<p>${item.name} x ${item.quantity} = ₹${t}</p>`;
-  });
-
-  let discount = !localStorage.getItem("hasOrdered")
-    ? Math.floor(subtotal * 0.10)
-    : 0;
-
-  let finalTotal = subtotal - discount;
-
-  document.getElementById("finalTotal").innerText = finalTotal;
-}
-
-
-// ===== PLACE ORDER =====
-async function placeOrder() {
-
+  // =======================
+  // CHECK LOGIN FIRST
+  // =======================
   const token = localStorage.getItem("token");
-
+  
   if (!token) {
-    alert("Please login first");
-    return;
-  }
-
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const address = document.getElementById("address").value.trim();
-  const payment = document.getElementById("payment").value;
-
-  if (!name || !phone || !address) {
-    alert("Please fill all details");
-    return;
-  }
-
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  if (!cart.length) {
-    alert("Your cart is empty");
-    return;
-  }
-
-  let subtotal = 0;
-  cart.forEach(item => {
-    subtotal += item.price * item.quantity;
-  });
-
-  let discount = !localStorage.getItem("hasOrdered")
-    ? Math.floor(subtotal * 0.10)
-    : 0;
-
-  let finalTotal = subtotal - discount;
-
-  const order = {
-    name,
-    phone,
-    address,
-    items: cart,
-    total: finalTotal,
-    payment,
-    date: new Date().toLocaleString()
-  };
-
-  try {
-
-    // ✅ CLEAN + CORRECT AUTH FETCH
-    const res = await fetch(`${API_URL}/api/orders`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token
-      },
-      body: JSON.stringify(order)
+  alert("Please login first");
+  window.location.href = "login.html";
+}
+  
+  // =======================
+  // RENDER ORDER
+  // =======================
+  function renderOrder() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const container = document.getElementById("orderItems");
+  
+    let subtotal = 0;
+    container.innerHTML = "";
+  
+    cart.forEach(item => {
+      const t = item.price * item.quantity;
+      subtotal += t;
+  
+      container.innerHTML += `<p>${item.name} x ${item.quantity} = ₹${t}</p>`;
     });
-
-    const data = await res.json();
-
-    if (res.ok && data.success) {
-
-      localStorage.setItem("hasOrdered", "true");
-      localStorage.removeItem("cart");
-
-      alert("Order Placed Successfully 🎉");
-      window.location.href = "index.html";
-
-    } else {
-      alert(data.msg || "Order failed ❌");
-    }
-
-  } catch (err) {
-    console.error("Order error:", err);
-    alert("Server error ❌");
+  
+    let discount = !localStorage.getItem("hasOrdered")
+      ? Math.floor(subtotal * 0.10)
+      : 0;
+  
+    let finalTotal = subtotal - discount;
+  
+    document.getElementById("finalTotal").innerText = finalTotal;
   }
-}
-
-const user = JSON.parse(localStorage.getItem("user"));
-
-if (user) {
-  document.getElementById("name").value = user.name || "";
-}
-
-// INIT
-renderOrder();
-
-</script>
-
+  
+  
+  // =======================
+  // PLACE ORDER
+  // =======================
+  async function placeOrder() {
+  
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      alert("Please login first");
+      window.location.href = "login.html";
+      return;
+    }
+  
+    console.log("TOKEN:", token); // DEBUG
+  
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const address = document.getElementById("address").value.trim();
+    const payment = document.getElementById("payment").value;
+  
+    if (!name || !phone || !address) {
+      alert("Please fill all details");
+      return;
+    }
+  
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  
+    if (!cart.length) {
+      alert("Your cart is empty");
+      return;
+    }
+  
+    let subtotal = 0;
+    cart.forEach(item => {
+      subtotal += item.price * item.quantity;
+    });
+  
+    let discount = !localStorage.getItem("hasOrdered")
+      ? Math.floor(subtotal * 0.10)
+      : 0;
+  
+    let finalTotal = subtotal - discount;
+  
+    const order = {
+      name,
+      phone,
+      address,
+      items: cart,
+      total: finalTotal,
+      payment,
+      date: new Date().toLocaleString()
+    };
+  
+    try {
+  
+      const res = await fetch(`${API_URL}/api/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify(order)
+      });
+  
+      const data = await res.json();
+  
+      console.log("ORDER RESPONSE:", data);
+  
+      if (res.ok) {
+  
+        localStorage.setItem("hasOrdered", "true");
+        localStorage.removeItem("cart");
+  
+        alert("Order Placed Successfully 🎉");
+        window.location.href = "index.html";
+  
+      } else {
+        alert(data.msg || "Order failed ❌");
+      }
+  
+    } catch (err) {
+      console.error("Order error:", err);
+      alert("Server error ❌");
+    }
+  }
+  
+  
+  // =======================
+  // AUTO-FILL USER
+  // =======================
+  const user = JSON.parse(localStorage.getItem("user"));
+  
+  if (user) {
+    document.getElementById("name").value = user.name || "";
+  }
+  
+  // INIT
+  renderOrder();
+  
+  </script>
 </body>
 </html>
