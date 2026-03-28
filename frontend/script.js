@@ -202,8 +202,9 @@ window.submitAuth = async function () {
     }
 
     if (isSignup) {
-      alert("Signup successful! Now login 👍");
-      toggleAuth();
+      alert(data.message || "Signup successful 🎉");
+    
+      toggleAuth(); // switch to login
       return;
     }
 

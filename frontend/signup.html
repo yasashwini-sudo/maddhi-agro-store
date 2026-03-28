@@ -46,7 +46,7 @@ async function signup() {
       alert("Signup successful 🎉");
       window.location.href = "login.html";
     } else {
-      alert(data.msg || "Signup failed ❌");
+        alert(data.message || data.msg || "Signup failed ❌");
     }
 
   } catch (err) {

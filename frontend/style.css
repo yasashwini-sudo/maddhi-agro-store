@@ -1857,6 +1857,7 @@ button:hover {
   border-radius: 12px;
   width: 300px;
   text-align: center;
+  position: relative;
 }
 
 .auth-box input {
