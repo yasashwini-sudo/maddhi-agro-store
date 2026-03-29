@@ -4,7 +4,7 @@
   <title>Signup</title>
 </head>
 
-<body style="text-align:center; margin-top:100px;">
+<body style="text-align:center; margin-top:100px; font-family:Poppins;">
 
 <h2>Signup</h2>
 
@@ -12,11 +12,7 @@
 <input id="email" placeholder="Email"><br><br>
 <input id="password" type="password" placeholder="Password"><br><br>
 
-<p class="switch-text" onclick="toggleAuth()">
-  Already have account? Login
-</p>
-
-<button onclick="submitAuth()">Signup</button>
+<button onclick="signup()">Signup</button>
 
 <p>Already have account? <a href="login.html">Login</a></p>
 
@@ -46,11 +42,13 @@ async function signup() {
 
     const data = await res.json();
 
+    console.log("SIGNUP RESPONSE:", data);
+
     if (res.ok) {
       alert("Signup successful 🎉");
       window.location.href = "login.html";
     } else {
-        alert(data.message || data.msg || "Signup failed ❌");
+      alert(data.message || data.msg || "Signup failed ❌");
     }
 
   } catch (err) {
@@ -58,8 +56,6 @@ async function signup() {
     alert("Server error ❌");
   }
 }
-
-<script src="script.js"></script>
 
 </script>
 
