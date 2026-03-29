@@ -148,16 +148,18 @@ function scrollToProducts(){
 <div id="authBox" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%);
 background:white; padding:20px; border-radius:10px; box-shadow:0 5px 20px rgba(0,0,0,0.3); z-index:999;">
 
-  <h3 id="authTitle">Login</h3>
+<h3 id="authTitle">Login</h3>
 
-  <input id="authName" placeholder="Name (signup only)" style="display:none;"><br><br>
-  <input id="authEmail" placeholder="Email"><br><br>
-  <input id="authPassword" placeholder="Password" type="password"><br><br>
+<input id="authName" placeholder="Name" style="display:none;"><br><br>
 
-  <button onclick="submitAuth()">Submit</button>
-  <p onclick="toggleAuth()" style="cursor:pointer; color:blue;">Switch to Signup</p>
+<input id="authEmail" placeholder="Email"><br><br>
+<input id="authPassword" type="password" placeholder="Password"><br><br>
 
-</div>
+<button onclick="submitAuth()">Submit</button>
+
+<p class="switch-text" onclick="toggleAuth()" style="cursor:pointer;">
+  Don't have account? Signup
+</p>
 
 <!-- 🔐 AUTH MODAL -->
 <div id="authModal" class="auth-modal">
