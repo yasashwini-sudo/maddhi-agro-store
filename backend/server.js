@@ -15,10 +15,9 @@ const app = express();
 // MIDDLEWARES
 // ===============================
 
-// ✅ FIXED CORS (WORKS WITH YOUR NEW NETLIFY URL)
-app.use(cors({
-  origin: "*"
-}));
+// ✅ FIXED CORS (REAL FIX)
+app.use(cors());
+app.options("*", cors()); // 🔥 handles preflight requests
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
