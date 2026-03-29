@@ -15,7 +15,7 @@ const app = express();
 // MIDDLEWARES
 // ===============================
 app.use(cors({
-  origin: ["https://madhi-agro-storee.netlify.app"],
+  origin: ["https://madhi-agro-storeee.netlify.app"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
