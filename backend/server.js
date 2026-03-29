@@ -14,10 +14,10 @@ const app = express();
 // ===============================
 // MIDDLEWARES
 // ===============================
+
+// ✅ FIXED CORS (WORKS WITH YOUR NEW NETLIFY URL)
 app.use(cors({
-  origin: ["https://madhi-agro-storeee.netlify.app"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
+  origin: "*"
 }));
 
 app.use(express.json());
@@ -33,8 +33,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ===============================
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
-
-// AUTH ROUTES
 app.use("/api", authRoutes);
 
 // ===============================
@@ -45,7 +43,7 @@ app.get("/", (req, res) => {
 });
 
 // ===============================
-// ERROR HANDLING (OPTIONAL BUT PRO)
+// ERROR HANDLING
 // ===============================
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -62,7 +60,7 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(Server running on port ${PORT});
     });
 
   } catch (error) {
