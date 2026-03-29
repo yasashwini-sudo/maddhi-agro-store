@@ -1,5 +1,5 @@
-/ ===== API URL =====
-const API_URL = "https://maddhi-agro-store.onrender.com";
+// ===== API URL =====
+window.API_URL = "https://maddhi-agro-store.onrender.com";
 
 
 // ===== CART HELPERS =====
@@ -44,6 +44,7 @@ function showToast(msg) {
     color: "white",
     padding: "10px 20px",
     borderRadius: "8px",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
     zIndex: 9999
   });
 
@@ -149,14 +150,12 @@ let isSignup = false;
 
 // OPEN MODAL
 window.openAuth = function () {
-  const modal = document.getElementById("authModal");
-  if (modal) modal.style.display = "flex";
+  document.getElementById("authModal").style.display = "flex";
 };
 
 // CLOSE MODAL
 window.closeAuth = function () {
-  const modal = document.getElementById("authModal");
-  if (modal) modal.style.display = "none";
+  document.getElementById("authModal").style.display = "none";
 };
 
 
@@ -164,16 +163,10 @@ window.closeAuth = function () {
 window.toggleAuth = function () {
   isSignup = !isSignup;
 
-  const title = document.getElementById("authTitle");
-  const nameField = document.getElementById("authName");
-  const switchText = document.querySelector(".switch-text");
+  document.getElementById("authTitle").innerText = isSignup ? "Signup" : "Login";
+  document.getElementById("authName").style.display = isSignup ? "block" : "none";
 
-  if (!title || !nameField || !switchText) return;
-
-  title.innerText = isSignup ? "Signup" : "Login";
-  nameField.style.display = isSignup ? "block" : "none";
-
-  switchText.innerText =
+  document.querySelector(".switch-text").innerText =
     isSignup ? "Already have account? Login" : "Don't have account? Signup";
 };
 
@@ -181,9 +174,9 @@ window.toggleAuth = function () {
 // SUBMIT AUTH
 window.submitAuth = async function () {
 
-  const name = document.getElementById("authName")?.value.trim();
-  const email = document.getElementById("authEmail")?.value.trim();
-  const password = document.getElementById("authPassword")?.value.trim();
+  const name = document.getElementById("authName").value.trim();
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value.trim();
 
   if (!email || !password || (isSignup && !name)) {
     alert("Fill all fields");
@@ -191,8 +184,8 @@ window.submitAuth = async function () {
   }
 
   const url = isSignup
-    ? ${API_URL}/api/register
-    : ${API_URL}/api/login;
+    ? `${API_URL}/api/register`
+    : `${API_URL}/api/login`;
 
   const body = isSignup
     ? { name, email, password }
@@ -210,16 +203,17 @@ window.submitAuth = async function () {
     console.log("AUTH RESPONSE:", data);
 
     if (!res.ok) {
-      alert(data.msg || data.message || "Error ❌");
+      alert(data.message || data.msg || "Error ❌");
       return;
     }
 
     if (isSignup) {
       alert("Signup successful 🎉 Now login");
-      toggleAuth();
+      toggleAuth(); // switch to login
       return;
     }
 
+    // LOGIN SUCCESS
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -245,13 +239,27 @@ function updateNavbar() {
   if (user) {
     userSection.innerHTML = `
       <div style="display:flex; align-items:center; gap:10px;">
-        <span>👋 ${user.name}</span>
-        <button onclick="logout()">Logout</button>
+        <span style="font-weight:500;">👋 ${user.name}</span>
+        <button onclick="logout()" style="
+          background:#e53935;
+          color:white;
+          border:none;
+          padding:6px 10px;
+          border-radius:6px;
+          cursor:pointer;
+        ">Logout</button>
       </div>
     `;
   } else {
     userSection.innerHTML = `
-      <button onclick="openAuth()">Login</button>
+      <button onclick="openAuth()" style="
+        background:#2e7d32;
+        color:white;
+        border:none;
+        padding:6px 12px;
+        border-radius:6px;
+        cursor:pointer;
+      ">Login</button>
     `;
   }
 }
@@ -268,12 +276,8 @@ window.logout = function () {
 // ===== LOAD PRODUCTS =====
 async function loadProducts() {
   try {
-    console.log("Fetching from:", ${API_URL}/api/products);
-
-    const res = await fetch(${API_URL}/api/products);
+    const res = await fetch(`${API_URL}/api/products`);
     const products = await res.json();
-
-    console.log("Products:", products);
 
     window.allProducts = products;
 
@@ -306,9 +310,7 @@ function filterProducts(category) {
     });
   }
 
-  if (typeof renderProducts === "function") {
-    renderProducts(filtered);
-  }
+  renderProducts(filtered);
 }
 
 
