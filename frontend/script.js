@@ -95,9 +95,9 @@ const div = document.createElement("div");
 div.className = "cart-item";
 
 div.innerHTML = `
-  <img src="${API_URL}/uploads/${item.image || 'default.png'}"
-  onerror="this.src='https://via.placeholder.com/150'" />
-  
+  <img src="${API_URL}/uploads/${item.image || 'default.png'}" 
+       onerror="this.src='https://via.placeholder.com/150'" />
+
   <div class="cart-info">
     <h3>${item.name}</h3>
     <p>₹${item.price}</p>
@@ -141,19 +141,16 @@ showToast("Cart updated 🔄");
 // ===============================
 let isSignup = false;
 
-// OPEN MODAL
 window.openAuth = function () {
 const modal = document.getElementById("authModal");
 if (modal) modal.style.display = "flex";
 };
 
-// CLOSE MODAL
 window.closeAuth = function () {
 const modal = document.getElementById("authModal");
 if (modal) modal.style.display = "none";
 };
 
-// TOGGLE LOGIN ↔ SIGNUP
 window.toggleAuth = function () {
 isSignup = !isSignup;
 
@@ -170,7 +167,7 @@ switchText.innerText =
 isSignup ? "Already have account? Login" : "Don't have account? Signup";
 };
 
-// SUBMIT AUTH
+// ===== SUBMIT AUTH =====
 window.submitAuth = async function () {
 
 const name = document.getElementById("authName")?.value.trim();
