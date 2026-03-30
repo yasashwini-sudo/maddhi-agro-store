@@ -142,6 +142,10 @@ window.changeQty = function(id, change) {
     cart = cart.filter(p => p._id !== id);
   }
 
+  window.goToCheckout = function () {
+    window.location.href = "checkout.html";
+  };
+
   saveCart(cart);
   updateCartCount();
   renderCart();
