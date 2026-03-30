@@ -1,12 +1,13 @@
 // ===== GLOBAL SAFE API =====
 window.API_URL = "https://maddhi-agro-store.onrender.com";
 
-
 // ===== GLOBAL PRODUCTS STORE =====
 window.allProducts = [];
 
 
+// ===============================
 // ===== CART HELPERS =====
+// ===============================
 function getCart() {
   try {
     return JSON.parse(localStorage.getItem("cart")) || [];
@@ -20,7 +21,9 @@ function saveCart(cart) {
 }
 
 
+// ===============================
 // ===== ADD TO CART =====
+// ===============================
 window.addToCart = function (product) {
   if (!product) return;
 
@@ -39,7 +42,9 @@ window.addToCart = function (product) {
 };
 
 
+// ===============================
 // ===== TOAST =====
+// ===============================
 function showToast(msg) {
   const toast = document.createElement("div");
   toast.innerText = msg;
@@ -60,7 +65,9 @@ function showToast(msg) {
 }
 
 
+// ===============================
 // ===== CART COUNT =====
+// ===============================
 function updateCartCount() {
   const cart = getCart();
   let count = 0;
@@ -73,7 +80,76 @@ function updateCartCount() {
 
 
 // ===============================
-// ✅ CATEGORY FILTER (FIXED)
+// ===== RENDER CART (🔥 FIXED)
+// ===============================
+function renderCart() {
+  const container = document.getElementById("cartItems");
+  const totalEl = document.getElementById("cartTotal");
+
+  if (!container || !totalEl) return;
+
+  const cart = getCart();
+  container.innerHTML = "";
+
+  let total = 0;
+
+  if (cart.length === 0) {
+    container.innerHTML = "<h2>Your cart is empty 🛒</h2>";
+    totalEl.innerText = 0;
+    return;
+  }
+
+  cart.forEach(item => {
+    const itemTotal = item.price * item.quantity;
+    total += itemTotal;
+
+    const div = document.createElement("div");
+    div.className = "cart-item";
+
+    div.innerHTML = `
+      <img src="${window.API_URL}/uploads/${item.image || "default.png"}"
+           onerror="this.src='https://via.placeholder.com/150'" />
+
+      <div class="cart-info">
+        <h3>${item.name}</h3>
+        <p>₹${item.price}</p>
+
+        <button onclick="changeQty('${item._id}',1)">+</button>
+        ${item.quantity}
+        <button onclick="changeQty('${item._id}',-1)">-</button>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+
+  totalEl.innerText = total;
+}
+
+
+// ===============================
+// ===== CHANGE QTY =====
+// ===============================
+window.changeQty = function(id, change) {
+  let cart = getCart();
+
+  const item = cart.find(p => p._id === id);
+  if (!item) return;
+
+  item.quantity += change;
+
+  if (item.quantity <= 0) {
+    cart = cart.filter(p => p._id !== id);
+  }
+
+  saveCart(cart);
+  updateCartCount();
+  renderCart();
+};
+
+
+// ===============================
+// ===== CATEGORY FILTER =====
 // ===============================
 window.filterProducts = function(category) {
   let filtered = window.allProducts;
@@ -91,14 +167,12 @@ window.filterProducts = function(category) {
     });
   }
 
-  if (typeof renderProducts === "function") {
-    renderProducts(filtered);
-  }
+  renderProducts(filtered);
 };
 
 
 // ===============================
-// ✅ BUTTON ACTIVE STYLE (FIXED)
+// ===== ACTIVE BUTTON =====
 // ===============================
 window.setActive = function(btn) {
   document.querySelectorAll(".category-btn").forEach(b => {
@@ -191,7 +265,9 @@ window.submitAuth = async function () {
 };
 
 
+// ===============================
 // ===== NAVBAR =====
+// ===============================
 function updateNavbar() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userSection = document.getElementById("userSection");
@@ -236,9 +312,12 @@ async function loadProducts() {
 }
 
 
+// ===============================
 // ===== INIT =====
+// ===============================
 document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
   updateNavbar();
+  renderCart();   // 🔥 THIS FIXES CART PAGE
   loadProducts();
 });
