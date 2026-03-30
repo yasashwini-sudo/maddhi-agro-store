@@ -1,4 +1,4 @@
-/ ===== API URL =====
+// ===== API URL =====
 const API_URL = "https://maddhi-agro-store.onrender.com";
 
 // ===== CART HELPERS =====
@@ -191,14 +191,13 @@ const body = isSignup
 : { email, password };
 
 try {
-
-```
 const res = await fetch(url, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(body)
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify(body)
 });
 
+```
 const data = await res.json();
 
 if (!res.ok) {
