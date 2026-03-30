@@ -1,10 +1,14 @@
-// ===== API URL =====
-const API_URL = "https://maddhi-agro-store.onrender.com";
+// ===== GLOBAL SAFE API =====
+window.API_URL = "https://maddhi-agro-store.onrender.com";
 
 
 // ===== CART HELPERS =====
 function getCart() {
-  return JSON.parse(localStorage.getItem("cart")) || [];
+  try {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+  } catch {
+    return [];
+  }
 }
 
 function saveCart(cart) {
@@ -74,52 +78,6 @@ function updateCartCount() {
 }
 
 
-// ===== RENDER CART =====
-function renderCart() {
-  const container = document.getElementById("cartItems");
-  const totalEl = document.getElementById("cartTotal");
-
-  if (!container || !totalEl) return;
-
-  const cart = getCart();
-  container.innerHTML = "";
-
-  let total = 0;
-
-  if (cart.length === 0) {
-    container.innerHTML = "<h2>Your cart is empty 🛒</h2>";
-    totalEl.innerText = 0;
-    return;
-  }
-
-  cart.forEach(item => {
-    const itemTotal = item.price * item.quantity;
-    total += itemTotal;
-
-    const div = document.createElement("div");
-    div.className = "cart-item";
-
-    div.innerHTML = `
-      <img src="${API_URL}/uploads/${item.image || "default.png"}"
-           onerror="this.onerror=null; this.src='https://via.placeholder.com/150';" />
-
-      <div class="cart-info">
-        <h3>${item.name}</h3>
-        <p>₹${item.price}</p>
-
-        <button onclick="changeQty('${item._id}',1)">+</button>
-        ${item.quantity}
-        <button onclick="changeQty('${item._id}',-1)">-</button>
-      </div>
-    `;
-
-    container.appendChild(div);
-  });
-
-  totalEl.innerText = total;
-}
-
-
 // ===== CHANGE QTY =====
 window.changeQty = function(id, change) {
   let cart = getCart();
@@ -134,11 +92,38 @@ window.changeQty = function(id, change) {
   }
 
   saveCart(cart);
-  renderCart();
   updateCartCount();
-
-  showToast("Cart updated 🔄");
+  renderCart();
 };
+
+
+// ===== RENDER CART =====
+function renderCart() {
+  const container = document.getElementById("cartItems");
+  const totalEl = document.getElementById("cartTotal");
+
+  if (!container || !totalEl) return;
+
+  const cart = getCart();
+  container.innerHTML = "";
+
+  let total = 0;
+
+  cart.forEach(item => {
+    total += item.price * item.quantity;
+
+    const div = document.createElement("div");
+
+    div.innerHTML =
+      "<h3>" + item.name + "</h3>" +
+      "<p>₹" + item.price + "</p>" +
+      "<p>Qty: " + item.quantity + "</p>";
+
+    container.appendChild(div);
+  });
+
+  totalEl.innerText = total;
+}
 
 
 // ===============================
@@ -161,15 +146,11 @@ window.toggleAuth = function () {
 
   const title = document.getElementById("authTitle");
   const nameField = document.getElementById("authName");
-  const switchText = document.querySelector(".switch-text");
 
-  if (!title || !nameField || !switchText) return;
+  if (!title || !nameField) return;
 
   title.innerText = isSignup ? "Signup" : "Login";
   nameField.style.display = isSignup ? "block" : "none";
-
-  switchText.innerText =
-    isSignup ? "Already have account? Login" : "Don't have account? Signup";
 };
 
 
@@ -186,8 +167,8 @@ window.submitAuth = async function () {
   }
 
   const url = isSignup
-    ? ${API_URL}/api/signup
-    : ${API_URL}/api/login;
+    ? window.API_URL + "/api/signup"
+    : window.API_URL + "/api/login";
 
   const body = isSignup
     ? { name, email, password }
@@ -208,7 +189,7 @@ window.submitAuth = async function () {
     }
 
     if (isSignup) {
-      alert("Signup successful 🎉 Now login");
+      alert("Signup successful 🎉");
       toggleAuth();
       return;
     }
@@ -217,7 +198,6 @@ window.submitAuth = async function () {
     localStorage.setItem("user", JSON.stringify(data.user));
 
     alert("Login successful 🎉");
-
     closeAuth();
     updateNavbar();
 
@@ -228,7 +208,7 @@ window.submitAuth = async function () {
 };
 
 
-// ===== NAVBAR UPDATE =====
+// ===== NAVBAR =====
 function updateNavbar() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userSection = document.getElementById("userSection");
@@ -236,24 +216,19 @@ function updateNavbar() {
   if (!userSection) return;
 
   if (user) {
-    userSection.innerHTML = `
-      <div style="display:flex; gap:10px; align-items:center;">
-        <span>👋 ${user.name}</span>
-        <button onclick="logout()">Logout</button>
-      </div>
-    `;
+    userSection.innerHTML =
+      "<span>👋 " + user.name + "</span> " +
+      "<button onclick='logout()'>Logout</button>";
   } else {
-    userSection.innerHTML = `
-      <button onclick="openAuth()">Login</button>
-    `;
+    userSection.innerHTML =
+      "<button onclick='openAuth()'>Login</button>";
   }
 }
 
 
 // ===== LOGOUT =====
 window.logout = function () {
-  localStorage.removeItem("user");
-  localStorage.removeItem("token");
+  localStorage.clear();
   location.reload();
 };
 
@@ -261,49 +236,19 @@ window.logout = function () {
 // ===== LOAD PRODUCTS =====
 async function loadProducts() {
   try {
-    console.log("Fetching:", ${API_URL}/api/products);
-
-    const res = await fetch(${API_URL}/api/products);
+    const res = await fetch(window.API_URL + "/api/products");
     const products = await res.json();
 
-    if (!Array.isArray(products)) {
-      console.error("Invalid product response:", products);
-      return;
-    }
+    console.log("Products:", products);
 
-    window.allProducts = products;
+    if (!Array.isArray(products)) return;
 
     if (typeof renderProducts === "function") {
       renderProducts(products);
     }
 
   } catch (err) {
-    console.error("Error loading products:", err);
-  }
-}
-
-
-// ===== FILTER =====
-function filterProducts(category) {
-  const allProducts = window.allProducts || [];
-
-  let filtered = allProducts;
-
-  if (category !== "All") {
-    filtered = allProducts.filter(p => {
-      const cat = p.category?.toLowerCase();
-
-      if (category === "Oils") return cat === "oil";
-      if (category === "Spices") return cat === "spice";
-      if (category === "Ghee") return cat === "ghee";
-      if (category === "Salt") return cat === "salt";
-
-      return true;
-    });
-  }
-
-  if (typeof renderProducts === "function") {
-    renderProducts(filtered);
+    console.error("Products error:", err);
   }
 }
 
