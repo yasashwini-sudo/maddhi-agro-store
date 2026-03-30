@@ -16,8 +16,7 @@ const app = express();
 // ===============================
 
 // ✅ FIXED CORS (REAL FIX)
-app.use(cors());
-app.options("*", cors()); // 🔥 handles preflight requests
+app.use(cors());// 🔥 handles preflight requests
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -59,7 +58,7 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(PORT, () => {
-      console.log(Server running on port ${PORT});
+      console.log(`Server running on port ${PORT}`);
     });
 
   } catch (error) {
