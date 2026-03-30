@@ -2,6 +2,10 @@
 window.API_URL = "https://maddhi-agro-store.onrender.com";
 
 
+// ===== GLOBAL PRODUCTS STORE =====
+window.allProducts = [];
+
+
 // ===== CART HELPERS =====
 function getCart() {
   try {
@@ -56,16 +60,6 @@ function showToast(msg) {
 }
 
 
-// ===== NAVIGATION =====
-window.goToCheckout = () => window.location.href = "checkout.html";
-
-window.buyNow = function (product) {
-  if (!product) return;
-  saveCart([{ ...product, quantity: 1 }]);
-  window.location.href = "checkout.html";
-};
-
-
 // ===== CART COUNT =====
 function updateCartCount() {
   const cart = getCart();
@@ -78,52 +72,41 @@ function updateCartCount() {
 }
 
 
-// ===== CHANGE QTY =====
-window.changeQty = function(id, change) {
-  let cart = getCart();
+// ===============================
+// ✅ CATEGORY FILTER (FIXED)
+// ===============================
+window.filterProducts = function(category) {
+  let filtered = window.allProducts;
 
-  const item = cart.find(p => p._id === id);
-  if (!item) return;
+  if (category !== "All") {
+    filtered = window.allProducts.filter(p => {
+      const cat = p.category?.toLowerCase();
 
-  item.quantity += change;
+      if (category === "Oils") return cat === "oil";
+      if (category === "Spices") return cat === "spice";
+      if (category === "Ghee") return cat === "ghee";
+      if (category === "Salt") return cat === "salt";
 
-  if (item.quantity <= 0) {
-    cart = cart.filter(p => p._id !== id);
+      return true;
+    });
   }
 
-  saveCart(cart);
-  updateCartCount();
-  renderCart();
+  if (typeof renderProducts === "function") {
+    renderProducts(filtered);
+  }
 };
 
 
-// ===== RENDER CART =====
-function renderCart() {
-  const container = document.getElementById("cartItems");
-  const totalEl = document.getElementById("cartTotal");
-
-  if (!container || !totalEl) return;
-
-  const cart = getCart();
-  container.innerHTML = "";
-
-  let total = 0;
-
-  cart.forEach(item => {
-    total += item.price * item.quantity;
-
-    const div = document.createElement("div");
-
-    div.innerHTML =
-      "<h3>" + item.name + "</h3>" +
-      "<p>₹" + item.price + "</p>" +
-      "<p>Qty: " + item.quantity + "</p>";
-
-    container.appendChild(div);
+// ===============================
+// ✅ BUTTON ACTIVE STYLE (FIXED)
+// ===============================
+window.setActive = function(btn) {
+  document.querySelectorAll(".category-btn").forEach(b => {
+    b.classList.remove("active");
   });
 
-  totalEl.innerText = total;
-}
+  btn.classList.add("active");
+};
 
 
 // ===============================
@@ -233,19 +216,19 @@ window.logout = function () {
 };
 
 
+// ===============================
 // ===== LOAD PRODUCTS =====
+// ===============================
 async function loadProducts() {
   try {
     const res = await fetch(window.API_URL + "/api/products");
     const products = await res.json();
 
-    console.log("Products:", products);
-
     if (!Array.isArray(products)) return;
 
-    if (typeof renderProducts === "function") {
-      renderProducts(products);
-    }
+    window.allProducts = products;
+
+    renderProducts(products);
 
   } catch (err) {
     console.error("Products error:", err);
@@ -257,6 +240,5 @@ async function loadProducts() {
 document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
   updateNavbar();
-  renderCart();
   loadProducts();
 });
