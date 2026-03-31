@@ -41,6 +41,34 @@
       font-weight: 500;
     }
 
+    .controls {
+      max-width: 1000px;
+      margin: 20px auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .controls button {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #eee;
+    }
+
+    .controls button:hover {
+      background: #ddd;
+    }
+
+    .controls input {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 250px;
+    }
+
     #ordersContainer {
       max-width: 1000px;
       margin: auto;
@@ -55,63 +83,29 @@
       transition: 0.2s;
     }
 
-    .order-card:hover {
-      transform: translateY(-2px);
-    }
-
     .order-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-    }
-
-    .order-name {
-      font-size: 18px;
-      font-weight: 600;
     }
 
     .status {
-      font-size: 13px;
       padding: 6px 12px;
       border-radius: 20px;
     }
 
-    .pending { background: #ffe5e5; color: #d32f2f; }
-    .shipped { background: #fff3cd; color: #f57c00; }
-    .delivered { background: #e6ffed; color: #2e7d32; }
-
-    .order-info {
-      margin-top: 10px;
-      color: #555;
-    }
+    .pending { background: #ffe5e5; color: red; }
+    .shipped { background: #fff3cd; color: orange; }
+    .delivered { background: #e6ffed; color: green; }
 
     .action-row {
-      margin-top: 15px;
+      margin-top: 10px;
       display: flex;
       gap: 10px;
     }
 
-    select {
-      padding: 6px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      padding: 7px 14px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: 500;
-    }
-
     .delete-btn {
-      background: #ff4d4d;
+      background: red;
       color: white;
-    }
-
-    .delete-btn:hover {
-      background: #e53935;
     }
 
     .items {
@@ -124,27 +118,38 @@
     .center-msg {
       text-align: center;
       margin-top: 40px;
-      color: #777;
     }
   </style>
 </head>
 
 <body>
 
-<div class="navbar">
-  Maddhi Agro 🌿 Admin
-</div>
+<div class="navbar">Maddhi Agro 🌿 Admin</div>
 
 <h1>Admin Dashboard</h1>
 
-<!-- 🔥 STATS BAR -->
 <div id="statsBar"></div>
+
+<!-- 🔥 CONTROLS -->
+<div class="controls">
+  <div>
+    <button onclick="filterStatus('All')">All</button>
+    <button onclick="filterStatus('Pending')">Pending</button>
+    <button onclick="filterStatus('Shipped')">Shipped</button>
+    <button onclick="filterStatus('Delivered')">Delivered</button>
+  </div>
+
+  <input type="text" placeholder="Search..." oninput="searchOrders(this.value)">
+</div>
 
 <div id="ordersContainer"></div>
 
 <script>
 
 const API_URL = "https://maddhi-agro-store.onrender.com";
+
+let allOrders = [];
+let filteredOrders = [];
 
 
 // ===============================
@@ -154,171 +159,154 @@ async function loadOrders() {
   const container = document.getElementById("ordersContainer");
   const statsBar = document.getElementById("statsBar");
 
-  container.innerHTML = "<p class='center-msg'>Loading orders...</p>";
+  container.innerHTML = "<p class='center-msg'>Loading...</p>";
 
   try {
     const token = localStorage.getItem("token");
 
-    if (!token) {
-      container.innerHTML = "<p class='center-msg'>Please login first</p>";
-      return;
-    }
-
     const res = await fetch(`${API_URL}/api/orders/admin/all`, {
-      headers: {
-        "Authorization": "Bearer " + token
-      }
+      headers: { "Authorization": "Bearer " + token }
     });
 
-    if (res.status === 401) {
-      container.innerHTML = "<p class='center-msg'>Session expired. Redirecting...</p>";
-      localStorage.removeItem("token");
-      setTimeout(() => window.location.href = "index.html", 1500);
-      return;
-    }
-
-    if (!res.ok) {
-      container.innerHTML = "<p class='center-msg'>Failed to load orders</p>";
-      return;
-    }
-
     const orders = await res.json();
-    container.innerHTML = "";
 
-    // 🔥 Update heading
-    document.querySelector("h1").innerText = `Admin Dashboard (${orders.length} Orders)`;
+    allOrders = orders;
+    filteredOrders = orders;
 
-    // 🔥 Stats Calculation
-    let totalRevenue = 0;
-    let pending = 0;
+    document.querySelector("h1").innerText =
+      `Admin Dashboard (${orders.length} Orders)`;
+
+    let total = 0, pending = 0;
 
     orders.forEach(o => {
-      totalRevenue += o.total || 0;
+      total += o.total || 0;
       if (o.status === "Pending") pending++;
     });
 
     statsBar.innerHTML = `
-      <div class="stat-card">📦 Orders: <b>${orders.length}</b></div>
-      <div class="stat-card">💰 Revenue: <b>₹${totalRevenue}</b></div>
-      <div class="stat-card">⏳ Pending: <b>${pending}</b></div>
+      <div class="stat-card">📦 ${orders.length}</div>
+      <div class="stat-card">💰 ₹${total}</div>
+      <div class="stat-card">⏳ ${pending}</div>
     `;
 
-    if (!orders.length) {
-      container.innerHTML = "<p class='center-msg'>No orders found</p>";
-      return;
-    }
+    renderOrders(filteredOrders);
 
-    orders.forEach(order => {
-      let itemsHTML = "";
-      (order.items || []).forEach(item => {
-        itemsHTML += `<p>${item.name} x ${item.quantity}</p>`;
-      });
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-      const statusClass = (order.status || "pending").toLowerCase();
 
-      container.innerHTML += `
-        <div class="order-card">
+// ===============================
+// RENDER ORDERS
+// ===============================
+function renderOrders(orders) {
+  const container = document.getElementById("ordersContainer");
+  container.innerHTML = "";
 
-          <div class="order-header">
-            <div class="order-name">${order.name}</div>
-            <div class="status ${statusClass}">
-              ${order.status || "Pending"}
-            </div>
-          </div>
+  if (!orders.length) {
+    container.innerHTML = "<p class='center-msg'>No results</p>";
+    return;
+  }
 
-          <div class="order-info">
-            <p>📞 ${order.phone}</p>
-            <p>📍 ${order.address}</p>
-            <p><b>Total:</b> ₹${order.total}</p>
-          </div>
+  orders.forEach(order => {
+    let itemsHTML = "";
+    (order.items || []).forEach(i => {
+      itemsHTML += `<p>${i.name} x ${i.quantity}</p>`;
+    });
 
-          <div class="action-row">
-            <select onchange="updateStatus('${order._id}', this)">
-              <option value="">Change Status</option>
-              <option>Pending</option>
-              <option>Shipped</option>
-              <option>Delivered</option>
-            </select>
+    const statusClass = order.status.toLowerCase();
 
-            <button class="delete-btn" onclick="deleteOrder('${order._id}')">
-              Delete
-            </button>
-          </div>
+    container.innerHTML += `
+      <div class="order-card">
 
-          <div class="items">
-            <b>Items:</b>
-            ${itemsHTML}
-          </div>
-
+        <div class="order-header">
+          <b>${order.name}</b>
+          <span class="status ${statusClass}">${order.status}</span>
         </div>
-      `;
-    });
 
-  } catch (err) {
-    console.error("Load Orders Error:", err);
-    container.innerHTML = "<p class='center-msg'>Something went wrong</p>";
-  }
+        <p>📞 ${order.phone}</p>
+        <p>📍 ${order.address}</p>
+        <p><b>₹${order.total}</b></p>
+
+        <div class="action-row">
+          <select onchange="updateStatus('${order._id}', this)">
+            <option>Pending</option>
+            <option ${order.status==='Shipped'?'selected':''}>Shipped</option>
+            <option ${order.status==='Delivered'?'selected':''}>Delivered</option>
+          </select>
+
+          <button class="delete-btn" onclick="deleteOrder('${order._id}')">Delete</button>
+        </div>
+
+        <div class="items">${itemsHTML}</div>
+      </div>
+    `;
+  });
 }
 
 
 // ===============================
-// UPDATE STATUS
+// FILTER
 // ===============================
-async function updateStatus(id, selectEl) {
-  const status = selectEl.value;
-  if (!status) return;
+function filterStatus(status) {
+  filteredOrders = status === "All"
+    ? allOrders
+    : allOrders.filter(o => o.status === status);
 
-  selectEl.disabled = true;
-
-  try {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(`${API_URL}/api/orders/admin/update/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
-      body: JSON.stringify({ status })
-    });
-
-    if (!res.ok) {
-      alert("Failed to update status");
-    }
-
-    loadOrders();
-
-  } catch (err) {
-    console.error("Update error:", err);
-  }
+  renderOrders(filteredOrders);
 }
 
 
 // ===============================
-// DELETE ORDER
+// SEARCH
+// ===============================
+function searchOrders(q) {
+  q = q.toLowerCase();
+
+  filteredOrders = allOrders.filter(o =>
+    o.name.toLowerCase().includes(q) ||
+    o.phone.includes(q)
+  );
+
+  renderOrders(filteredOrders);
+}
+
+
+// ===============================
+// UPDATE
+// ===============================
+async function updateStatus(id, el) {
+  const status = el.value;
+  const token = localStorage.getItem("token");
+
+  await fetch(`${API_URL}/api/orders/admin/update/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({ status })
+  });
+
+  loadOrders();
+}
+
+
+// ===============================
+// DELETE
 // ===============================
 async function deleteOrder(id) {
-  if (!confirm("Are you sure you want to delete this order?")) return;
+  if (!confirm("Delete?")) return;
 
-  try {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    const res = await fetch(`${API_URL}/api/orders/admin/delete/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": "Bearer " + token
-      }
-    });
+  await fetch(`${API_URL}/api/orders/admin/delete/${id}`, {
+    method: "DELETE",
+    headers: { "Authorization": "Bearer " + token }
+  });
 
-    if (!res.ok) {
-      alert("Delete failed");
-    }
-
-    loadOrders();
-
-  } catch (err) {
-    console.error("Delete error:", err);
-  }
+  loadOrders();
 }
 
 
