@@ -20,7 +20,7 @@ router.post("/", auth, async (req, res) => {
       total: req.body.total || 0,  
       date: req.body.date || new Date(),  
       user: req.user.id,  
-      status: "Pending" // ✅ default  
+      status: "Pending"  
     });  
 
     await newOrder.save();  
@@ -28,38 +28,48 @@ router.post("/", auth, async (req, res) => {
     res.status(201).json({ success: true, order: newOrder });  
 
   } catch (err) {  
-    console.error("ORDER ERROR:", err);  
+    console.error("ORDER ERROR FULL:", err);  
     res.status(500).json({ success: false, msg: "Order failed" });  
   }  
 });  
 
 
-// ===============================  
-// GET USER ORDERS  
-// ===============================  
-router.get("/", auth, async (req, res) => {  
-  try {  
-    const orders = await Order.find({ user: req.user.id }).sort({ _id: -1 });  
-    res.json(orders);  
-  } catch (err) {  
-    console.error("FETCH ORDER ERROR:", err);  
-    res.status(500).json({ msg: "Failed to fetch user orders" });  
-  }  
-});  
+/ ===============================
+// ADMIN - GET ALL ORDERS
+// ===============================
+router.get("/admin/all", async (req, res) => {
+  try {
+    const orders = await Order.find().sort({ _id: -1 }); // ✅ FIXED
+    res.json(orders);
+  } catch (err) {
+    console.error("ADMIN ORDER ERROR:", err);
+    res.status(500).json([]);
+  }
+});
 
 
-// ===============================  
-// 🔥 ADMIN - GET ALL ORDERS  
-// ===============================  
-router.get("/admin/all", async (req, res) => {  
-  try {  
-    const orders = await Order.find().sort({ _id: -1 });  
-    res.json(orders);  
-  } catch (err) {  
-    console.error("ADMIN FETCH ERROR:", err);  
-    res.status(500).json({ msg: "Failed to fetch orders" });  
-  }  
-});  
+// ===============================
+// GET USER ORDERS
+// ===============================
+router.get("/", auth, async (req, res) => {
+  try {
+    console.log("FETCHING ORDERS FOR:", req.user.id);
+
+    const orders = await Order.find({
+      user: req.user.id
+    }).sort({ _id: -1 }); // ✅ FIXED
+
+    console.log("ORDERS FOUND:", orders.length);
+
+    res.json(orders);
+
+  } catch (err) {
+    console.error("FETCH ORDER ERROR:", err);
+    res.status(500).json({
+      msg: "Failed to fetch orders"
+    });
+  }
+});
 
 
 // ===============================  
@@ -68,6 +78,8 @@ router.get("/admin/all", async (req, res) => {
 router.put("/admin/update/:id", async (req, res) => {  
   try {  
     const { status } = req.body;  
+
+    console.log("UPDATE STATUS:", req.params.id, status);
 
     if (!status) {  
       return res.status(400).json({ msg: "Status required" });  
@@ -83,12 +95,10 @@ router.put("/admin/update/:id", async (req, res) => {
       return res.status(404).json({ msg: "Order not found" });  
     }  
 
-    console.log("UPDATED ORDER:", order); // 🔥 debug
-
     res.json({ success: true, order });  
 
   } catch (err) {  
-    console.error("UPDATE STATUS ERROR:", err);  
+    console.error("❌ UPDATE STATUS ERROR FULL:", err);  
     res.status(500).json({ msg: "Failed to update status" });  
   }  
 });  
@@ -99,6 +109,8 @@ router.put("/admin/update/:id", async (req, res) => {
 // ===============================  
 router.delete("/admin/delete/:id", async (req, res) => {  
   try {  
+    console.log("DELETE ORDER:", req.params.id);
+
     const deleted = await Order.findByIdAndDelete(req.params.id);  
 
     if (!deleted) {  
@@ -108,10 +120,10 @@ router.delete("/admin/delete/:id", async (req, res) => {
     res.json({ success: true });  
 
   } catch (err) {  
-    console.error("DELETE ERROR:", err);  
+    console.error("❌ DELETE ERROR FULL:", err);  
     res.status(500).json({ msg: "Failed to delete order" });  
   }  
 });  
 
 
-module.exports = router;
+module.exports = router
