@@ -19,7 +19,8 @@ router.post("/", auth, async (req, res) => {
       items: req.body.items || [],
       total: req.body.total || 0,
       date: req.body.date || new Date(),
-      user: req.user.id // ✅ attach order to logged-in user
+      user: req.user.id,
+      status: "Pending" // 🔥 ADDED STATUS
     });
 
     await newOrder.save();
@@ -38,6 +39,7 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
+
 // ===============================
 // ADMIN - GET ALL ORDERS
 // ===============================
@@ -53,6 +55,43 @@ router.get("/admin/all", async (req, res) => {
 
 
 // ===============================
+// UPDATE ORDER STATUS (ADMIN)
+// ===============================
+router.put("/admin/update/:id", async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    res.json(order);
+
+  } catch (err) {
+    console.error("UPDATE ERROR:", err);
+    res.status(500).json({ msg: "Error updating status" });
+  }
+});
+
+
+// ===============================
+// DELETE ORDER (ADMIN)
+// ===============================
+router.delete("/admin/delete/:id", async (req, res) => {
+  try {
+    await Order.findByIdAndDelete(req.params.id);
+    res.json({ msg: "Order deleted" });
+
+  } catch (err) {
+    console.error("DELETE ERROR:", err);
+    res.status(500).json({ msg: "Error deleting order" });
+  }
+});
+
+
+// ===============================
 // GET USER ORDERS (FIXED 🔥)
 // ===============================
 router.get("/", auth, async (req, res) => {
@@ -60,7 +99,7 @@ router.get("/", auth, async (req, res) => {
     console.log("FETCHING ORDERS FOR:", req.user.id);
 
     const orders = await Order.find({
-      user: req.user.id   // ✅ ONLY this user's orders
+      user: req.user.id
     }).sort({ createdAt: -1 });
 
     console.log("ORDERS FOUND:", orders.length);
