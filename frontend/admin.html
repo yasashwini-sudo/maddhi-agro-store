@@ -3,6 +3,9 @@
 <head>
   <title>Admin Panel</title>
 
+  <!-- 🔥 CHART LIB -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -10,7 +13,6 @@
       margin: 0;
     }
 
-    /* NAVBAR */
     .navbar {
       background: #1b5e20;
       color: white;
@@ -26,7 +28,6 @@
       color: #222;
     }
 
-    /* STATS */
     #statsBar {
       display: flex;
       justify-content: center;
@@ -55,7 +56,16 @@
       margin-top: 5px;
     }
 
-    /* CONTROLS */
+    /* 🔥 CHART BOX */
+    .chart-box {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
     .controls {
       max-width: 1000px;
       margin: 20px auto;
@@ -83,10 +93,8 @@
       padding: 10px;
       border-radius: 10px;
       border: 1px solid #ccc;
-      width: 250px;
     }
 
-    /* ORDERS */
     #ordersContainer {
       max-width: 1000px;
       margin: auto;
@@ -166,6 +174,11 @@
 
 <div id="statsBar"></div>
 
+<!-- 🔥 CHART -->
+<div class="chart-box">
+  <canvas id="revenueChart"></canvas>
+</div>
+
 <div class="controls">
   <div class="filters">
     <button onclick="setActive(this);filterStatus('All')">All</button>
@@ -174,6 +187,7 @@
     <button onclick="setActive(this);filterStatus('Delivered')">Delivered</button>
   </div>
 
+  <input type="date" onchange="filterByDate(this.value)">
   <input type="text" placeholder="Search..." oninput="searchOrders(this.value)">
 </div>
 
@@ -185,6 +199,7 @@ const API_URL = "https://maddhi-agro-store.onrender.com";
 
 let allOrders = [];
 let filteredOrders = [];
+let chart;
 
 function setActive(btn){
   document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
@@ -236,6 +251,29 @@ async function loadOrders() {
   `;
 
   renderOrders(filteredOrders);
+  renderChart(filteredOrders);
+}
+
+function renderChart(orders){
+  const ctx = document.getElementById("revenueChart");
+
+  const labels = orders.map((_,i)=>"Order "+(i+1));
+  const data = orders.map(o=>o.total || 0);
+
+  if(chart) chart.destroy();
+
+  chart = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Revenue',
+        data,
+        borderWidth:2,
+        tension:0.3
+      }]
+    }
+  });
 }
 
 function renderOrders(orders){
@@ -257,7 +295,6 @@ function renderOrders(orders){
 
     container.innerHTML+=`
       <div class="order-card">
-
         <div class="order-header">
           <b>${order.name}</b>
           <span class="status ${statusClass}">${order.status}</span>
@@ -288,6 +325,7 @@ function renderOrders(orders){
 function filterStatus(status){
   filteredOrders = status==="All" ? allOrders : allOrders.filter(o=>o.status===status);
   renderOrders(filteredOrders);
+  renderChart(filteredOrders);
 }
 
 function searchOrders(q){
@@ -297,6 +335,21 @@ function searchOrders(q){
     o.phone.includes(q)
   );
   renderOrders(filteredOrders);
+  renderChart(filteredOrders);
+}
+
+function filterByDate(date){
+  if(!date){
+    filteredOrders = allOrders;
+  } else {
+    filteredOrders = allOrders.filter(o=>{
+      const d = new Date(o.date).toISOString().split("T")[0];
+      return d===date;
+    });
+  }
+
+  renderOrders(filteredOrders);
+  renderChart(filteredOrders);
 }
 
 async function updateStatus(id,el){
