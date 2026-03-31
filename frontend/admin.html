@@ -8,6 +8,7 @@
     body {
       font-family: Arial, sans-serif;
       background: #f5f7fa;
+      margin: 0;
     }
 
     .navbar {
@@ -29,6 +30,11 @@
       padding: 20px;
       margin: 15px 0;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      transition: 0.2s;
+    }
+
+    .order-card:hover {
+      transform: translateY(-2px);
     }
 
     .status {
@@ -43,6 +49,9 @@
 
     .action-row {
       margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
     }
 
     button {
@@ -60,6 +69,12 @@
     select {
       padding: 5px;
       border-radius: 5px;
+    }
+
+    .center-msg {
+      text-align: center;
+      margin-top: 40px;
+      color: #666;
     }
   </style>
 </head>
@@ -80,36 +95,47 @@ const API_URL = "https://maddhi-agro-store.onrender.com";
 
 
 // ===============================
-// LOAD ORDERS
+// LOAD ORDERS (STABLE VERSION)
 // ===============================
 async function loadOrders() {
+  const container = document.getElementById("ordersContainer");
+  container.innerHTML = "<p class='center-msg'>Loading orders...</p>";
+
   try {
     const token = localStorage.getItem("token");
 
+    if (!token) {
+      container.innerHTML = "<p class='center-msg'>Please login first</p>";
+      return;
+    }
+
     const res = await fetch(`${API_URL}/api/orders/admin/all`, {
       headers: {
-        ...(token && { "Authorization": "Bearer " + token })
+        "Authorization": "Bearer " + token
       }
     });
 
     if (res.status === 401) {
-      alert("Please login as admin");
-      window.location.href = "index.html";
+      container.innerHTML = "<p class='center-msg'>Session expired. Redirecting...</p>";
+      localStorage.removeItem("token");
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1500);
+
       return;
     }
 
     if (!res.ok) {
-      console.error("API failed");
+      container.innerHTML = "<p class='center-msg'>Failed to load orders</p>";
       return;
     }
 
     const orders = await res.json();
-
-    const container = document.getElementById("ordersContainer");
     container.innerHTML = "";
 
-    if (!orders || orders.length === 0) {
-      container.innerHTML = "<p style='text-align:center;'>No orders found</p>";
+    if (!orders.length) {
+      container.innerHTML = "<p class='center-msg'>No orders found</p>";
       return;
     }
 
@@ -120,13 +146,11 @@ async function loadOrders() {
         itemsHTML += `<p>${item.name} x ${item.quantity}</p>`;
       });
 
-      const statusColor =
-        order.status === "Delivered" ? "green" :
-        order.status === "Shipped" ? "orange" : "red";
+      const statusClass = (order.status || "pending").toLowerCase();
 
       container.innerHTML += `
-        <div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:10px;">
-          
+        <div class="order-card">
+
           <h3>${order.name}</h3>
           <p>${order.phone}</p>
           <p>${order.address}</p>
@@ -134,23 +158,24 @@ async function loadOrders() {
           <p><b>Total:</b> ₹${order.total}</p>
 
           <p>
-            <b>Status:</b> 
-            <span style="color:${statusColor};font-weight:bold;">
+            <b>Status:</b>
+            <span class="status ${statusClass}">
               ${order.status || "Pending"}
             </span>
           </p>
 
-          <select onchange="updateStatus('${order._id}', this.value)">
-            <option value="">Change Status</option>
-            <option>Pending</option>
-            <option>Shipped</option>
-            <option>Delivered</option>
-          </select>
+          <div class="action-row">
+            <select onchange="updateStatus('${order._id}', this.value)">
+              <option value="">Change Status</option>
+              <option>Pending</option>
+              <option>Shipped</option>
+              <option>Delivered</option>
+            </select>
 
-          <button onclick="deleteOrder('${order._id}')" 
-            style="margin-left:10px;background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">
-            Delete
-          </button>
+            <button class="delete-btn" onclick="deleteOrder('${order._id}')">
+              Delete
+            </button>
+          </div>
 
           <h4>Items:</h4>
           ${itemsHTML}
@@ -161,12 +186,13 @@ async function loadOrders() {
 
   } catch (err) {
     console.error("Load Orders Error:", err);
+    container.innerHTML = "<p class='center-msg'>Something went wrong</p>";
   }
 }
 
 
 // ===============================
-// UPDATE STATUS (FIXED)
+// UPDATE STATUS
 // ===============================
 async function updateStatus(id, status) {
   try {
@@ -176,13 +202,13 @@ async function updateStatus(id, status) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        ...(token && { "Authorization": "Bearer " + token })
+        "Authorization": "Bearer " + token
       },
       body: JSON.stringify({ status })
     });
 
     if (!res.ok) {
-      console.error("Update failed");
+      alert("Failed to update status");
       return;
     }
 
@@ -195,7 +221,7 @@ async function updateStatus(id, status) {
 
 
 // ===============================
-// DELETE ORDER (FIXED)
+// DELETE ORDER
 // ===============================
 async function deleteOrder(id) {
   if (!confirm("Delete this order?")) return;
@@ -204,16 +230,14 @@ async function deleteOrder(id) {
     const token = localStorage.getItem("token");
 
     const res = await fetch(`${API_URL}/api/orders/admin/delete/${id}`, {
-  method: "DELETE",
-  headers: {
-    ...(token && { "Authorization": "Bearer " + token })
-  }
-});
+      method: "DELETE",
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
 
-    if (res.status === 401) {
-      alert("Session expired. Please login again.");
-      localStorage.removeItem("token");
-      window.location.href = "index.html";
+    if (!res.ok) {
+      alert("Delete failed");
       return;
     }
 
