@@ -1888,3 +1888,44 @@ button:hover {
   object-fit: cover;
   border-radius: 10px;
 }
+
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;   /* 🔥 THIS FIXES SHAPE */
+  border-radius: 10px;
+}
+
+.order-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.status {
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.pending { background: #ffe5e5; color: red; }
+.shipped { background: #fff3cd; color: orange; }
+.delivered { background: #e6ffed; color: green; }
+
+.action-row {
+  margin-top: 10px;
+}
+
+button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: #ff4d4d;
+  color: white;
+}

@@ -3,15 +3,74 @@
 <head>
   <title>Admin Panel</title>
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+    }
+
+    .navbar {
+      background: #2e7d32;
+      color: white;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .order-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 15px 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    .status {
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+
+    .pending { background: #ffe5e5; color: red; }
+    .shipped { background: #fff3cd; color: orange; }
+    .delivered { background: #e6ffed; color: green; }
+
+    .action-row {
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .delete-btn {
+      background: #ff4d4d;
+      color: white;
+    }
+
+    select {
+      padding: 5px;
+      border-radius: 5px;
+    }
+  </style>
 </head>
 
 <body>
 
 <div class="navbar">
-  <div class="logo">Maddhi Agro 🌿</div>
+  Maddhi Agro 🌿 Admin
 </div>
 
-<h1 style="text-align:center;">Admin Dashboard</h1>
+<h1>Admin Dashboard</h1>
 
 <div id="ordersContainer" style="max-width:900px;margin:auto;"></div>
 
@@ -19,8 +78,9 @@
 
 const API_URL = "https://maddhi-agro-store.onrender.com";
 
+
 // ===============================
-// LOAD ORDERS (FIXED)
+// LOAD ORDERS
 // ===============================
 async function loadOrders() {
   try {
@@ -45,18 +105,13 @@ async function loadOrders() {
 
       let itemsHTML = "";
 
-      // ✅ SAFE LOOP (FIX)
       (order.items || []).forEach(item => {
         itemsHTML += `<p>${item.name} x ${item.quantity}</p>`;
       });
 
-      const statusColor =
-        order.status === "Delivered" ? "green" :
-        order.status === "Shipped" ? "orange" : "red";
-
       container.innerHTML += `
-        <div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:10px;">
-          
+        <div class="order-card">
+
           <h3>${order.name}</h3>
           <p>${order.phone}</p>
           <p>${order.address}</p>
@@ -64,23 +119,24 @@ async function loadOrders() {
           <p><b>Total:</b> ₹${order.total}</p>
 
           <p>
-            <b>Status:</b> 
-            <span style="color:${statusColor};font-weight:bold;">
+            <b>Status:</b>
+            <span class="status ${order.status?.toLowerCase()}">
               ${order.status || "Pending"}
             </span>
           </p>
 
-          <select onchange="updateStatus('${order._id}', this.value)">
-            <option value="">Change Status</option>
-            <option>Pending</option>
-            <option>Shipped</option>
-            <option>Delivered</option>
-          </select>
+          <div class="action-row">
+            <select onchange="updateStatus('${order._id}', this.value)">
+              <option value="">Change Status</option>
+              <option>Pending</option>
+              <option>Shipped</option>
+              <option>Delivered</option>
+            </select>
 
-          <button onclick="deleteOrder('${order._id}')" 
-            style="margin-left:10px;background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">
-            Delete
-          </button>
+            <button class="delete-btn" onclick="deleteOrder('${order._id}')">
+              Delete
+            </button>
+          </div>
 
           <h4>Items:</h4>
           ${itemsHTML}
@@ -96,15 +152,27 @@ async function loadOrders() {
 
 
 // ===============================
-// UPDATE STATUS
+// UPDATE STATUS (FIXED)
 // ===============================
 async function updateStatus(id, status) {
   try {
-    await fetch(`${API_URL}/api/orders/admin/update/${id}`, {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${API_URL}/api/orders/admin/update/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
       body: JSON.stringify({ status })
     });
+
+    if (res.status === 401) {
+      alert("Session expired. Please login again.");
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+      return;
+    }
 
     loadOrders();
 
@@ -115,15 +183,27 @@ async function updateStatus(id, status) {
 
 
 // ===============================
-// DELETE ORDER
+// DELETE ORDER (FIXED)
 // ===============================
 async function deleteOrder(id) {
   if (!confirm("Delete this order?")) return;
 
   try {
-    await fetch(`${API_URL}/api/orders/admin/delete/${id}`, {
-      method: "DELETE"
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${API_URL}/api/orders/admin/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": "Bearer " + token
+      }
     });
+
+    if (res.status === 401) {
+      alert("Session expired. Please login again.");
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+      return;
+    }
 
     loadOrders();
 
