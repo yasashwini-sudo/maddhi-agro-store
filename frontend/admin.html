@@ -25,6 +25,22 @@
       color: #333;
     }
 
+    #statsBar {
+      max-width: 1000px;
+      margin: 20px auto;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      font-weight: 500;
+    }
+
     #ordersContainer {
       max-width: 1000px;
       margin: auto;
@@ -121,6 +137,9 @@
 
 <h1>Admin Dashboard</h1>
 
+<!-- 🔥 STATS BAR -->
+<div id="statsBar"></div>
+
 <div id="ordersContainer"></div>
 
 <script>
@@ -133,6 +152,8 @@ const API_URL = "https://maddhi-agro-store.onrender.com";
 // ===============================
 async function loadOrders() {
   const container = document.getElementById("ordersContainer");
+  const statsBar = document.getElementById("statsBar");
+
   container.innerHTML = "<p class='center-msg'>Loading orders...</p>";
 
   try {
@@ -163,6 +184,24 @@ async function loadOrders() {
 
     const orders = await res.json();
     container.innerHTML = "";
+
+    // 🔥 Update heading
+    document.querySelector("h1").innerText = `Admin Dashboard (${orders.length} Orders)`;
+
+    // 🔥 Stats Calculation
+    let totalRevenue = 0;
+    let pending = 0;
+
+    orders.forEach(o => {
+      totalRevenue += o.total || 0;
+      if (o.status === "Pending") pending++;
+    });
+
+    statsBar.innerHTML = `
+      <div class="stat-card">📦 Orders: <b>${orders.length}</b></div>
+      <div class="stat-card">💰 Revenue: <b>₹${totalRevenue}</b></div>
+      <div class="stat-card">⏳ Pending: <b>${pending}</b></div>
+    `;
 
     if (!orders.length) {
       container.innerHTML = "<p class='center-msg'>No orders found</p>";
@@ -223,7 +262,7 @@ async function loadOrders() {
 
 
 // ===============================
-// UPDATE STATUS (IMPROVED)
+// UPDATE STATUS
 // ===============================
 async function updateStatus(id, selectEl) {
   const status = selectEl.value;
