@@ -1,5 +1,5 @@
 // ===== GLOBAL SAFE API =====
-const API_URL = window.API_URL || "https://maddhi-agro-store.onrender.com";
+window.API_URL = "https://maddhi-agro-store.onrender.com";
 
 // ===== GLOBAL PRODUCTS STORE =====
 window.allProducts = [];
@@ -80,7 +80,7 @@ function updateCartCount() {
 
 
 // ===============================
-// ===== CHECKOUT NAVIGATION (🔥 FIXED)
+// ===== CHECKOUT NAVIGATION =====
 // ===============================
 window.goToCheckout = function () {
   window.location.href = "checkout.html";
@@ -252,10 +252,10 @@ window.submitAuth = async function () {
 
     const data = await res.json();
 
-if (!res.ok) {
-  alert(data.msg || data.message || "Signup failed ❌");
-  return;
-}
+    if (!res.ok) {
+      alert(data.msg || data.message || "Signup/Login failed ❌");
+      return;
+    }
 
     if (isSignup) {
       alert("Signup successful 🎉");
@@ -311,8 +311,18 @@ window.logout = function () {
 // ===============================
 async function loadProducts() {
   try {
+    console.log("Fetching:", window.API_URL + "/api/products");
+
     const res = await fetch(window.API_URL + "/api/products");
+
+    if (!res.ok) {
+      console.error("API error:", res.status);
+      return;
+    }
+
     const products = await res.json();
+
+    console.log("Products:", products);
 
     if (!Array.isArray(products)) return;
 
