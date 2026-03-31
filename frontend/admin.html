@@ -3,7 +3,6 @@
 <head>
   <title>Admin Panel</title>
 
-  <!-- 🔥 CHART LIB -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -19,13 +18,11 @@
       padding: 16px 30px;
       font-size: 20px;
       font-weight: 600;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     h1 {
       text-align: center;
       margin: 30px 0 10px;
-      color: #222;
     }
 
     #statsBar {
@@ -42,37 +39,23 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       text-align: center;
-      min-width: 120px;
     }
 
-    .stat-title {
-      font-size: 12px;
-      color: #777;
-    }
-
-    .stat-value {
-      font-size: 18px;
-      font-weight: bold;
-      margin-top: 5px;
-    }
-
-    /* 🔥 CHART BOX */
     .chart-box {
       max-width: 1000px;
       margin: 20px auto;
       background: white;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .controls {
       max-width: 1000px;
       margin: 20px auto;
       display: flex;
-      justify-content: space-between;
       flex-wrap: wrap;
       gap: 10px;
+      justify-content: space-between;
     }
 
     .filters button {
@@ -81,7 +64,6 @@
       border: none;
       background: #e0e0e0;
       cursor: pointer;
-      margin-right: 5px;
     }
 
     .filters button.active {
@@ -93,6 +75,15 @@
       padding: 10px;
       border-radius: 10px;
       border: 1px solid #ccc;
+    }
+
+    .top-actions button {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #2e7d32;
+      color: white;
     }
 
     #ordersContainer {
@@ -108,60 +99,21 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
 
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
     .status {
       padding: 6px 12px;
       border-radius: 20px;
-      font-size: 13px;
-      font-weight: 500;
     }
 
-    .pending { background: #ffe5e5; color: #d32f2f; }
-    .shipped { background: #fff3cd; color: #f57c00; }
-    .delivered { background: #e6ffed; color: #2e7d32; }
-
-    .order-info {
-      margin-top: 10px;
-      color: #555;
-    }
-
-    .action-row {
-      margin-top: 12px;
-      display: flex;
-      gap: 10px;
-    }
-
-    select {
-      padding: 6px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
+    .pending { background: #ffe5e5; color: red; }
+    .shipped { background: #fff3cd; color: orange; }
+    .delivered { background: #e6ffed; color: green; }
 
     .delete-btn {
-      background: #e53935;
+      background: red;
       color: white;
       border: none;
       padding: 6px 12px;
       border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .items {
-      margin-top: 10px;
-      background: #fafafa;
-      padding: 10px;
-      border-radius: 10px;
-    }
-
-    .center-msg {
-      text-align: center;
-      margin-top: 40px;
-      color: #777;
     }
   </style>
 </head>
@@ -174,7 +126,6 @@
 
 <div id="statsBar"></div>
 
-<!-- 🔥 CHART -->
 <div class="chart-box">
   <canvas id="revenueChart"></canvas>
 </div>
@@ -189,6 +140,10 @@
 
   <input type="date" onchange="filterByDate(this.value)">
   <input type="text" placeholder="Search..." oninput="searchOrders(this.value)">
+
+  <div class="top-actions">
+    <button onclick="exportCSV()">Export CSV</button>
+  </div>
 </div>
 
 <div id="ordersContainer"></div>
@@ -206,16 +161,10 @@ function setActive(btn){
   btn.classList.add("active");
 }
 
-async function loadOrders() {
-  const container = document.getElementById("ordersContainer");
-  const statsBar = document.getElementById("statsBar");
-
-  container.innerHTML = "<p class='center-msg'>Loading...</p>";
-
+async function loadOrders(){
   const token = localStorage.getItem("token");
-
-  const res = await fetch(`${API_URL}/api/orders/admin/all`, {
-    headers: { "Authorization": "Bearer " + token }
+  const res = await fetch(`${API_URL}/api/orders/admin/all`,{
+    headers:{Authorization:"Bearer "+token}
   });
 
   const orders = await res.json();
@@ -223,158 +172,140 @@ async function loadOrders() {
   allOrders = orders;
   filteredOrders = orders;
 
-  document.querySelector("h1").innerText =
-    `Admin Dashboard (${orders.length} Orders)`;
+  updateStats(orders);
+  renderOrders(orders);
+  renderChart(orders);
+}
 
-  let total = 0, pending = 0;
-
+function updateStats(orders){
+  let total=0,pending=0;
   orders.forEach(o=>{
-    total += o.total || 0;
+    total+=o.total||0;
     if(o.status==="Pending") pending++;
   });
 
-  statsBar.innerHTML = `
-    <div class="stat-card">
-      <div class="stat-title">Orders</div>
-      <div class="stat-value">${orders.length}</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-title">Revenue</div>
-      <div class="stat-value">₹${total}</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-title">Pending</div>
-      <div class="stat-value">${pending}</div>
-    </div>
+  document.getElementById("statsBar").innerHTML=`
+    <div class="stat-card">Orders<br><b>${orders.length}</b></div>
+    <div class="stat-card">Revenue<br><b>₹${total}</b></div>
+    <div class="stat-card">Pending<br><b>${pending}</b></div>
   `;
-
-  renderOrders(filteredOrders);
-  renderChart(filteredOrders);
 }
 
 function renderChart(orders){
-  const ctx = document.getElementById("revenueChart");
+  const ctx=document.getElementById("revenueChart");
 
-  const labels = orders.map((_,i)=>"Order "+(i+1));
-  const data = orders.map(o=>o.total || 0);
+  const monthly={};
+
+  orders.forEach(o=>{
+    const m=new Date(o.date).toLocaleString("default",{month:"short"});
+    monthly[m]=(monthly[m]||0)+(o.total||0);
+  });
 
   if(chart) chart.destroy();
 
-  chart = new Chart(ctx,{
-    type:'line',
+  chart=new Chart(ctx,{
+    type:'bar',
     data:{
-      labels,
+      labels:Object.keys(monthly),
       datasets:[{
-        label:'Revenue',
-        data,
-        borderWidth:2,
-        tension:0.3
+        label:'Monthly Revenue',
+        data:Object.values(monthly)
       }]
     }
   });
 }
 
 function renderOrders(orders){
-  const container = document.getElementById("ordersContainer");
-  container.innerHTML="";
+  const c=document.getElementById("ordersContainer");
+  c.innerHTML="";
 
-  if(!orders.length){
-    container.innerHTML="<p class='center-msg'>No results</p>";
-    return;
-  }
-
-  orders.forEach(order=>{
-    let itemsHTML="";
-    (order.items||[]).forEach(i=>{
-      itemsHTML+=`<p>${i.name} x ${i.quantity}</p>`;
-    });
-
-    const statusClass=order.status.toLowerCase();
-
-    container.innerHTML+=`
+  orders.forEach(o=>{
+    c.innerHTML+=`
       <div class="order-card">
-        <div class="order-header">
-          <b>${order.name}</b>
-          <span class="status ${statusClass}">${order.status}</span>
-        </div>
+        <b>${o.name}</b> - <span class="status ${o.status.toLowerCase()}">${o.status}</span>
+        <p>${o.phone}</p>
+        <p>${o.address}</p>
+        <p><b>₹${o.total}</b></p>
 
-        <div class="order-info">
-          <p>📞 ${order.phone}</p>
-          <p>📍 ${order.address}</p>
-          <p><b>₹${order.total}</b></p>
-        </div>
+        <select onchange="updateStatus('${o._id}',this)">
+          <option ${o.status==='Pending'?'selected':''}>Pending</option>
+          <option ${o.status==='Shipped'?'selected':''}>Shipped</option>
+          <option ${o.status==='Delivered'?'selected':''}>Delivered</option>
+        </select>
 
-        <div class="action-row">
-          <select onchange="updateStatus('${order._id}', this)">
-            <option ${order.status==='Pending'?'selected':''}>Pending</option>
-            <option ${order.status==='Shipped'?'selected':''}>Shipped</option>
-            <option ${order.status==='Delivered'?'selected':''}>Delivered</option>
-          </select>
-
-          <button class="delete-btn" onclick="deleteOrder('${order._id}')">Delete</button>
-        </div>
-
-        <div class="items">${itemsHTML}</div>
+        <button onclick="showInvoice('${o._id}')">Invoice</button>
+        <button class="delete-btn" onclick="deleteOrder('${o._id}')">Delete</button>
       </div>
     `;
   });
 }
 
-function filterStatus(status){
-  filteredOrders = status==="All" ? allOrders : allOrders.filter(o=>o.status===status);
+function showInvoice(id){
+  const o = allOrders.find(x=>x._id===id);
+
+  const win = window.open("", "", "width=400,height=600");
+
+  win.document.write(`
+    <h2>Invoice</h2>
+    <p>Name: ${o.name}</p>
+    <p>Phone: ${o.phone}</p>
+    <p>Total: ₹${o.total}</p>
+    <p>Status: ${o.status}</p>
+  `);
+}
+
+function exportCSV(){
+  let csv="Name,Phone,Total,Status\n";
+  allOrders.forEach(o=>{
+    csv+=`${o.name},${o.phone},${o.total},${o.status}\n`;
+  });
+
+  const blob=new Blob([csv]);
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="orders.csv";
+  a.click();
+}
+
+function filterStatus(s){
+  filteredOrders=s==="All"?allOrders:allOrders.filter(o=>o.status===s);
   renderOrders(filteredOrders);
   renderChart(filteredOrders);
 }
 
 function searchOrders(q){
   q=q.toLowerCase();
-  filteredOrders = allOrders.filter(o=>
-    o.name.toLowerCase().includes(q) ||
-    o.phone.includes(q)
-  );
+  filteredOrders=allOrders.filter(o=>o.name.toLowerCase().includes(q));
   renderOrders(filteredOrders);
   renderChart(filteredOrders);
 }
 
-function filterByDate(date){
-  if(!date){
-    filteredOrders = allOrders;
-  } else {
-    filteredOrders = allOrders.filter(o=>{
-      const d = new Date(o.date).toISOString().split("T")[0];
-      return d===date;
-    });
-  }
-
+function filterByDate(d){
+  filteredOrders=allOrders.filter(o=>new Date(o.date).toISOString().split("T")[0]===d);
   renderOrders(filteredOrders);
   renderChart(filteredOrders);
 }
 
 async function updateStatus(id,el){
   const token = localStorage.getItem("token");
-
   await fetch(`${API_URL}/api/orders/admin/update/${id}`,{
     method:"PUT",
     headers:{
       "Content-Type":"application/json",
-      "Authorization":"Bearer "+token
+      Authorization:"Bearer "+token
     },
     body:JSON.stringify({status:el.value})
   });
-
   loadOrders();
 }
 
 async function deleteOrder(id){
-  if(!confirm("Delete this order?")) return;
+  if(!confirm("Delete?")) return;
 
   const token = localStorage.getItem("token");
-
   await fetch(`${API_URL}/api/orders/admin/delete/${id}`,{
     method:"DELETE",
-    headers:{ "Authorization":"Bearer "+token }
+    headers:{Authorization:"Bearer "+token}
   });
 
   loadOrders();
