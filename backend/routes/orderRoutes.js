@@ -67,14 +67,17 @@ router.put("/admin/update/:id", async (req, res) => {
       { new: true }
     );
 
-    res.json(order);
+    if (!order) {
+      return res.status(404).json({ msg: "Order not found" });
+    }
+
+    res.json({ success: true, order });
 
   } catch (err) {
-    console.error("UPDATE ERROR:", err);
-    res.status(500).json({ msg: "Error updating status" });
+    console.error("UPDATE STATUS ERROR:", err);
+    res.status(500).json({ msg: "Failed to update status" });
   }
 });
-
 
 // ===============================
 // DELETE ORDER (ADMIN)
@@ -82,14 +85,12 @@ router.put("/admin/update/:id", async (req, res) => {
 router.delete("/admin/delete/:id", async (req, res) => {
   try {
     await Order.findByIdAndDelete(req.params.id);
-    res.json({ msg: "Order deleted" });
-
+    res.json({ success: true });
   } catch (err) {
     console.error("DELETE ERROR:", err);
-    res.status(500).json({ msg: "Error deleting order" });
+    res.status(500).json({ msg: "Failed to delete order" });
   }
 });
-
 
 // ===============================
 // GET USER ORDERS (FIXED 🔥)
