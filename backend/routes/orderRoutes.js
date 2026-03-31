@@ -38,6 +38,19 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
+// ===============================
+// ADMIN - GET ALL ORDERS
+// ===============================
+router.get("/admin/all", async (req, res) => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (err) {
+    console.error("ADMIN ORDER ERROR:", err);
+    res.status(500).json([]);
+  }
+});
+
 
 // ===============================
 // GET USER ORDERS (FIXED 🔥)

@@ -7,7 +7,7 @@
 
 <body>
 
-<!-- ✅ NAVBAR (kept clean) -->
+<!-- NAVBAR -->
 <div class="navbar">
   <div class="logo">Maddhi Agro 🌿</div>
   <div class="nav-links">
@@ -23,11 +23,12 @@
 
 <script>
 
-const API_URL = "https://YOUR_BACKEND_URL"; // 🔥 PUT YOUR BACKEND URL HERE
+const API_URL = "https://maddhi-agro-store.onrender.com"; // ✅ your backend
 
 async function loadOrders() {
   try {
-    const res = await fetch(`${API_URL}/api/orders`);
+
+    const res = await fetch(`${API_URL}/api/orders/admin/all`);
     const orders = await res.json();
 
     const container = document.getElementById("ordersContainer");
@@ -50,8 +51,8 @@ async function loadOrders() {
       container.innerHTML += `
         <div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:10px;">
           <h3>${order.name}</h3>
-          <p>${order.phone}</p>
-          <p>${order.address}</p>
+          <p><b>Phone:</b> ${order.phone}</p>
+          <p><b>Address:</b> ${order.address}</p>
           <p><b>Total:</b> ₹${order.total}</p>
           <p><b>Date:</b> ${order.date}</p>
 
