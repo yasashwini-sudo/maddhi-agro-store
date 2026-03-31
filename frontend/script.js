@@ -1,5 +1,5 @@
 // ===== GLOBAL SAFE API =====
-window.API_URL = "https://maddhi-agro-store.onrender.com";
+const API_URL = window.API_URL || "https://maddhi-agro-store.onrender.com";
 
 // ===== GLOBAL PRODUCTS STORE =====
 window.allProducts = [];
@@ -252,10 +252,10 @@ window.submitAuth = async function () {
 
     const data = await res.json();
 
-    if (!res.ok) {
-      alert(data.msg || "Error ❌");
-      return;
-    }
+if (!res.ok) {
+  alert(data.msg || data.message || "Signup failed ❌");
+  return;
+}
 
     if (isSignup) {
       alert("Signup successful 🎉");

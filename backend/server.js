@@ -11,20 +11,28 @@ const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
+
 // ===============================
 // MIDDLEWARES
 // ===============================
 
-// ✅ FIXED CORS (REAL FIX)
-app.use(cors());// 🔥 handles preflight requests
+// ✅ CORS (SAFE + FLEXIBLE)
+app.use(cors({
+  origin: "*", // you can restrict later
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
+// ✅ BODY PARSING
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 // ===============================
 // STATIC FILES
 // ===============================
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 // ===============================
 // ROUTES
@@ -33,6 +41,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api", authRoutes);
 
+
 // ===============================
 // HEALTH CHECK
 // ===============================
@@ -40,16 +49,18 @@ app.get("/", (req, res) => {
   res.send("API Running 🚀");
 });
 
+
 // ===============================
-// ERROR HANDLING
+// ERROR HANDLER
 // ===============================
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error("ERROR:", err.stack);
   res.status(500).json({ msg: "Something went wrong" });
 });
 
+
 // ===============================
-// START SERVER AFTER DB CONNECT
+// START SERVER
 // ===============================
 const PORT = process.env.PORT || 5000;
 
@@ -58,7 +69,7 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(🚀 Server running on port ${PORT});
     });
 
   } catch (error) {

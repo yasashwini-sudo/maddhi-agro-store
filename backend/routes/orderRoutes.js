@@ -4,6 +4,7 @@ const router = express.Router();
 const Order = require("../models/Order");
 const auth = require("../middleware/auth");
 
+
 // ===============================
 // CREATE ORDER (PROTECTED)
 // ===============================
@@ -18,35 +19,35 @@ router.post("/", auth, async (req, res) => {
       items: req.body.items || [],
       total: req.body.total || 0,
       date: req.body.date || new Date(),
-      user: req.user.id // ✅ correct
+      user: req.user.id // ✅ attach order to logged-in user
     });
 
     await newOrder.save();
 
-    res.json({
+    res.status(201).json({
       success: true,
-      order: newOrder   // 🔥 send order back
+      order: newOrder
     });
 
   } catch (err) {
     console.error("ORDER ERROR:", err);
-    res.status(500).json({ success: false });
+    res.status(500).json({
+      success: false,
+      msg: "Failed to create order"
+    });
   }
 });
 
 
 // ===============================
-// GET USER ORDERS
+// GET USER ORDERS (FIXED 🔥)
 // ===============================
 router.get("/", auth, async (req, res) => {
   try {
     console.log("FETCHING ORDERS FOR:", req.user.id);
 
     const orders = await Order.find({
-      $or: [
-        { user: req.user.id },          // new orders
-        { user: { $exists: false } }    // old orders
-      ]
+      user: req.user.id   // ✅ ONLY this user's orders
     }).sort({ createdAt: -1 });
 
     console.log("ORDERS FOUND:", orders.length);
@@ -55,8 +56,11 @@ router.get("/", auth, async (req, res) => {
 
   } catch (err) {
     console.error("FETCH ORDER ERROR:", err);
-    res.status(500).json([]);
+    res.status(500).json({
+      msg: "Failed to fetch orders"
+    });
   }
 });
+
 
 module.exports = router;
