@@ -4,63 +4,69 @@
   <title>Admin Panel</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <body>
 
-<h1 style="text-align:center;">Admin Orders</h1>
+<!-- ✅ NAVBAR (kept clean) -->
+<div class="navbar">
+  <div class="logo">Maddhi Agro 🌿</div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#products">Products</a>
+    <a href="index.html#about">About</a>
+  </div>
+</div>
+
+<h1 style="text-align:center;">Admin - All Orders</h1>
 
 <div id="ordersContainer" style="max-width:800px;margin:auto;"></div>
 
 <script>
 
-let orders = JSON.parse(localStorage.getItem("orders")) || [];
+const API_URL = "https://YOUR_BACKEND_URL"; // 🔥 PUT YOUR BACKEND URL HERE
 
-function renderOrders() {
+async function loadOrders() {
+  try {
+    const res = await fetch(`${API_URL}/api/orders`);
+    const orders = await res.json();
 
-  const container = document.getElementById("ordersContainer");
-  container.innerHTML = "";
+    const container = document.getElementById("ordersContainer");
 
-  orders.forEach(order => {
+    if (!orders || orders.length === 0) {
+      container.innerHTML = "<p style='text-align:center;'>No orders yet</p>";
+      return;
+    }
 
-    let itemsHTML = "";
+    container.innerHTML = "";
 
-    order.items.forEach(item => {
-      itemsHTML += `<p>${item.name} x ${item.quantity}</p>`;
+    orders.forEach(order => {
+
+      let itemsHTML = "";
+
+      order.items.forEach(item => {
+        itemsHTML += `<p>${item.name} x ${item.quantity}</p>`;
+      });
+
+      container.innerHTML += `
+        <div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:10px;">
+          <h3>${order.name}</h3>
+          <p>${order.phone}</p>
+          <p>${order.address}</p>
+          <p><b>Total:</b> ₹${order.total}</p>
+          <p><b>Date:</b> ${order.date}</p>
+
+          <h4>Items:</h4>
+          ${itemsHTML}
+        </div>
+      `;
     });
-    <div class="navbar">
-  <div class="logo">Maddhi Agro 🌿</div>
-  fetch(`${API_URL}/api/products`)
 
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="index.html#products">Products</a>
-    <a href="index.html#about">About</a>
-
-    <!-- ✅ ADD THIS BACK -->
-    <a href="orders.html">My Orders</a>
-
-    <span id="userSection"></span>
-
-    <a href="cart.html">🛒 (<span id="cartCount">0</span>)</a>
-  </div>
-</div>
-    container.innerHTML += `
-      <div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:10px;">
-        <h3>${order.name}</h3>
-        <p>${order.phone}</p>
-        <p>${order.address}</p>
-        <p><b>Date:</b> ${order.date}</p>
-
-        <h4>Items:</h4>
-        ${itemsHTML}
-      </div>
-    `;
-  });
-
+  } catch (err) {
+    console.error("Error loading orders:", err);
+  }
 }
 
-renderOrders();
+loadOrders();
 
 </script>
 
