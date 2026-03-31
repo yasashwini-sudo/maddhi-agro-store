@@ -55,7 +55,7 @@ router.get("/", auth, async (req, res) => {
 // ===============================  
 // 🔥 ADMIN - GET ALL ORDERS  
 // ===============================  
-router.get("/admin/all", async (req, res) => {  
+router.get("/admin/all", auth, async (req, res) => {  
   try {  
     console.log("ADMIN FETCH START");
 console.log("Mongo connected? fetching...");
