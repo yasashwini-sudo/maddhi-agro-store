@@ -230,18 +230,24 @@ window.submitAuth = async function () {
   const email = document.getElementById("authEmail")?.value.trim();
   const password = document.getElementById("authPassword")?.value.trim();
 
-  if (!email || !password || (isSignup && !name)) {
-    alert("Fill all fields");
-    return;
-  }
-
   const url = isSignup
-    ? window.API_URL + "/api/signup"
+    ? window.API_URL + "/api/register"
     : window.API_URL + "/api/login";
 
   const body = isSignup
     ? { name, email, password }
     : { email, password };
+
+  // 🔥 DEBUG LOGS (IMPORTANT)
+  console.log("MODE:", isSignup);
+  console.log("BODY:", body);
+  console.log("URL:", url);
+
+  // ✅ VALIDATION
+  if (!email || !password || (isSignup && !name)) {
+    alert("Fill all fields");
+    return;
+  }
 
   try {
     const res = await fetch(url, {
@@ -252,26 +258,37 @@ window.submitAuth = async function () {
 
     const data = await res.json();
 
+    console.log("RESPONSE:", data); // 🔥 SEE WHAT BACKEND RETURNS
+
     if (!res.ok) {
       alert(data.msg || data.message || "Signup/Login failed ❌");
       return;
     }
 
+    // ✅ SIGNUP FLOW
     if (isSignup) {
       alert("Signup successful 🎉");
-      toggleAuth();
+
+      // 🔥 IMPORTANT UX FIX
+      document.getElementById("authName").value = "";
+      document.getElementById("authEmail").value = "";
+      document.getElementById("authPassword").value = "";
+
+      toggleAuth(); // switch to login
       return;
     }
 
+    // ✅ LOGIN FLOW
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
     alert("Login successful 🎉");
+
     closeAuth();
     updateNavbar();
 
   } catch (err) {
-    console.error(err);
+    console.error("FETCH ERROR:", err);
     alert("Server error ❌");
   }
 };
