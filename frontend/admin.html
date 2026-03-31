@@ -84,7 +84,19 @@ const API_URL = "https://maddhi-agro-store.onrender.com";
 // ===============================
 async function loadOrders() {
   try {
-    const res = await fetch(`${API_URL}/api/orders/admin/all`);
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${API_URL}/api/orders/admin/all`, {
+      headers: {
+        ...(token && { "Authorization": "Bearer " + token })
+      }
+    });
+
+    if (res.status === 401) {
+      alert("Please login as admin");
+      window.location.href = "index.html";
+      return;
+    }
 
     if (!res.ok) {
       console.error("API failed");
@@ -104,14 +116,17 @@ async function loadOrders() {
     orders.forEach(order => {
 
       let itemsHTML = "";
-
       (order.items || []).forEach(item => {
         itemsHTML += `<p>${item.name} x ${item.quantity}</p>`;
       });
 
-      container.innerHTML += `
-        <div class="order-card">
+      const statusColor =
+        order.status === "Delivered" ? "green" :
+        order.status === "Shipped" ? "orange" : "red";
 
+      container.innerHTML += `
+        <div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:10px;">
+          
           <h3>${order.name}</h3>
           <p>${order.phone}</p>
           <p>${order.address}</p>
@@ -119,24 +134,23 @@ async function loadOrders() {
           <p><b>Total:</b> ₹${order.total}</p>
 
           <p>
-            <b>Status:</b>
-            <span class="status ${order.status?.toLowerCase()}">
+            <b>Status:</b> 
+            <span style="color:${statusColor};font-weight:bold;">
               ${order.status || "Pending"}
             </span>
           </p>
 
-          <div class="action-row">
-            <select onchange="updateStatus('${order._id}', this.value)">
-              <option value="">Change Status</option>
-              <option>Pending</option>
-              <option>Shipped</option>
-              <option>Delivered</option>
-            </select>
+          <select onchange="updateStatus('${order._id}', this.value)">
+            <option value="">Change Status</option>
+            <option>Pending</option>
+            <option>Shipped</option>
+            <option>Delivered</option>
+          </select>
 
-            <button class="delete-btn" onclick="deleteOrder('${order._id}')">
-              Delete
-            </button>
-          </div>
+          <button onclick="deleteOrder('${order._id}')" 
+            style="margin-left:10px;background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">
+            Delete
+          </button>
 
           <h4>Items:</h4>
           ${itemsHTML}
