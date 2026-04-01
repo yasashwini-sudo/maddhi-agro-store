@@ -24,6 +24,9 @@
   </div>
 </div>
 
+<!-- SCROLL BAR -->
+<div id="scrollBar"></div>
+
 <!-- HERO -->
 <section class="hero fade-in">
   <div class="hero-content">
@@ -109,6 +112,23 @@ class="whatsapp-float" target="_blank">💬</a>
 <script src="script.js"></script>
 
 <script>
+
+// ✅ IMAGE FIX FUNCTION (FINAL)
+function getImageUrl(img) {
+  if (!img) return "https://dummyimage.com/300x300/eeeeee/000000&text=No+Image";
+
+  img = img.replace(/^\/+/, "");
+
+  if (img.startsWith("http")) return img;
+
+  if (img.startsWith("uploads/")) {
+    return API_URL + "/" + img;
+  }
+
+  return API_URL + "/uploads/" + img;
+}
+
+
 // ===== RENDER PRODUCTS =====
 window.renderProducts = function(products){
   const container = document.getElementById("productsContainer");
@@ -132,14 +152,13 @@ window.renderProducts = function(products){
       <div class="img-box">
         <div class="img-overlay"></div>
         <img 
-  src="${product.image ? (product.image.includes('uploads') ? API_URL + '/' + product.image : API_URL + '/uploads/' + product.image) : 'https://dummyimage.com/300x300/eeeeee/000000&text=No+Image'}"
-  onerror="this.src='https://dummyimage.com/300x300/eeeeee/000000&text=No+Image'"
->
+          src="${getImageUrl(product.image)}"
+          onerror="this.src='https://dummyimage.com/300x300/eeeeee/000000&text=No+Image'"
+        >
       </div>
 
       <h3>${product.name}</h3>
-      <p class="price
-      ">₹${product.price}</p>
+      <p class="price">₹${product.price}</p>
 
       <div class="btn-group">
         <button class="add-btn">Add</button>
@@ -167,6 +186,7 @@ window.renderProducts = function(products){
 function scrollToProducts(){
   document.getElementById("products").scrollIntoView({behavior:"smooth"});
 }
+
 </script>
 
 </body>
