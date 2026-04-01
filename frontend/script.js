@@ -6,6 +6,27 @@ window.allProducts = [];
 
 
 // ===============================
+// ===== IMAGE FIX (GLOBAL) =====
+// ===============================
+window.getImageUrl = function (img) {
+  if (!img) return "https://dummyimage.com/300x300/eeeeee/000000&text=No+Image";
+
+  // remove leading slashes
+  img = img.replace(/^\/+/, "");
+
+  // already full URL
+  if (img.startsWith("http")) return img;
+
+  // avoid double uploads
+  if (img.startsWith("uploads/")) {
+    return window.API_URL + "/" + img;
+  }
+
+  return window.API_URL + "/uploads/" + img;
+};
+
+
+// ===============================
 // ===== CART HELPERS =====
 // ===============================
 function getCart() {
@@ -115,7 +136,7 @@ function renderCart() {
     div.className = "cart-item";
 
     div.innerHTML = `
-      <img src="${window.API_URL}/uploads/${item.image || "default.png"}"
+      <img src="${getImageUrl(item.image)}"
            onerror="this.src='https://via.placeholder.com/150'" />
 
       <div class="cart-info">
