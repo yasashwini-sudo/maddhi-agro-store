@@ -132,13 +132,14 @@ window.renderProducts = function(products){
       <div class="img-box">
         <div class="img-overlay"></div>
         <img 
-          src="${product.image ? (product.image.startsWith('http') ? product.image : API_URL + '/' + product.image.replace(/^\/?uploads\//, 'uploads/')) : 'https://via.placeholder.com/300'}"
-onerror="this.src='https://via.placeholder.com/300'"
-        >
+  src="${product.image ? (product.image.includes('uploads') ? API_URL + '/' + product.image : API_URL + '/uploads/' + product.image) : 'https://dummyimage.com/300x300/eeeeee/000000&text=No+Image'}"
+  onerror="this.src='https://dummyimage.com/300x300/eeeeee/000000&text=No+Image'"
+>
       </div>
 
       <h3>${product.name}</h3>
-      <p class="price">₹${product.price}</p>
+      <p class="price
+      ">₹${product.price}</p>
 
       <div class="btn-group">
         <button class="add-btn">Add</button>
