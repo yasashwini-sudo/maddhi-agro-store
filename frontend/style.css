@@ -2173,3 +2173,188 @@ button {
 button:active {
   transform: scale(0.96);
 }
+
+/* ================= FINAL MOBILE + CLEAN FIX ================= */
+
+/* ===== NAVBAR MOBILE ===== */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+  }
+}
+
+/* ===== HERO MOBILE ===== */
+@media (max-width: 768px) {
+  .hero {
+    height: 60vh;
+    padding: 20px;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+  }
+
+  .hero p {
+    font-size: 14px;
+  }
+}
+
+/* ===== PRODUCT GRID FIX ===== */
+@media (max-width: 768px) {
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 10px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+
+  .img-box {
+    height: 140px;
+  }
+}
+
+/* ===== BUTTON FIX ===== */
+@media (max-width: 768px) {
+  .btn-group {
+    gap: 6px;
+  }
+
+  .add-btn,
+  .buy-btn {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
+
+/* ===== WHY SECTION FIX ===== */
+@media (max-width: 768px) {
+  .why-section {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .why-card {
+    padding: 12px;
+  }
+
+  .why-card h3 {
+    font-size: 14px;
+  }
+
+  .why-card p {
+    font-size: 12px;
+  }
+}
+
+/* ===== CHECKOUT FIX ===== */
+@media (max-width: 768px) {
+  .checkout-container {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .checkout-left,
+  .checkout-right {
+    width: 100%;
+  }
+}
+
+/* ===== CART FIX ===== */
+@media (max-width: 768px) {
+  .cart-container {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .cart-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .cart-item img {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+/* ===== GLOBAL SPACING FIX ===== */
+@media (max-width: 768px) {
+  body {
+    padding-top: 70px;
+  }
+
+  .section-title {
+    font-size: 22px;
+  }
+}
+
+/* RIPPLE EFFECT */
+button {
+  position: relative;
+  overflow: hidden;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+button:active::after {
+  transform: scale(2);
+  opacity: 1;
+  transition: 0.4s;
+}
+
+.card:active {
+  transform: scale(0.97);
+}
+
+.img-box img {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.img-box img.loaded {
+  opacity: 1;
+}
+
+.nav-links a {
+  position: relative;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -3px;
+  left: 0;
+  background: #2e7d32;
+  transition: 0.3s;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}

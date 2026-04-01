@@ -195,7 +195,6 @@ window.setActive = function(btn) {
 
 // ===============================
 // ===== AUTH SYSTEM =====
-// ===============================
 let isSignup = false;
 
 window.openAuth = function () {
@@ -223,7 +222,6 @@ window.toggleAuth = function () {
 
 // ===============================
 // ===== SUBMIT AUTH =====
-// ===============================
 window.submitAuth = async function () {
 
   const name = document.getElementById("authName")?.value.trim();
@@ -280,7 +278,6 @@ window.submitAuth = async function () {
 
 // ===============================
 // ===== NAVBAR =====
-// ===============================
 function updateNavbar() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userSection = document.getElementById("userSection");
@@ -300,7 +297,6 @@ function updateNavbar() {
 
 // ===============================
 // ===== LOGOUT =====
-// ===============================
 window.logout = function () {
   localStorage.clear();
   location.reload();
@@ -309,7 +305,6 @@ window.logout = function () {
 
 // ===============================
 // ===== LOAD PRODUCTS =====
-// ===============================
 async function loadProducts() {
   try {
     const res = await fetch(window.API_URL + "/api/products");
@@ -334,14 +329,13 @@ async function loadProducts() {
 
 // ===============================
 // ===== INIT =====
-// ===============================
 document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
   updateNavbar();
   renderCart();
   loadProducts();
 
-  // 🔥 NAVBAR SCROLL EFFECT
+  // NAVBAR SCROLL
   window.addEventListener("scroll", () => {
     const nav = document.querySelector(".navbar");
 
@@ -354,9 +348,20 @@ document.addEventListener("DOMContentLoaded", () => {
       nav.style.boxShadow = "none";
       nav.style.background = "rgba(255,255,255,0.7)";
     }
+
+    // SCROLL BAR
+    const scrollTop = document.documentElement.scrollTop;
+    const height =
+      document.documentElement.scrollHeight -
+      document.documentElement.clientHeight;
+
+    const scrolled = (scrollTop / height) * 100;
+
+    const bar = document.getElementById("scrollBar");
+    if (bar) bar.style.width = scrolled + "%";
   });
 
-  // 🔥 SCROLL ANIMATIONS FIXED
+  // ANIMATIONS
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
