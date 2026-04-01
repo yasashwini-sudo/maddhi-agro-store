@@ -132,8 +132,8 @@ window.renderProducts = function(products){
       <div class="img-box">
         <div class="img-overlay"></div>
         <img 
-          src="${product.image ? API_URL + '/uploads/' + product.image : 'https://via.placeholder.com/300'}"
-          onerror="this.src='https://via.placeholder.com/300'"
+          src="${product.image ? (product.image.startsWith('http') ? product.image : API_URL + '/' + product.image.replace(/^\/?uploads\//, 'uploads/')) : 'https://via.placeholder.com/300'}"
+onerror="this.src='https://via.placeholder.com/300'"
         >
       </div>
 
