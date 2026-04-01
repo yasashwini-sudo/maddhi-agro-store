@@ -1,11 +1,5 @@
-// ===== SAFE GLOBAL API (NEVER BREAKS) =====
-const API_URL =
-  window.location.hostname.includes("localhost")
-    ? "http://localhost:5000"
-    : "https://maddhi-agro-store.onrender.com";
-
-window.API_URL = API_URL;
-
+// ===== GLOBAL SAFE API =====
+window.API_URL = "https://maddhi-agro-store.onrender.com";
 
 // ===== GLOBAL PRODUCTS STORE =====
 window.allProducts = [];
@@ -121,7 +115,7 @@ function renderCart() {
     div.className = "cart-item";
 
     div.innerHTML = `
-      <img src="${API_URL}/uploads/${item.image || "default.png"}"
+      <img src="${window.API_URL}/uploads/${item.image || "default.png"}"
            onerror="this.src='https://via.placeholder.com/150'" />
 
       <div class="cart-info">
@@ -201,6 +195,7 @@ window.setActive = function(btn) {
 
 // ===============================
 // ===== AUTH SYSTEM =====
+// ===============================
 let isSignup = false;
 
 window.openAuth = function () {
@@ -230,13 +225,14 @@ window.toggleAuth = function () {
 // ===== SUBMIT AUTH =====
 // ===============================
 window.submitAuth = async function () {
+
   const name = document.getElementById("authName")?.value.trim();
   const email = document.getElementById("authEmail")?.value.trim();
   const password = document.getElementById("authPassword")?.value.trim();
 
   const url = isSignup
-    ? `${API_URL}/api/register`
-    : `${API_URL}/api/login`;
+    ? window.API_URL + "/api/register"
+    : window.API_URL + "/api/login";
 
   const body = isSignup
     ? { name, email, password }
@@ -271,11 +267,12 @@ window.submitAuth = async function () {
     localStorage.setItem("user", JSON.stringify(data.user));
 
     alert("Login successful 🎉");
+
     closeAuth();
     updateNavbar();
 
   } catch (err) {
-    console.error(err);
+    console.error("FETCH ERROR:", err);
     alert("Server error ❌");
   }
 };
@@ -315,7 +312,7 @@ window.logout = function () {
 // ===============================
 async function loadProducts() {
   try {
-    const res = await fetch(`${API_URL}/api/products`);
+    const res = await fetch(window.API_URL + "/api/products");
 
     if (!res.ok) return;
 
@@ -330,7 +327,7 @@ async function loadProducts() {
     }
 
   } catch (err) {
-    console.error(err);
+    console.error("Products error:", err);
   }
 }
 
@@ -343,5 +340,33 @@ document.addEventListener("DOMContentLoaded", () => {
   updateNavbar();
   renderCart();
   loadProducts();
-});
 
+  // 🔥 NAVBAR SCROLL EFFECT
+  window.addEventListener("scroll", () => {
+    const nav = document.querySelector(".navbar");
+
+    if (!nav) return;
+
+    if (window.scrollY > 50) {
+      nav.style.boxShadow = "0 5px 20px rgba(0,0,0,0.1)";
+      nav.style.background = "rgba(255,255,255,0.95)";
+    } else {
+      nav.style.boxShadow = "none";
+      nav.style.background = "rgba(255,255,255,0.7)";
+    }
+  });
+
+  // 🔥 SCROLL ANIMATIONS FIXED
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+      }
+    });
+  });
+
+  document.querySelectorAll(".fade-in").forEach(el => {
+    observer.observe(el);
+  });
+
+});

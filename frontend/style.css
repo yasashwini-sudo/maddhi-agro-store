@@ -2159,3 +2159,17 @@ button {
   transform: scale(1.05);
 }
 
+.fade-in {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease;
+}
+
+.fade-in.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+button:active {
+  transform: scale(0.96);
+}

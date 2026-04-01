@@ -25,7 +25,7 @@
 </div>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero fade-in">
   <div class="hero-content">
     <h1>Pure Cold Pressed Oils</h1>
     <p>Traditional extraction preserving nutrition & purity.</p>
@@ -34,9 +34,9 @@
 </section>
 
 <!-- WHY -->
-<h2 class="section-title">Why Choose Maddhi Agro</h2>
+<h2 class="section-title fade-in">Why Choose Maddhi Agro</h2>
 
-<div class="why-section">
+<div class="why-section fade-in">
   <div class="why-card">
     <div class="icon">🌿</div>
     <h3>100% Natural</h3>
@@ -63,7 +63,7 @@
 </div>
 
 <!-- FILTERS -->
-<div class="filters">
+<div class="filters fade-in">
   <button class="category-btn active" onclick="filterProducts('All'); setActive(this)">All</button>
   <button class="category-btn" onclick="filterProducts('Oils'); setActive(this)">Oils</button>
   <button class="category-btn" onclick="filterProducts('Ghee'); setActive(this)">Ghee</button>
@@ -72,11 +72,11 @@
 </div>
 
 <!-- PRODUCTS -->
-<h2 class="section-title" id="products">Our Products</h2>
-<div id="productsContainer" class="products">Loading...</div>
+<h2 class="section-title fade-in" id="products">Our Products</h2>
+<div id="productsContainer" class="products fade-in">Loading...</div>
 
 <!-- ABOUT -->
-<section class="about" id="about">
+<section class="about fade-in" id="about">
   <div class="about-text">
     <h2>About Maddhi Agro</h2>
     <p>
@@ -115,7 +115,12 @@ window.renderProducts = function(products){
   container.innerHTML = "";
 
   if (!products || products.length === 0) {
-    container.innerHTML = "<h2>No products available 😔</h2>";
+    container.innerHTML = `
+      <div style="text-align:center; padding:40px;">
+        <h2>No products available</h2>
+        <p style="color:#777;">Check back soon 🌿</p>
+      </div>
+    `;
     return;
   }
 
