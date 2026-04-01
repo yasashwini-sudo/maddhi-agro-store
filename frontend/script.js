@@ -1,5 +1,11 @@
-// ===== GLOBAL SAFE API =====
-window.API_URL = "https://maddhi-agro-store.onrender.com";
+// ===== SAFE GLOBAL API (NEVER BREAKS) =====
+const API_URL =
+  window.location.hostname.includes("localhost")
+    ? "http://localhost:5000"
+    : "https://maddhi-agro-store.onrender.com";
+
+window.API_URL = API_URL;
+
 
 // ===== GLOBAL PRODUCTS STORE =====
 window.allProducts = [];
@@ -115,7 +121,7 @@ function renderCart() {
     div.className = "cart-item";
 
     div.innerHTML = `
-      <img src="${window.API_URL}/uploads/${item.image || "default.png"}"
+      <img src="${API_URL}/uploads/${item.image || "default.png"}"
            onerror="this.src='https://via.placeholder.com/150'" />
 
       <div class="cart-info">
@@ -195,7 +201,6 @@ window.setActive = function(btn) {
 
 // ===============================
 // ===== AUTH SYSTEM =====
-// ===============================
 let isSignup = false;
 
 window.openAuth = function () {
@@ -225,25 +230,18 @@ window.toggleAuth = function () {
 // ===== SUBMIT AUTH =====
 // ===============================
 window.submitAuth = async function () {
-
   const name = document.getElementById("authName")?.value.trim();
   const email = document.getElementById("authEmail")?.value.trim();
   const password = document.getElementById("authPassword")?.value.trim();
 
   const url = isSignup
-    ? window.API_URL + "/api/register"
-    : window.API_URL + "/api/login";
+    ? `${API_URL}/api/register`
+    : `${API_URL}/api/login`;
 
   const body = isSignup
     ? { name, email, password }
     : { email, password };
 
-  // 🔥 DEBUG LOGS (IMPORTANT)
-  console.log("MODE:", isSignup);
-  console.log("BODY:", body);
-  console.log("URL:", url);
-
-  // ✅ VALIDATION
   if (!email || !password || (isSignup && !name)) {
     alert("Fill all fields");
     return;
@@ -258,37 +256,26 @@ window.submitAuth = async function () {
 
     const data = await res.json();
 
-    console.log("RESPONSE:", data); // 🔥 SEE WHAT BACKEND RETURNS
-
     if (!res.ok) {
       alert(data.msg || data.message || "Signup/Login failed ❌");
       return;
     }
 
-    // ✅ SIGNUP FLOW
     if (isSignup) {
       alert("Signup successful 🎉");
-
-      // 🔥 IMPORTANT UX FIX
-      document.getElementById("authName").value = "";
-      document.getElementById("authEmail").value = "";
-      document.getElementById("authPassword").value = "";
-
-      toggleAuth(); // switch to login
+      toggleAuth();
       return;
     }
 
-    // ✅ LOGIN FLOW
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
     alert("Login successful 🎉");
-
     closeAuth();
     updateNavbar();
 
   } catch (err) {
-    console.error("FETCH ERROR:", err);
+    console.error(err);
     alert("Server error ❌");
   }
 };
@@ -328,18 +315,11 @@ window.logout = function () {
 // ===============================
 async function loadProducts() {
   try {
-    console.log("Fetching:", window.API_URL + "/api/products");
+    const res = await fetch(`${API_URL}/api/products`);
 
-    const res = await fetch(window.API_URL + "/api/products");
-
-    if (!res.ok) {
-      console.error("API error:", res.status);
-      return;
-    }
+    if (!res.ok) return;
 
     const products = await res.json();
-
-    console.log("Products:", products);
 
     if (!Array.isArray(products)) return;
 
@@ -350,7 +330,7 @@ async function loadProducts() {
     }
 
   } catch (err) {
-    console.error("Products error:", err);
+    console.error(err);
   }
 }
 
@@ -364,3 +344,4 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCart();
   loadProducts();
 });
+
