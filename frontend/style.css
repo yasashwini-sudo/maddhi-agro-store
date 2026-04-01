@@ -2332,15 +2332,6 @@ button:active::after {
   transform: scale(0.97);
 }
 
-.img-box img {
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.img-box img.loaded {
-  opacity: 1;
-}
-
 .nav-links a {
   position: relative;
 }
