@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
 
 <head>
@@ -90,27 +90,19 @@
 <a href="https://wa.me/9059052688?text=Hi, I want to order"
 class="whatsapp-float" target="_blank">💬</a>
 
-<!-- ================= PREMIUM AUTH MODAL ================= -->
+<!-- AUTH MODAL -->
 <div id="authModal" class="auth-modal">
-
   <div class="auth-box">
-
     <span class="close-btn" onclick="closeAuth()">✖</span>
-
     <h2 id="authTitle">Login</h2>
-
     <input id="authName" placeholder="Your Name" style="display:none;">
     <input id="authEmail" placeholder="Email Address">
     <input id="authPassword" type="password" placeholder="Password">
-
     <button class="auth-btn" onclick="submitAuth()">Continue</button>
-
     <p class="switch-text" onclick="toggleAuth()">
       Don't have an account? Signup
     </p>
-
   </div>
-
 </div>
 
 <!-- SCRIPT -->
@@ -132,12 +124,17 @@ window.renderProducts = function(products){
     card.className = "card";
 
     card.innerHTML = `
-      <img 
-        src="${product.image ? API_URL + '/uploads/' + product.image : 'https://via.placeholder.com/200'}"
-        onerror="this.src='https://via.placeholder.com/200'"
-      >
+      <div class="img-box">
+        <div class="img-overlay"></div>
+        <img 
+          src="${product.image ? API_URL + '/uploads/' + product.image : 'https://via.placeholder.com/300'}"
+          onerror="this.src='https://via.placeholder.com/300'"
+        >
+      </div>
+
       <h3>${product.name}</h3>
       <p class="price">₹${product.price}</p>
+
       <div class="btn-group">
         <button class="add-btn">Add</button>
         <button class="buy-btn">Buy</button>
