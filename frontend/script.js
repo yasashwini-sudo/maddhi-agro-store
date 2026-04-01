@@ -137,7 +137,7 @@ function renderCart() {
 
     div.innerHTML = `
       <img src="${getImageUrl(item.image)}"
-           onerror="this.src='https://via.placeholder.com/150'" />
+           onerror="this.src='https://dummyimage.com/150x150/eeeeee/000000&text=No+Image'"
 
       <div class="cart-info">
         <h3>${item.name}</h3>
@@ -394,5 +394,35 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".fade-in").forEach(el => {
     observer.observe(el);
   });
+
+  // ===== LIVE ORDER POPUP =====
+const names = ["Ravi", "Priya", "Arjun", "Sneha", "Kiran"];
+const cities = ["Hyderabad", "Bangalore", "Chennai", "Mumbai"];
+
+function showOrderPopup() {
+  if (!window.allProducts.length) return;
+
+  const product = window.allProducts[Math.floor(Math.random() * window.allProducts.length)];
+  const name = names[Math.floor(Math.random() * names.length)];
+  const city = cities[Math.floor(Math.random() * cities.length)];
+
+  const popup = document.getElementById("orderPopup");
+  if (!popup) return;
+
+  popup.innerHTML = `
+    <strong>${name}</strong> from ${city}<br>
+    just ordered <b>${product.name}</b>
+  `;
+
+  popup.style.display = "block";
+
+  setTimeout(() => {
+    popup.style.display = "none";
+  }, 4000);
+}
+
+setTimeout(() => {
+  setInterval(showOrderPopup, 10000);
+}, 3000);
 
 });
