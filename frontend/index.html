@@ -100,11 +100,15 @@ class="whatsapp-float" target="_blank">💬</a>
 <script>
 // ===== RENDER PRODUCTS =====
 window.renderProducts = function(products){
-  const container = document.getElementById("productsContainer");
-
-container.innerHTML = `
-  <div style="text-align:center; padding:40px;">
-    <h2>Loading products...</h2>
+  container.innerHTML = `
+  <div style="
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    font-size: 18px;
+    color: #555;
+  ">
+    Loading products...
   </div>
 `;
 
