@@ -59,6 +59,24 @@ window.addToCart = function (product) {
   showToast("Added to cart ✅");
 };
 
+// ===============================
+// ===== BUY NOW =====
+// ===============================
+window.buyNow = function(product) {
+  if (!product) return;
+
+  // Replace cart with this product
+  const cart = [{
+    ...product,
+    quantity: 1
+  }];
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  // Go to checkout
+  window.location.href = "checkout.html";
+};
+
 
 // ===============================
 // ===== TOAST =====
