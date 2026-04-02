@@ -2392,3 +2392,36 @@ button:active::after {
   margin-top: 10px;
 }
 
+/* VERTICAL RECOMMENDED */
+.recommended-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* individual card */
+.recommended-list .card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+/* image */
+.recommended-list .card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* text */
+.recommended-list .card h3 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.recommended-list .price {
+  font-size: 14px;
+}
