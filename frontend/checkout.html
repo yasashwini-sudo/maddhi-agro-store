@@ -120,9 +120,10 @@
 
     let finalTotal = subtotal - discount;
 
-    <p style="color:#2e7d32; font-weight:600;">
-  🎉 First Order Offer Applied (10% OFF)
-</p>
+    if (!localStorage.getItem("hasOrdered")) {
+  document.getElementById("offerMsg").innerText =
+    "🎉 First Order Offer Applied (10% OFF)";
+}
 
     document.getElementById("subtotal").innerText = subtotal;
 document.getElementById("discount").innerText = discount;
