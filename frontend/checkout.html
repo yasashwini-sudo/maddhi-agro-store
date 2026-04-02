@@ -37,19 +37,25 @@
     <div class="summary-box">
 
       <h2>Order Summary</h2>
-
+    
       <div id="orderItems"></div>
-
-      <h2>Total: ₹<span id="finalTotal">0</span></h2>
-
+    
+      <div class="price-breakdown">
+        <p>Subtotal: ₹<span id="subtotal">0</span></p>
+        <p style="color:green;">Discount (10%): -₹<span id="discount">0</span></p>
+        <h2>Total: ₹<span id="finalTotal">0</span></h2>
+      </div>
+    
+      <div id="offerMsg"></div>
+    
       <select id="payment">
         <option>Cash on Delivery</option>
         <option>UPI</option>
         <option>Card</option>
       </select>
-
-      <button class="place-order-btn" onclick="placeOrder()">Place Order</button>
-
+    
+      <button onclick="placeOrder()">Place Order</button>
+    
     </div>
   </div>
 
@@ -114,7 +120,13 @@
 
     let finalTotal = subtotal - discount;
 
-    document.getElementById("finalTotal").innerText = finalTotal;
+    <p style="color:#2e7d32; font-weight:600;">
+  🎉 First Order Offer Applied (10% OFF)
+</p>
+
+    document.getElementById("subtotal").innerText = subtotal;
+document.getElementById("discount").innerText = discount;
+document.getElementById("finalTotal").innerText = finalTotal;
   }
 
 

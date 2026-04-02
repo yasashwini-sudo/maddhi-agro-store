@@ -2382,3 +2382,12 @@ button:active::after {
   color: #d32f2f;
   margin-top: 4px;
 }
+
+.price-breakdown p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.price-breakdown h2 {
+  margin-top: 10px;
+}

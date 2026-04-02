@@ -10,7 +10,6 @@
 
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
   <div class="logo">Maddhi Agro 🌿</div>
 
@@ -24,7 +23,6 @@
   </div>
 </div>
 
-<!-- HERO -->
 <section class="hero fade-in">
   <div class="hero-content">
     <h1>Pure Cold Pressed Oils</h1>
@@ -33,127 +31,60 @@
   </div>
 </section>
 
-<!-- WHY -->
 <h2 class="section-title fade-in">Why Choose Maddhi Agro</h2>
 
 <div class="why-section fade-in">
-  <div class="why-card">
-    <div class="icon">🌿</div>
-    <h3>100% Natural</h3>
-    <p>No chemicals, no artificial processing.</p>
-  </div>
-
-  <div class="why-card">
-    <div class="icon">🪵</div>
-    <h3>Wood Pressed</h3>
-    <p>Traditional cold-press extraction.</p>
-  </div>
-
-  <div class="why-card">
-    <div class="icon">❤️</div>
-    <h3>Healthy</h3>
-    <p>Rich in nutrients & antioxidants.</p>
-  </div>
-
-  <div class="why-card">
-    <div class="icon">🚜</div>
-    <h3>Farm Fresh</h3>
-    <p>Directly sourced and processed.</p>
-  </div>
+  <div class="why-card">🌿<h3>100% Natural</h3></div>
+  <div class="why-card">🪵<h3>Wood Pressed</h3></div>
+  <div class="why-card">❤️<h3>Healthy</h3></div>
+  <div class="why-card">🚜<h3>Farm Fresh</h3></div>
 </div>
 
-<!-- FILTERS -->
 <div class="filters fade-in">
-  <button class="category-btn active" onclick="filterProducts('All'); setActive(this)">All</button>
-  <button class="category-btn" onclick="filterProducts('Oils'); setActive(this)">Oils</button>
-  <button class="category-btn" onclick="filterProducts('Ghee'); setActive(this)">Ghee</button>
-  <button class="category-btn" onclick="filterProducts('Spices'); setActive(this)">Spices</button>
-  <button class="category-btn" onclick="filterProducts('Salt'); setActive(this)">Salt</button>
+  <button onclick="filterProducts('All'); setActive(this)">All</button>
+  <button onclick="filterProducts('Oils'); setActive(this)">Oils</button>
 </div>
 
-<!-- PRODUCTS -->
 <h2 class="section-title fade-in" id="products">Our Products</h2>
-<div id="productsContainer" class="products fade-in">Loading...</div>
+<div id="productsContainer" class="products fade-in"></div>
 
-<!-- ABOUT -->
 <section class="about fade-in" id="about">
-  <div class="about-text">
-    <h2>About Maddhi Agro</h2>
-    <p>
-      We deliver pure cold pressed oils using traditional wooden methods.
-      No chemicals. No heat. Just natural goodness.
-    </p>
-  </div>
+  <h2>About Maddhi Agro</h2>
 </section>
 
-<!-- WHATSAPP -->
-<a href="https://wa.me/9059052688?text=Hi, I want to order"
-class="whatsapp-float" target="_blank">💬</a>
+<!-- ✅ AUTH MODAL (THIS FIXES LOGIN BUTTON) -->
+<div id="authModal" class="auth-modal">
+  <div class="auth-box">
+    <span onclick="closeAuth()">✖</span>
+    <h2 id="authTitle">Login</h2>
+    <input id="authName" style="display:none;">
+    <input id="authEmail">
+    <input id="authPassword">
+    <button onclick="submitAuth()">Continue</button>
+    <p onclick="toggleAuth()">Switch</p>
+  </div>
+</div>
 
-<!-- ✅ POPUP (FIXED POSITION) -->
+<!-- POPUP -->
 <div id="orderPopup" class="order-popup"></div>
 
-<!-- SCRIPT -->
 <script src="script.js"></script>
 
 <script>
-// ===== RENDER PRODUCTS =====
 window.renderProducts = function(products){
   const container = document.getElementById("productsContainer");
   container.innerHTML = "";
 
-  if (!products || products.length === 0) {
-    container.innerHTML = `
-      <div style="text-align:center; padding:40px;">
-        <h2>No products available</h2>
-        <p style="color:#777;">Check back soon 🌿</p>
-      </div>
-    `;
-    return;
-  }
-
   products.forEach(product => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-      <div class="img-box">
-        <div class="img-overlay"></div>
-        <img 
-          src="${getImageUrl(product.image)}"
-          onload="this.classList.add('loaded')"
-          onerror="this.src='https://dummyimage.com/300x300/eeeeee/000000&text=No+Image'"
-        >
-      </div>
-
-      <h3>${product.name}</h3>
-      <p class="price">₹${product.price}</p>
-      <p class="stock">Only ${Math.floor(Math.random()*5)+3} left in stock</p>
-
-      <div class="btn-group">
-        <button class="add-btn">Add</button>
-        <button class="buy-btn">Buy</button>
+    container.innerHTML += `
+      <div class="card">
+        <img src="${getImageUrl(product.image)}">
+        <h3>${product.name}</h3>
+        <p>₹${product.price}</p>
+        <button onclick='addToCart(${JSON.stringify(product)})'>Add</button>
       </div>
     `;
-
-    card.querySelector("img").onclick = () => {
-      window.location.href = "product.html?id=" + product._id;
-    };
-
-    card.querySelector(".add-btn").onclick = () => {
-      addToCart(product);
-    };
-
-    card.querySelector(".buy-btn").onclick = () => {
-      buyNow(product);
-    };
-
-    container.appendChild(card);
   });
-}
-
-function scrollToProducts(){
-  document.getElementById("products").scrollIntoView({behavior:"smooth"});
 }
 </script>
 
