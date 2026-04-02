@@ -2391,3 +2391,37 @@ button:active::after {
 .price-breakdown h2 {
   margin-top: 10px;
 }
+
+/* CHECKOUT / CART RECOMMENDED - VERTICAL */
+#recommended {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* make cards full width */
+#recommended .card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+}
+
+/* image left */
+#recommended .card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* text spacing */
+#recommended .card h3 {
+  font-size: 16px;
+  margin: 0;
+}
+
+#recommended .card .price {
+  font-size: 14px;
+}
