@@ -11,13 +11,10 @@ window.allProducts = [];
 window.getImageUrl = function (img) {
   if (!img) return "https://dummyimage.com/300x300/eeeeee/000000&text=No+Image";
 
-  // remove leading slashes
   img = img.replace(/^\/+/, "");
 
-  // already full URL
   if (img.startsWith("http")) return img;
 
-  // avoid double uploads
   if (img.startsWith("uploads/")) {
     return window.API_URL + "/" + img;
   }
@@ -137,7 +134,7 @@ function renderCart() {
 
     div.innerHTML = `
       <img src="${getImageUrl(item.image)}"
-           onerror="this.src='https://dummyimage.com/150x150/eeeeee/000000&text=No+Image'"
+           onerror="this.src='https://dummyimage.com/150x150/eeeeee/000000&text=No+Image'" />
 
       <div class="cart-info">
         <h3>${item.name}</h3>
@@ -330,11 +327,20 @@ async function loadProducts() {
   try {
     const res = await fetch(window.API_URL + "/api/products");
 
-    if (!res.ok) return;
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("API ERROR:", res.status, text);
+      return;
+    }
 
     const products = await res.json();
 
-    if (!Array.isArray(products)) return;
+    console.log("PRODUCTS:", products); // 👈 ADD THIS
+
+    if (!Array.isArray(products)) {
+      console.error("Invalid product format");
+      return;
+    }
 
     window.allProducts = products;
 
@@ -343,7 +349,7 @@ async function loadProducts() {
     }
 
   } catch (err) {
-    console.error("Products error:", err);
+    console.error("FETCH ERROR:", err);
   }
 }
 
@@ -356,30 +362,36 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCart();
   loadProducts();
 
-  // NAVBAR SCROLL
+  // ===== DISCOUNT SUPPORT =====
+  function applyDiscountUI(subtotal) {
+    let discount = !localStorage.getItem("hasOrdered")
+      ? Math.floor(subtotal * 0.10)
+      : 0;
+
+    let finalTotal = subtotal - discount;
+
+    const sub = document.getElementById("subtotal");
+    const dis = document.getElementById("discount");
+    const fin = document.getElementById("finalTotal");
+
+    if (sub) sub.innerText = subtotal;
+    if (dis) dis.innerText = discount;
+    if (fin) fin.innerText = finalTotal;
+
+    if (!localStorage.getItem("hasOrdered")) {
+      const msg = document.getElementById("offerMsg");
+      if (msg) msg.innerText = "🎉 First Order Offer Applied (10% OFF)";
+    }
+  }
+
+  // NAVBAR SCROLL + SCROLL BAR
   window.addEventListener("scroll", () => {
     const nav = document.querySelector(".navbar");
-
     if (!nav) return;
 
-    if (window.scrollY > 50) {
-      nav.style.boxShadow = "0 5px 20px rgba(0,0,0,0.1)";
-      nav.style.background = "rgba(255,255,255,0.95)";
-    } else {
-      nav.style.boxShadow = "none";
-      nav.style.background = "rgba(255,255,255,0.7)";
-    }
-
-    // SCROLL BAR
-    const scrollTop = document.documentElement.scrollTop;
-    const height =
-      document.documentElement.scrollHeight -
-      document.documentElement.clientHeight;
-
-    const scrolled = (scrollTop / height) * 100;
-
-    const bar = document.getElementById("scrollBar");
-    if (bar) bar.style.width = scrolled + "%";
+    nav.style.boxShadow = window.scrollY > 50
+      ? "0 5px 20px rgba(0,0,0,0.1)"
+      : "none";
   });
 
   // ANIMATIONS
@@ -395,34 +407,22 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(el);
   });
 
-  // ===== LIVE ORDER POPUP =====
-const names = ["Ravi", "Priya", "Arjun", "Sneha", "Kiran"];
-const cities = ["Hyderabad", "Bangalore", "Chennai", "Mumbai"];
-
-function showOrderPopup() {
-  if (!window.allProducts.length) return;
-
-  const product = window.allProducts[Math.floor(Math.random() * window.allProducts.length)];
-  const name = names[Math.floor(Math.random() * names.length)];
-  const city = cities[Math.floor(Math.random() * cities.length)];
-
-  const popup = document.getElementById("orderPopup");
-  if (!popup) return;
-
-  popup.innerHTML = `
-    <strong>${name}</strong> from ${city}<br>
-    just ordered <b>${product.name}</b>
-  `;
-
-  popup.style.display = "block";
-
+  // ===== POPUP =====
   setTimeout(() => {
-    popup.style.display = "none";
-  }, 4000);
-}
+    setInterval(() => {
+      if (!window.allProducts.length) return;
 
-setTimeout(() => {
-  setInterval(showOrderPopup, 10000);
-}, 3000);
+      const product = window.allProducts[Math.floor(Math.random() * window.allProducts.length)];
+      const popup = document.getElementById("orderPopup");
+
+      if (!popup) return;
+
+      popup.innerHTML = `Someone just ordered <b>${product.name}</b>`;
+      popup.style.display = "block";
+
+      setTimeout(() => popup.style.display = "none", 4000);
+
+    }, 10000);
+  }, 3000);
 
 });

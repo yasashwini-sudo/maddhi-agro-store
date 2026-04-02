@@ -2,6 +2,7 @@
 <html>
 
 <head>
+<link rel="icon" href="favicon.ico">
 <meta charset="UTF-8">
 <title>Maddhi Agro Store</title>
 <link rel="stylesheet" href="style.css">
@@ -100,7 +101,12 @@ class="whatsapp-float" target="_blank">💬</a>
 // ===== RENDER PRODUCTS =====
 window.renderProducts = function(products){
   const container = document.getElementById("productsContainer");
-  container.innerHTML = "";
+
+container.innerHTML = `
+  <div style="text-align:center; padding:40px;">
+    <h2>Loading products...</h2>
+  </div>
+`;
 
   if (!products || products.length === 0) {
     container.innerHTML = `
