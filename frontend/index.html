@@ -54,17 +54,27 @@
 
 <!-- ✅ AUTH MODAL (THIS FIXES LOGIN BUTTON) -->
 <div id="authModal" class="auth-modal">
-  <div class="auth-box">
-    <span onclick="closeAuth()">✖</span>
-    <h2 id="authTitle">Login</h2>
-    <input id="authName" style="display:none;">
-    <input id="authEmail">
-    <input id="authPassword">
-    <button onclick="submitAuth()">Continue</button>
-    <p onclick="toggleAuth()">Switch</p>
-  </div>
-</div>
 
+  <div class="auth-box">
+
+    <!-- CLOSE BUTTON (FIXED POSITION) -->
+    <span class="close-btn" onclick="closeAuth()">✖</span>
+
+    <h2 id="authTitle">Login</h2>
+
+    <input id="authName" placeholder="Your Name" style="display:none;">
+    <input id="authEmail" placeholder="Email Address">
+    <input id="authPassword" type="password" placeholder="Password">
+
+    <button class="auth-btn" onclick="submitAuth()">Continue</button>
+
+    <p class="switch-text" onclick="toggleAuth()">
+      Don't have an account? Signup
+    </p>
+
+  </div>
+
+</div>
 <!-- POPUP -->
 <div id="orderPopup" class="order-popup"></div>
 
