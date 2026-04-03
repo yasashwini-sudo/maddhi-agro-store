@@ -64,15 +64,25 @@ fetch(`${API_URL}/api/products`)
 
   container.innerHTML = "";
 
-  data.slice(0,4).forEach(p => {
+  // 🛒 get cart
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  // ❌ remove products already in cart
+  const filtered = data.filter(p => 
+    !cart.some(c => c._id === p._id)
+  );
+
+  // 🎯 take 4 from remaining
+  filtered.slice(0,4).forEach(p => {
     container.innerHTML += `
       <div class="card" onclick="goToProduct('${p._id}')">
-        <img src="${API_URL}/uploads/${p.image}">
+        <img src="${getImageUrl(p.image)}">
         <h3>${p.name}</h3>
         <p class="price">₹${p.price}</p>
       </div>
     `;
   });
+
 });
 
 // NAV
