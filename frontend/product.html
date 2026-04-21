@@ -37,7 +37,18 @@
 
     <p class="price" id="productPrice"></p>
 
-    <p id="productDesc"></p>
+    <div class="product-description">
+
+      <h3>Overview</h3>
+      <p id="productOverview"></p>
+    
+      <h3>Health Benefits</h3>
+      <ul id="productBenefits"></ul>
+    
+      <h3>Nutritional Highlights</h3>
+      <ul id="productNutrition"></ul>
+    
+    </div>
 
     <ul style="margin-top:15px; color:#555; font-size:14px;">
       <li>✔ 100% Natural & Chemical Free</li>
@@ -104,7 +115,45 @@ fetch(`${API_URL}/api/products`)
 
   document.getElementById("productName").innerText = product.name;
   document.getElementById("productPrice").innerText = "₹" + product.price;
-  document.getElementById("productDesc").innerText = product.description;
+  // ===== PRODUCT DESCRIPTION SPLIT =====
+
+// fallback if backend not structured
+const desc = product.description || "";
+
+// split into lines
+const lines = desc.split("\n");
+
+// OVERVIEW
+document.getElementById("productOverview").innerText = lines[0] || desc;
+
+// BENEFITS (simple filter)
+const benefitsList = document.getElementById("productBenefits");
+benefitsList.innerHTML = "";
+
+lines.forEach(line => {
+  if (line.toLowerCase().includes("benefit") || line.includes("•") || line.includes("*")) {
+    const li = document.createElement("li");
+    li.innerText = line.replace(/[•*]/g, "").trim();
+    benefitsList.appendChild(li);
+  }
+});
+
+// NUTRITION (keywords)
+const nutritionList = document.getElementById("productNutrition");
+nutritionList.innerHTML = "";
+
+lines.forEach(line => {
+  if (
+    line.toLowerCase().includes("vitamin") ||
+    line.toLowerCase().includes("omega") ||
+    line.toLowerCase().includes("calcium") ||
+    line.toLowerCase().includes("protein")
+  ) {
+    const li = document.createElement("li");
+    li.innerText = line.trim();
+    nutritionList.appendChild(li);
+  }
+});
 
   // RECOMMENDED PRODUCTS
   const related = data.filter(p =>
