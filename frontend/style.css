@@ -11,9 +11,9 @@
 
 .logo-img {
   height: 60px;
-  width: auto;
-  object-fit: contain;
-  
+  width: 60px;
+  object-fit: cover;
+  transform: scale(1.2);  /* zoom */
 }
 
 .logo-img {
