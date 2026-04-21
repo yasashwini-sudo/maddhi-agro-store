@@ -2478,21 +2478,4 @@ button:active::after {
     color: #2d6a4f;
   }
 
-  .product-description {
-    margin-top: 20px;
-  }
   
-  .product-description h3 {
-    margin-top: 20px;
-    color: #2e7d32;
-  }
-  
-  .product-description ul {
-    margin-left: 20px;
-    margin-top: 10px;
-  }
-  
-  .product-description li {
-    margin-bottom: 6px;
-    color: #444;
-  }
