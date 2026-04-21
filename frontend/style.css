@@ -5,13 +5,17 @@
   font-size: 20px;
   font-weight: 600;
   color: #2e7d32;
+  position: relative;
+  z-index: 999;
 }
 
 .logo-img {
-  width: auto;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
+  height: 60px !important;
+  width: 60px !important;
+  background: red !important;
+  border: 3px solid blue !important;
+  display: block !important;
+  object-fit: contain;
 }
 
 .hero h1 {
