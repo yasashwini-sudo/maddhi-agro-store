@@ -10,12 +10,14 @@
 }
 
 .logo-img {
-  height: 60px !important;
-  width: 60px !important;
-  background: red !important;
-  border: 3px solid blue !important;
-  display: block !important;
+  height: 45px;
+  width: auto;
   object-fit: contain;
+  
+}
+
+.logo-img {
+  background: yellow;
 }
 
 .hero h1 {
