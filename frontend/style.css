@@ -1498,3 +1498,67 @@ h1 {
     font-size: 13px;
   }
 }
+
+
+/* ===== EMERGENCY MOBILE FIX (PRODUCT PAGE) ===== */
+@media (max-width: 768px) {
+
+  /* kill grid layout completely */
+  .product-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center;
+    width: 100% !important;
+    padding: 15px !important;
+    gap: 15px !important;
+  }
+
+  /* fix image */
+  .product-image {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  .product-image img {
+    width: 85% !important;
+    max-width: 260px !important;
+    height: auto !important;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  /* fix text section */
+  .product-details {
+    width: 100% !important;
+    text-align: center !important;
+    max-width: 500px;
+  }
+
+  /* FIX BIGGEST ISSUE (heading breaking) */
+  .product-details h1 {
+    font-size: 22px !important;
+    line-height: 1.3 !important;
+    word-break: normal !important;
+  }
+
+  /* price */
+  .product-price {
+    font-size: 18px !important;
+  }
+
+  /* description */
+  .product-details p {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+  }
+
+  /* buttons */
+  .product-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+}
