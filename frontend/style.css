@@ -106,7 +106,7 @@ button:hover {
 /* ===== PRODUCTS ===== */
 .products {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 260px));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   justify-content: center;
   gap: 30px;
   padding: 30px;
@@ -1363,4 +1363,81 @@ h1 {
   font-size: 13px;
   color: #aaa;
   margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .logo {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .nav-links {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .nav-links a {
+    font-size: 14px;
+  }
+}
+
+.hero h1 {
+  font-size: 28px;
+  line-height: 1.3;
+  text-align: center;
+  padding: 0 10px;
+}
+
+.hero h1 {
+  word-break: keep-all;
+}
+
+@media (max-width: 768px) {
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card img {
+    height: 150px;
+    object-fit: cover;
+  }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.whatsapp-float {
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.scroll-top {
+  bottom: 80px; /* push above WhatsApp */
+}
+
+@media (max-width: 768px) {
+  .about-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .about-image img {
+    max-width: 220px;
+  }
 }
