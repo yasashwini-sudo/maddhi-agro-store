@@ -1690,3 +1690,19 @@ h1 {
   }
 
 }
+
+.policy-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  line-height: 1.7;
+}
+
+.policy-container h1 {
+  margin-bottom: 20px;
+}
+
+.policy-container h3 {
+  margin-top: 20px;
+  color: var(--accent);
+}
