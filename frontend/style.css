@@ -1638,3 +1638,55 @@ h1 {
   }
 
 }
+
+/* ===== CART PAGE MOBILE FIX ===== */
+@media (max-width: 768px) {
+
+  .cart-container {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 15px;
+    gap: 20px;
+  }
+
+  /* LEFT SIDE (items + recommended) */
+  .cart-items {
+    width: 100%;
+  }
+
+  /* RECOMMENDED SECTION */
+  .recommended-list,
+  #recommended,
+  .products {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important; /* ONE per row */
+    gap: 20px;
+  }
+
+  .card {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .card img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+  }
+
+  /* ORDER SUMMARY */
+  .cart-summary {
+    width: 100%;
+    position: static !important; /* remove side/fixed behavior */
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .cart-summary button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+}
