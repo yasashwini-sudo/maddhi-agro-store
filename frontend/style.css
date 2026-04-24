@@ -1608,3 +1608,33 @@ h1 {
   }
 
 }
+
+/* ===== RECOMMENDED MOBILE FIX ===== */
+@media (max-width: 768px) {
+
+  .products {
+    display: grid !important;
+    grid-template-columns: 1fr !important; /* ONE card per row */
+    gap: 20px;
+    padding: 10px;
+  }
+
+  .card {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .card img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 22px;
+    margin-top: 40px;
+  }
+
+}
