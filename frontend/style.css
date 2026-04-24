@@ -1706,3 +1706,58 @@ h1 {
   margin-top: 20px;
   color: var(--accent);
 }
+
+/* ===== FOOTER (PREMIUM DARK THEME) ===== */
+.footer {
+  margin-top: 60px;
+  padding: 30px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #334155;
+  text-align: center;
+}
+
+/* links container */
+.footer-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* links style */
+.footer-links a {
+  color: #cbd5f5;
+  text-decoration: none;
+  font-size: 14px;
+  position: relative;
+  transition: 0.3s;
+}
+
+/* hover glow effect */
+.footer-links a:hover {
+  color: #facc15; /* your accent */
+}
+
+/* underline animation */
+.footer-links a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background: #facc15;
+  transition: 0.3s;
+}
+
+.footer-links a:hover::after {
+  width: 100%;
+}
+
+/* optional small text (copyright etc) */
+.footer p {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #94a3b8;
+}
