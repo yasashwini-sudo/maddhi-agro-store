@@ -3,25 +3,25 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Orders</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="navbar">
-  <div class="logo">Maddhi Agro 🌿</div>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="index.html#products">Products</a>
-    <a href="index.html#about">About</a>
-    <a href="orders.html">My Orders</a>
-    <span id="userSection"></span>
-    <a href="cart.html">🛒 (<span id="cartCount">0</span>)</a>
-  </div>
-</div>
+  <div id="navbar"></div>
 
-<h1 style="text-align:center;">My Orders</h1>
+<script>
+  fetch("navbar.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("navbar").innerHTML = data;
+    });
+</script>
+
+
+<h1 class="section-title">My Orders</h1>
 
 <div id="ordersContainer" style="max-width:800px;margin:40px auto;"></div>
 
@@ -64,20 +64,31 @@ async function loadOrders() {
 
     orders.forEach(order => {
       container.innerHTML += `
-        <div style="background:#fff;padding:20px;margin-bottom:20px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-          <p><b>Name:</b> ${order.name}</p>
-          <p><b>Phone:</b> ${order.phone}</p>
-          <p><b>Total:</b> ₹${order.total}</p>
-          <p><b>Date:</b> ${order.date}</p>
+  <div class="order-card">
 
-          <div style="margin-top:10px;">
-            <b>Items:</b>
-            ${order.items.map(i => `
-              <p>${i.name} x ${i.quantity}</p>
-            `).join("")}
-          </div>
+    <div class="order-header">
+      <div>
+        <p class="order-name">${order.name}</p>
+        <p class="order-phone">${order.phone}</p>
+      </div>
+
+      <div class="order-meta">
+        <p class="order-total">₹${order.total}</p>
+        <p class="order-date">${new Date(order.date).toLocaleDateString()}</p>
+      </div>
+    </div>
+
+    <div class="order-items">
+      ${order.items.map(i => `
+        <div class="order-item">
+          <span>${i.name}</span>
+          <span>x ${i.quantity}</span>
         </div>
-      `;
+      `).join("")}
+    </div>
+
+  </div>
+`;
     });
 
   } catch (err) {

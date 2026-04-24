@@ -1,5 +1,5 @@
 // ===== GLOBAL SAFE API =====
-window.API_URL = "https://maddhi-agro-store.onrender.com";
+window.API_URL = "http://localhost:5000";
 
 // ===== GLOBAL PRODUCTS STORE =====
 window.allProducts = [];
@@ -11,7 +11,7 @@ window.allProducts = [];
 window.getImageUrl = function (img) {
   if (!img) return "https://dummyimage.com/300x300/eeeeee/000000&text=No+Image";
 
-  img = img.replace(/^\/+/, "");
+  img = img.replace(/^\/+/, "").replace(/\s/g, "%20");
 
   if (img.startsWith("http")) return img;
 
@@ -321,12 +321,14 @@ function updateNavbar() {
   if (!userSection) return;
 
   if (user) {
-    userSection.innerHTML =
-      "<span>👋 " + user.name + "</span> " +
-      "<button onclick='logout()'>Logout</button>";
+    userSection.innerHTML = `
+      <span>👋 ${user.name}</span>
+      <button onclick="logout()">Logout</button>
+    `;
   } else {
-    userSection.innerHTML =
-      "<button onclick='openAuth()'>Login</button>";
+    userSection.innerHTML = `
+      <button onclick="openAuth()">Login</button>
+    `;
   }
 }
 
@@ -338,10 +340,25 @@ window.logout = function () {
   location.reload();
 };
 
+window.openAuth = function () {
+  console.log("OPEN AUTH CLICKED"); // 👈 add this
+  const modal = document.getElementById("authModal");
+  if (modal) modal.style.display = "flex";
+};
 
 // ===============================
 // ===== LOAD PRODUCTS =====
 async function loadProducts() {
+
+  const container = document.getElementById("productsContainer");
+  if (container) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:40px;">
+        <h2>Failed to load products</h2>
+        <p style="color:#777;">Check server or try again</p>
+      </div>
+    `;
+  }
   try {
     const res = await fetch(window.API_URL + "/api/products");
 
@@ -366,8 +383,61 @@ async function loadProducts() {
       renderProducts(products);
     }
 
-  } catch (err) {
+  } 
+  catch (err) {
     console.error("FETCH ERROR:", err);
+  
+    document.getElementById("productsContainer").innerHTML = `
+      <div style="text-align:center; padding:40px;">
+        <h2>Failed to load products</h2>
+        <p style="color:#777;">Check server or try again</p>
+      </div>
+    `;
+  }
+}
+
+async function loadAbout() {
+  try {
+    const res = await fetch(API_URL + "/api/about");
+    const data = await res.json();
+
+    const el = document.getElementById("aboutContent");
+    if (!el) return;
+
+    el.innerHTML = `
+  <p>${data.description?.overview || ""}</p>
+
+  <h3 style="margin-top:20px;">Transformation Story</h3>
+  <p>
+    After following the VRK diet and switching to wood-pressed oils,
+    individuals have experienced a noticeable improvement in lifestyle,
+    energy levels, and overall well-being. The shift to natural,
+    chemical-free oils supports better digestion, heart health, and
+    long-term fitness, making it a powerful step toward a healthier life.
+  </p>
+
+      <h3 style="margin-top:20px;">Health Benefits</h3>
+      <ul>
+        ${data.description?.benefits?.map(b => `<li>${b}</li>`).join("") || ""}
+      </ul>
+
+      <h3 style="margin-top:20px;">Nutrition</h3>
+      <ul>
+        ${data.description?.nutrition?.map(n => `<li>${n}</li>`).join("") || ""}
+      </ul>
+
+      <h3 style="margin-top:20px;">Uses</h3>
+      <ul>
+        ${data.description?.uses?.map(u => `<li>${u}</li>`).join("") || ""}
+      </ul>
+
+      <h3 style="margin-top:20px;">Contact</h3>
+      <p>📧 ${data.contact?.email || ""}</p>
+      <p>📞 ${data.contact?.phone1 || ""}</p>
+      <p>📞 ${data.contact?.phone2 || ""}</p>
+    `;
+  } catch (err) {
+    console.error("About load error:", err);
   }
 }
 
@@ -379,6 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateNavbar();
   renderCart();
   loadProducts();
+  loadAbout();
 
   // ===== DISCOUNT SUPPORT =====
   function applyDiscountUI(subtotal) {

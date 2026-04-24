@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -9,15 +10,16 @@
 
   <h2>Login</h2>
 
-  <!-- UPDATED INPUTS -->
+  <!-- INPUTS -->
   <input id="email" placeholder="Enter email"><br><br>
   <input id="password" type="password" placeholder="Enter password"><br><br>
 
-  <button onclick="login()">Login</button>
+  <!-- ✅ BUTTON -->
+  <button id="loginBtn">Login</button>
 
   <p>Don't have account? <a href="signup.html">Signup</a></p>
 
-  <!-- NAVBAR (UNCHANGED) -->
+  <!-- NAVBAR -->
   <div class="navbar">
     <div class="logo">Maddhi Agro 🌿</div>
   
@@ -33,12 +35,17 @@
 
   <script>
 
-window.API_URL = "https://maddhi-agro-store.onrender.com";// 🔥 replace this
+    window.API_URL = "http://localhost:5000";
+
+    console.log("LOGIN SCRIPT LOADED");
 
     async function login(){
 
-      const email = document.getElementById("email").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
       const password = document.getElementById("password").value.trim();
+
+      console.log("EMAIL:", email);
+      console.log("PASSWORD:", password);
 
       if(!email || !password){
         alert("Enter all fields");
@@ -55,13 +62,14 @@ window.API_URL = "https://maddhi-agro-store.onrender.com";// 🔥 replace this
           body: JSON.stringify({ email, password })
         });
 
+        console.log("STATUS:", res.status);
+
         const data = await res.json();
 
-        console.log("LOGIN DATA:", data);
+        console.log("DATA:", data);
 
         if(res.ok && data.token){
 
-          // ✅ STORE BOTH (IMPORTANT)
           localStorage.setItem("token", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -70,14 +78,22 @@ window.API_URL = "https://maddhi-agro-store.onrender.com";// 🔥 replace this
           window.location.href = "index.html";
 
         } else {
-          alert(data.msg || "Login failed ❌");
+          alert(data.msg || data.message || "Login failed ❌");
         }
 
       } catch(err){
-        console.error(err);
+        console.error("LOGIN ERROR:", err);
         alert("Server error ❌");
       }
     }
+
+    // ✅ THIS WAS MISSING (IMPORTANT)
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("loginBtn");
+      if (btn) {
+        btn.addEventListener("click", login);
+      }
+    });
 
   </script>
 

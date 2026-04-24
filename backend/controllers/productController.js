@@ -6,10 +6,20 @@ const path = require("path");
 exports.createProduct = async (req, res) => {
   try {
 
+    // ✅ handle structured description safely
+    let description = req.body.description;
+    if (typeof description === "string") {
+      try {
+        description = JSON.parse(description);
+      } catch (e) {
+        // keep as is if not JSON
+      }
+    }
+
     const newProduct = new Product({
       name: req.body.name,
       price: req.body.price,
-      description: req.body.description,
+      description: description,
       category: req.body.category,
       image: req.file ? req.file.filename : null
     });
@@ -23,26 +33,24 @@ exports.createProduct = async (req, res) => {
   }
 };
 
+
 // GET PRODUCTS
 exports.getProducts = async (req, res) => {
   try {
+    const db = require("mongoose").connection.db;
 
-    const category = req.query.category;
+    // 🔥 RAW MongoDB query (bypasses schema completely)
+    const rawProducts = await db.collection("products").find().toArray();
 
-    let products;
+    console.log("RAW DB PRODUCTS:", rawProducts);
 
-    if (category) {
-      products = await Product.find({ category });
-    } else {
-      products = await Product.find();
-    }
-
-    res.json(products);
-
+    res.json(rawProducts);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // DELETE PRODUCT
 exports.deleteProduct = async (req, res) => {
@@ -71,13 +79,27 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
+
 // UPDATE PRODUCT
 exports.updateProduct = async (req, res) => {
   try {
 
+    // ✅ same fix for update
+    let description = req.body.description;
+    if (typeof description === "string") {
+      try {
+        description = JSON.parse(description);
+      } catch (e) {}
+    }
+
+    const updatedData = {
+      ...req.body,
+      description: description
+    };
+
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updatedData,
       { new: true }
     );
 

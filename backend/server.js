@@ -8,6 +8,7 @@ const connectDB = require("./config/db");
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const authRoutes = require("./routes/authRoutes");
+const aboutRoutes = require("./routes/aboutRoutes");
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/api/about", aboutRoutes);
 
 // ===============================
 // STATIC FILES
@@ -66,11 +68,12 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    await connectDB();
+    const db = await connectDB(); // ✅ get db AFTER connection
 
+    // ✅ FIXED: moved inside async function
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
-        });
+    });
 
   } catch (error) {
     console.error("Server start failed:", error);

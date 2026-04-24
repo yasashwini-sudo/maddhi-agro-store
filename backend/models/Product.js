@@ -8,8 +8,10 @@ const productSchema = new mongoose.Schema(
   },
 
   description: {
-    type: String,
-    required: true
+    overview: String,
+    benefits: [String],
+    nutrition: [String],
+    uses: [String]
   },
 
   price: {
@@ -45,4 +47,4 @@ const productSchema = new mongoose.Schema(
 { timestamps: true }
 );
 
-module.exports = mongoose.model("Product", productSchema);
+module.exports = mongoose.model("Product", productSchema, "products");

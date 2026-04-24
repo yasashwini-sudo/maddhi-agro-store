@@ -21,7 +21,10 @@ router.post("/", upload.single("image"), createProduct);
 router.get("/", getProducts);
 
 
+// 🔥 GET SINGLE PRODUCT (✅ added - useful)
+
 // 🔥 SEARCH PRODUCTS (keep this BEFORE /:id to avoid conflicts)
+// SEARCH FIRST
 router.get("/search/:keyword", async (req, res) => {
   try {
     const keyword = req.params.keyword;
@@ -31,13 +34,20 @@ router.get("/search/:keyword", async (req, res) => {
     });
 
     res.json(products);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-
+// THEN ID
+router.get("/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 // 🔥 DELETE ONE PRODUCT
