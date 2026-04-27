@@ -164,6 +164,21 @@ window.renderProducts = function(products){
   }
 
   products.forEach(product => {
+
+    let unitText = "";
+
+const category = product.category?.toLowerCase();
+
+if (category === "oils" || category === "ghee") {
+  unitText = "1 Liter";
+} else if (category === "salt") {
+  unitText = "1.5 Kg";
+} else {
+  unitText = "1 Kg";
+}
+
+console.log(product.category); // 👈 ADD HERE
+
     const card = document.createElement("div");
     card.className = "card";
 
@@ -179,6 +194,9 @@ window.renderProducts = function(products){
 
       <h3>${product.name}</h3>
 
+<p style="font-size:13px;color:#aaa;">
+  ${unitText}
+</p>
 
 <p class="price">₹${product.price}</p>
       
