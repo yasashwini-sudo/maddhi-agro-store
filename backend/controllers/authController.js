@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ msg: "Invalid password" });
     }
 
-    if (!name || !email || !password) {
+    if (!email || !password) {
       return res.status(400).json({ message: "All fields required" });
     }
 
