@@ -105,11 +105,21 @@
     document.getElementById("productPrice").innerText = "₹" + product.price;
     // ✅ SET UNIT (Litre / Kg)
 // ✅ SET UNIT (Litre / Kg)
-let liquidCategories = ["Oils", "Ghee"];
+let category = (product.category || "").toLowerCase().trim();
 
-let unitText = liquidCategories.includes(product.category)
-  ? "1 Liter"
-  : "1 Kg";
+let unitText = "";
+
+if (category === "oil" || category === "ghee") {
+  unitText = "1 Liter";
+} 
+else if (category === "salt") {
+  unitText = "1.5 Kg";
+} 
+else {
+  unitText = "1 Kg";
+}
+
+document.getElementById("productUnit").innerText = unitText;
 
 document.getElementById("productUnit").innerText = unitText;
   
