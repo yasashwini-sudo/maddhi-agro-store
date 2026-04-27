@@ -34,6 +34,8 @@
 
     <p class="price" id="productPrice"></p>
 
+    <p class="unit" id="productUnit"></p>
+
     <!-- ❌ REMOVED OBJECT PRINT ISSUE -->
     <p id="productDesc"></p>
 
@@ -101,6 +103,17 @@
   
     document.getElementById("productName").innerText = product.name;
     document.getElementById("productPrice").innerText = "₹" + product.price;
+    // ✅ SET UNIT (Litre / Kg)
+let unitText = "";
+
+// you can adjust category names based on your DB
+if (product.category === "Oils") {
+  unitText = "1 Liter";
+} else {
+  unitText = "1 Kg";
+}
+
+document.getElementById("productUnit").innerText = unitText;
   
     // ✅ SHOW DESCRIPTION (TOP)
     document.getElementById("productDesc").innerText =
