@@ -1,6 +1,15 @@
 {
-    "routes": [
-      { "src": "/api/(.*)", "dest": "https://maddhi-agro-store.onrender.com/api/$1" },
-      { "handle": "filesystem" }
-    ]
-  }
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "https://maddhi-agro-store.onrender.com/api/$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
