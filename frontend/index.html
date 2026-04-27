@@ -165,14 +165,13 @@ window.renderProducts = function(products){
 
   products.forEach(product => {
 
-    let category = product.category || "";
-category = category.toLowerCase().trim();
+    let unitText = "";
 
-let unitText = "";
+const category = product.category?.toLowerCase();
 
-if (category.includes("oil") || category.includes("ghee")) {
+if (category === "oils" || category === "ghee") {
   unitText = "1 Liter";
-} else if (category.includes("salt")) {
+} else if (category === "salt") {
   unitText = "1.5 Kg";
 } else {
   unitText = "1 Kg";
