@@ -1,5 +1,5 @@
 // ===== GLOBAL SAFE API =====
-window.API_URL = "https://maddhi-agro-store.onrender.com";
+window.API_URL = "https://maddhi-agro-store-j9pk.onrender.com";
 
 // ===== GLOBAL PRODUCTS STORE =====
 window.allProducts = [];
