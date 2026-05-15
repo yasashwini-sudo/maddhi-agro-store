@@ -227,18 +227,25 @@
 
         console.log("PAYMENT RESPONSE:", paymentData);
 
-        if (paymentData.success && paymentData.redirectUrl) {
+        const redirectUrl =
+  paymentData.redirectUrl ||
+  paymentData.redirectURL ||
+  paymentData.url;
 
-          // SAVE ORDER TEMPORARILY
-          localStorage.setItem("pendingOrder", JSON.stringify(order));
+if (paymentData.success && redirectUrl) {
 
-          // REDIRECT TO PAYMENT PAGE
-          window.location.href = paymentData.redirectUrl;
+  // SAVE ORDER TEMPORARILY
+  localStorage.setItem("pendingOrder", JSON.stringify(order));
 
-        } else {
+  // REDIRECT TO PAYMENT PAGE
+  window.location.href = redirectUrl;
 
-          alert("Payment initiation failed ❌");
-        }
+} else {
+
+  console.log("FULL PAYMENT RESPONSE:", paymentData);
+
+  alert("Payment initiation failed ❌");
+}
 
         return;
       }
