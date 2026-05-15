@@ -204,40 +204,46 @@
       // =========================
       // ONLINE PAYMENT FLOW
       // =========================
-      if (payment === "UPI" || payment === "Card") {
+      // =========================
+// ONLINE PAYMENT FLOW
+// =========================
+if (payment === "UPI" || payment === "Card") {
 
-        const paymentRes = await fetch(`${API_URL}/api/payment/initiate`, {
+const paymentRes = await fetch(`${API_URL}/api/payment/initiate`, {
 
-          method: "POST",
+  method: "POST",
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+  headers: {
+    "Content-Type": "application/json"
+  },
 
-          body: JSON.stringify({
-            amount: finalTotal,
-            customerName: name,
-            customerPhone: phone,
-            customerEmail: user?.email || "test@gmail.com"
-          })
+  body: JSON.stringify({
+    amount: finalTotal,
+    customerName: name,
+    customerPhone: phone,
+    customerEmail: user?.email || "test@gmail.com"
+  })
 
-        });
+});
 
-        const paymentData = await paymentRes.json();
+// IMPORTANT
+const paymentData = await paymentRes.json();
 
-        console.log("PAYMENT RESPONSE:", paymentData);
+console.log("PAYMENT RESPONSE:", paymentData);
 
-        const redirectUrl =
+// GET REDIRECT URL
+const redirectUrl =
   paymentData.redirectUrl ||
   paymentData.redirectURL ||
   paymentData.url;
 
-if (paymentData.success && redirectUrl) {
+// SUCCESS
+if (redirectUrl) {
 
-  // SAVE ORDER TEMPORARILY
+  // SAVE ORDER TEMP
   localStorage.setItem("pendingOrder", JSON.stringify(order));
 
-  // REDIRECT TO PAYMENT PAGE
+  // REDIRECT USING BROWSER
   window.location.href = redirectUrl;
 
 } else {
@@ -247,8 +253,8 @@ if (paymentData.success && redirectUrl) {
   alert("Payment initiation failed ❌");
 }
 
-        return;
-      }
+return;
+}
 
       // =========================
       // CASH ON DELIVERY FLOW
