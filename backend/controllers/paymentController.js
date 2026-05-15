@@ -83,7 +83,10 @@ const response = await axios.post(
 
     console.log("REDIRECT URL:", redirectUrl);
 
-    return res.redirect(redirectUrl);
+    return res.json({
+      success: true,
+      redirectUrl
+    });
 
   } catch (error) {
     console.error(
