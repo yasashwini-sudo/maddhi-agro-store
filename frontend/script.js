@@ -307,7 +307,8 @@ window.submitAuth = async function () {
 
   } catch (err) {
     console.error("FETCH ERROR:", err);
-    alert("Server error ❌");
+    alert("Server error ❌ " + err.message);
+    console.error(err);
   }
 };
 
@@ -385,7 +386,8 @@ async function loadProducts() {
 
   } 
   catch (err) {
-    console.error("FETCH ERROR:", err);
+    console.error("FETCH ERROR FULL:", err);
+alert(err.message);
   
     document.getElementById("productsContainer").innerHTML = `
       <div style="text-align:center; padding:40px;">
