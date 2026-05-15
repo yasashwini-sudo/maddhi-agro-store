@@ -231,23 +231,14 @@ const paymentData = await paymentRes.json();
 
 console.log("PAYMENT RESPONSE:", paymentData);
 
+// GET REDIRECT URL
 const redirectUrl =
   paymentData.redirectUrl ||
   paymentData.redirectURL ||
   paymentData.url;
 
+// SUCCESS
 if (redirectUrl) {
-
-  localStorage.setItem("pendingOrder", JSON.stringify(order));
-
-  window.location.href = redirectUrl;
-
-} else {
-
-  console.log(paymentData);
-
-  alert("Payment initiation failed ❌");
-}
 
   // SAVE ORDER TEMP
   localStorage.setItem("pendingOrder", JSON.stringify(order));
