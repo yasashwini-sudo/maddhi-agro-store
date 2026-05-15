@@ -101,24 +101,29 @@
   const token = localStorage.getItem("token");
 
   if (!token) {
-    openAuth(); // 🔥 open modal instead of redirect
+    openAuth();
   }
 
   // =======================
   // RENDER ORDER
   // =======================
   function renderOrder() {
+
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const container = document.getElementById("orderItems");
 
     let subtotal = 0;
+
     container.innerHTML = "";
 
     cart.forEach(item => {
+
       const t = item.price * item.quantity;
       subtotal += t;
 
-      container.innerHTML += `<p>${item.name} x ${item.quantity} = ₹${t}</p>`;
+      container.innerHTML += `
+        <p>${item.name} x ${item.quantity} = ₹${t}</p>
+      `;
     });
 
     let discount = !localStorage.getItem("hasOrdered")
@@ -128,25 +133,26 @@
     let finalTotal = subtotal - discount;
 
     if (!localStorage.getItem("hasOrdered")) {
-  document.getElementById("offerMsg").innerText =
-    "🎉 First Order Offer Applied (10% OFF)";
-}
+
+      document.getElementById("offerMsg").innerText =
+        "🎉 First Order Offer Applied (10% OFF)";
+    }
 
     document.getElementById("subtotal").innerText = subtotal;
-document.getElementById("discount").innerText = discount;
-document.getElementById("finalTotal").innerText = finalTotal;
+    document.getElementById("discount").innerText = discount;
+    document.getElementById("finalTotal").innerText = finalTotal;
   }
 
 
   // =======================
-  // PLACE ORDER (UPDATED)
+  // PLACE ORDER
   // =======================
   async function placeOrder() {
 
     const token = localStorage.getItem("token");
 
     if (!token) {
-      openAuth(); // 🔥 no redirect
+      openAuth();
       return;
     }
 
@@ -155,7 +161,10 @@ document.getElementById("finalTotal").innerText = finalTotal;
     const address = document.getElementById("address").value.trim();
     const payment = document.getElementById("payment").value;
 
+    const user = JSON.parse(localStorage.getItem("user"));
+
     if (!name || !phone || !address) {
+
       alert("Please fill all details");
       return;
     }
@@ -163,11 +172,13 @@ document.getElementById("finalTotal").innerText = finalTotal;
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     if (!cart.length) {
+
       alert("Your cart is empty");
       return;
     }
 
     let subtotal = 0;
+
     cart.forEach(item => {
       subtotal += item.price * item.quantity;
     });
@@ -190,13 +201,62 @@ document.getElementById("finalTotal").innerText = finalTotal;
 
     try {
 
+      // =========================
+      // ONLINE PAYMENT FLOW
+      // =========================
+      if (payment === "UPI" || payment === "Card") {
+
+        const paymentRes = await fetch(`${API_URL}/api/payment/initiate`, {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            amount: finalTotal,
+            customerName: name,
+            customerPhone: phone,
+            customerEmail: user?.email || "test@gmail.com"
+          })
+
+        });
+
+        const paymentData = await paymentRes.json();
+
+        console.log("PAYMENT RESPONSE:", paymentData);
+
+        if (paymentData.success && paymentData.redirectUrl) {
+
+          // SAVE ORDER TEMPORARILY
+          localStorage.setItem("pendingOrder", JSON.stringify(order));
+
+          // REDIRECT TO PAYMENT PAGE
+          window.location.href = paymentData.redirectUrl;
+
+        } else {
+
+          alert("Payment initiation failed ❌");
+        }
+
+        return;
+      }
+
+      // =========================
+      // CASH ON DELIVERY FLOW
+      // =========================
       const res = await fetch(`${API_URL}/api/orders`, {
+
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token
         },
+
         body: JSON.stringify(order)
+
       });
 
       const data = await res.json();
@@ -204,24 +264,29 @@ document.getElementById("finalTotal").innerText = finalTotal;
       if (res.ok) {
 
         localStorage.setItem("hasOrdered", "true");
+
         localStorage.removeItem("cart");
 
         alert("Order Placed Successfully 🎉");
+
         window.location.href = "index.html";
 
       } else {
+
         alert(data.msg || "Order failed ❌");
       }
 
     } catch (err) {
+
       console.error("Order error:", err);
+
       alert("Server error ❌");
     }
   }
 
 
   // =======================
-  // AUTO-FILL USER
+  // AUTO FILL USER
   // =======================
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -229,7 +294,9 @@ document.getElementById("finalTotal").innerText = finalTotal;
     document.getElementById("name").value = user.name || "";
   }
 
+  // =======================
   // INIT
+  // =======================
   renderOrder();
 
 </script>

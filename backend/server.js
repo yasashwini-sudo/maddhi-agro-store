@@ -5,10 +5,12 @@ const cors = require("cors");
 const path = require("path");
 
 const connectDB = require("./config/db");
+
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const authRoutes = require("./routes/authRoutes");
 const aboutRoutes = require("./routes/aboutRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 
@@ -19,7 +21,7 @@ const app = express();
 
 // ✅ CORS (SAFE + FLEXIBLE)
 app.use(cors({
-  origin: "*", // you can restrict later
+  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -28,7 +30,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/about", aboutRoutes);
 
 // ===============================
 // STATIC FILES
@@ -42,6 +43,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api", authRoutes);
+app.use("/api/about", aboutRoutes);
+
+// ✅ PAYMENT ROUTES
+app.use("/api/payment", paymentRoutes);
 
 
 // ===============================
@@ -68,9 +73,11 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    const db = await connectDB(); // ✅ get db AFTER connection
 
-    // ✅ FIXED: moved inside async function
+    // ✅ CONNECT DATABASE
+    await connectDB();
+
+    // ✅ START SERVER
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
