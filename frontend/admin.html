@@ -432,6 +432,8 @@ async function updateStatus(id,el){
   localStorage.getItem("token") ||
   sessionStorage.getItem("token");
 
+  alert("TOKEN: " + token);
+
   await fetch(`${API_URL}/api/orders/admin/update/${id}`,{
     method:"PUT",
     headers:{
