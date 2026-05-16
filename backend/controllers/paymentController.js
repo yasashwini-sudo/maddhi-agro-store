@@ -48,7 +48,7 @@ exports.initiatePayment = async (req, res) => {
       ha: hash,
       murl: merchantUrl,
       surl: 'https://maddhiagrofoodindia.com/payment-success.html',
-furl: 'https://maddhiagrofoodindia.com/payment-failed.html'
+      furl: 'https://maddhiagrofoodindia.com/payment-failed.html',
       name: customerName,
       Phone: customerPhone,
       Emailid: customerEmail,
