@@ -1943,3 +1943,105 @@ h1 {
   }
 
 }
+
+@media screen and (max-width: 768px){
+
+  body{
+    overflow-x:hidden;
+  }
+
+  .navbar{
+    padding:16px;
+    font-size:16px;
+    text-align:center;
+  }
+
+  h1{
+    font-size:28px;
+    margin:25px 0;
+  }
+
+  .section{
+    width:95%;
+    margin:15px auto;
+  }
+
+  /* STATS */
+  #statsBar{
+    flex-direction:column;
+    gap:12px;
+    padding:0 10px;
+  }
+
+  .stat-card{
+    width:100%;
+    min-width:unset;
+    box-sizing:border-box;
+    padding:18px;
+  }
+
+  /* CHART */
+  .chart-box{
+    padding:15px;
+    overflow-x:auto;
+  }
+
+  canvas{
+    width:100% !important;
+    height:auto !important;
+  }
+
+  /* CONTROLS */
+  .controls{
+    flex-direction:column;
+    align-items:stretch;
+    gap:12px;
+  }
+
+  .filters{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+  }
+
+  .filters button{
+    flex:1;
+    min-width:100px;
+  }
+
+  .controls input,
+  .top-actions button{
+    width:100%;
+    box-sizing:border-box;
+  }
+
+  /* ORDER CARDS */
+  .order-card{
+    padding:18px;
+    margin:15px 10px;
+  }
+
+  .order-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .action-row{
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+  }
+
+  .action-row button,
+  .action-row select{
+    width:100%;
+    box-sizing:border-box;
+  }
+
+  .status{
+    align-self:flex-start;
+  }
+
+}
