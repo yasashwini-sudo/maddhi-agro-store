@@ -1768,3 +1768,93 @@ h1 {
   margin-top: -5px;
   margin-bottom: 10px;
 }
+
+/* MOBILE RESPONSIVE */
+@media screen and (max-width: 768px) {
+
+  .navbar {
+    padding: 14px 16px;
+    font-size: 18px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 24px;
+    margin: 20px 0;
+  }
+
+  .section {
+    width: 95%;
+    margin: 15px auto;
+  }
+
+  /* STATS STACK */
+  #statsBar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .stat-card {
+    width: 100%;
+    min-width: unset;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  /* CONTROLS */
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .filters button {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .controls input,
+  .top-actions button,
+  select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ORDER CARD */
+  .order-card {
+    padding: 16px;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .action-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-row button,
+  .action-row select {
+    width: 100%;
+  }
+
+  /* CHART */
+  .chart-box {
+    overflow-x: auto;
+  }
+
+  canvas {
+    max-width: 100%;
+  }
+
+}
