@@ -55,12 +55,10 @@ exports.initiatePayment = async (req, res) => {
       
     };
 
-    console.log("FINAL PAYLOAD:", payload);
 
     // ================================
     // TOUCAN API CALL
     // ================================
-    const qs = require("querystring");
 
 const response = await axios.post(
   `${baseUrl}/api/auth/getpaymentsession`,
@@ -81,7 +79,7 @@ const response = await axios.post(
     // ================================
     const redirectUrl = response.headers.location;
 
-    console.log("REDIRECT URL:", redirectUrl);
+
 
     return res.json({
       success: true,

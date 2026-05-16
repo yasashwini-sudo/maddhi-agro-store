@@ -104,7 +104,7 @@ function showToast(msg) {
 // ===============================
 // ===== CART COUNT =====
 // ===============================
-function updateCartCount() {
+window.updateCartCount = function() {
   const cart = getCart();
   let count = 0;
 
@@ -315,7 +315,7 @@ window.submitAuth = async function () {
 
 // ===============================
 // ===== NAVBAR =====
-function updateNavbar() {
+window.updateNavbar = function() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userSection = document.getElementById("userSection");
 

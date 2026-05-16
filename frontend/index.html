@@ -18,13 +18,24 @@
 
   <div id="navbar"></div>
 
-<script>
-  fetch("navbar.html")
-    .then(res => res.text())
-    .then(data => {
-      document.getElementById("navbar").innerHTML = data;
-    });
-</script>
+  <script>
+    fetch("navbar.html")
+      .then(res => res.text())
+      .then(data => {
+  
+        document.getElementById("navbar").innerHTML = data;
+  
+        // wait till navbar loads
+        if(typeof updateCartCount === "function"){
+          updateCartCount();
+        }
+  
+        if(typeof updateNavbar === "function"){
+          updateNavbar();
+        }
+  
+      });
+  </script>
 
 <!-- NAVBAR -->
 <!-- NAVBAR -->
