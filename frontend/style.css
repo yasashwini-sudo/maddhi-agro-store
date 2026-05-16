@@ -1889,101 +1889,57 @@ h1 {
 
 }
 
-@media screen and (max-width:768px){
+@media screen and (max-width: 768px){
+
+  *{
+    box-sizing:border-box;
+  }
+
+  body{
+    overflow-x:hidden;
+    padding:0;
+    margin:0;
+  }
 
   .navbar{
-    padding:14px;
+    width:100%;
+    padding:16px;
     font-size:18px;
     text-align:center;
   }
 
   h1{
-    font-size:28px;
-  }
-
-  .section{
-    width:95%;
-  }
-
-  #statsBar,
-  .controls,
-  .order-header,
-  .action-row{
-    flex-direction:column;
-    align-items:stretch;
-  }
-
-  .stat-card{
-    min-width:unset;
-    width:100%;
-    box-sizing:border-box;
-  }
-
-  .controls input,
-  .filters button,
-  .top-actions button,
-  .action-row button,
-  .action-row select{
-    width:100%;
-    box-sizing:border-box;
-  }
-
-  .filters{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-
-  .order-card{
-    padding:15px;
-  }
-
-  canvas{
-    max-width:100%;
-  }
-
-}
-
-@media screen and (max-width: 768px){
-
-  body{
-    overflow-x:hidden;
-  }
-
-  .navbar{
-    padding:16px;
-    font-size:16px;
+    font-size:32px;
     text-align:center;
-  }
-
-  h1{
-    font-size:28px;
     margin:25px 0;
   }
 
   .section{
-    width:95%;
-    margin:15px auto;
+    width:100%;
+    padding:0 12px;
+    margin:15px 0;
   }
 
   /* STATS */
   #statsBar{
+    display:flex;
     flex-direction:column;
     gap:12px;
-    padding:0 10px;
+    width:100%;
   }
 
   .stat-card{
     width:100%;
-    min-width:unset;
-    box-sizing:border-box;
+    min-width:100%;
+    margin:0;
     padding:18px;
   }
 
   /* CHART */
   .chart-box{
+    width:100%;
+    overflow:hidden;
     padding:15px;
-    overflow-x:auto;
   }
 
   canvas{
@@ -1993,55 +1949,69 @@ h1 {
 
   /* CONTROLS */
   .controls{
+    display:flex;
     flex-direction:column;
-    align-items:stretch;
-    gap:12px;
+    gap:14px;
+    width:100%;
+    padding:0 12px;
   }
 
   .filters{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
+    display:grid;
+    grid-template-columns:1fr 1fr;
     gap:10px;
+    width:100%;
   }
 
   .filters button{
-    flex:1;
-    min-width:100px;
+    width:100%;
   }
 
   .controls input,
   .top-actions button{
     width:100%;
-    box-sizing:border-box;
+    height:48px;
   }
 
-  /* ORDER CARDS */
+  .top-actions{
+    width:100%;
+  }
+
+  /* ORDERS */
+  #ordersContainer{
+    width:100%;
+    padding:0 12px 20px;
+  }
+
   .order-card{
+    width:100%;
+    margin:15px 0;
     padding:18px;
-    margin:15px 10px;
+    border-radius:16px;
   }
 
   .order-header{
+    display:flex;
     flex-direction:column;
     align-items:flex-start;
     gap:10px;
   }
 
+  .status{
+    align-self:flex-start;
+  }
+
   .action-row{
+    display:flex;
     flex-direction:column;
-    align-items:stretch;
     gap:10px;
+    width:100%;
   }
 
   .action-row button,
   .action-row select{
     width:100%;
-    box-sizing:border-box;
-  }
-
-  .status{
-    align-self:flex-start;
+    height:45px;
   }
 
 }
