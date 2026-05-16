@@ -260,8 +260,17 @@ try {
 
   const orders = JSON.parse(data);
 
-  allOrders = orders || [];
-  filteredOrders = orders || [];
+if(!Array.isArray(orders)){
+
+  console.log("INVALID RESPONSE:", orders);
+
+  throw new Error(
+    orders.message || "Invalid orders response"
+  );
+}
+
+allOrders = orders;
+filteredOrders = orders;
 
   updateStats(filteredOrders);
   renderOrders(filteredOrders);
