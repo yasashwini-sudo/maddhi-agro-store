@@ -1888,3 +1888,58 @@ h1 {
   }
 
 }
+
+@media screen and (max-width:768px){
+
+  .navbar{
+    padding:14px;
+    font-size:18px;
+    text-align:center;
+  }
+
+  h1{
+    font-size:28px;
+  }
+
+  .section{
+    width:95%;
+  }
+
+  #statsBar,
+  .controls,
+  .order-header,
+  .action-row{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .stat-card{
+    min-width:unset;
+    width:100%;
+    box-sizing:border-box;
+  }
+
+  .controls input,
+  .filters button,
+  .top-actions button,
+  .action-row button,
+  .action-row select{
+    width:100%;
+    box-sizing:border-box;
+  }
+
+  .filters{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .order-card{
+    padding:15px;
+  }
+
+  canvas{
+    max-width:100%;
+  }
+
+}
