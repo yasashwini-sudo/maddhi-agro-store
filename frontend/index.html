@@ -25,14 +25,18 @@
   
         document.getElementById("navbar").innerHTML = data;
   
-        // wait till navbar loads
-        if(typeof updateCartCount === "function"){
-          updateCartCount();
-        }
+        // wait for navbar render
+        setTimeout(() => {
   
-        if(typeof updateNavbar === "function"){
-          updateNavbar();
-        }
+          if(typeof updateCartCount === "function"){
+            updateCartCount();
+          }
+  
+          if(typeof updateNavbar === "function"){
+            updateNavbar();
+          }
+  
+        }, 100);
   
       });
   </script>

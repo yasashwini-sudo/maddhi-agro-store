@@ -105,13 +105,20 @@ function showToast(msg) {
 // ===== CART COUNT =====
 // ===============================
 window.updateCartCount = function() {
+
   const cart = getCart();
+
   let count = 0;
 
-  cart.forEach(item => count += item.quantity);
+  cart.forEach(item => {
+    count += item.quantity;
+  });
 
-  const el = document.getElementById("cartCount");
-  if (el) el.innerText = count;
+  // update every cart count on page
+  document.querySelectorAll("#cartCount").forEach(el => {
+    el.innerText = count;
+  });
+
 }
 
 
