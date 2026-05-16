@@ -234,44 +234,51 @@ function setActive(btn){
 }
 
 async function loadOrders(){
+
+try {
+
   const token = localStorage.getItem("token");
+
+  if(!token){
+    document.getElementById("ordersContainer").innerHTML = `
+      <div style="text-align:center;padding:30px;color:red;">
+        Admin token missing. Please login again.
+      </div>
+    `;
+    return;
+  }
+
   const res = await fetch(`${API_URL}/api/orders/admin/all`,{
-    headers:{Authorization:"Bearer "+token}
+    method: "GET",
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:"Bearer "+token
+    }
   });
+
+  if(!res.ok){
+    throw new Error("Failed to fetch orders");
+  }
 
   const orders = await res.json();
 
-  allOrders = orders;
-  filteredOrders = orders;
+  allOrders = orders || [];
+  filteredOrders = orders || [];
 
-  updateStats(orders);
-  renderOrders(orders);
-  renderChart(orders);
-}
+  updateStats(filteredOrders);
+  renderOrders(filteredOrders);
+  renderChart(filteredOrders);
 
-function updateStats(orders){
-  let total=0,pending=0;
-  orders.forEach(o=>{
-    total+=o.total||0;
-    if(o.status==="Pending") pending++;
-  });
+} catch(err){
 
-  document.getElementById("statsBar").innerHTML=`
-    <div class="stat-card">
-      <div class="stat-title">Orders</div>
-      <div class="stat-value">${orders.length}</div>
-    </div>
+  console.error(err);
 
-    <div class="stat-card">
-      <div class="stat-title">Revenue</div>
-      <div class="stat-value">₹${total}</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-title">Pending</div>
-      <div class="stat-value">${pending}</div>
+  document.getElementById("ordersContainer").innerHTML = `
+    <div style="text-align:center;padding:30px;color:red;">
+      Failed to load orders.
     </div>
   `;
+}
 }
 
 function renderChart(orders){

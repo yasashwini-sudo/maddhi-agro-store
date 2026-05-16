@@ -1858,3 +1858,33 @@ h1 {
   }
 
 }
+
+
+@media screen and (max-width:768px){
+
+  .controls,
+  .action-row,
+  .order-header,
+  #statsBar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .controls input,
+  .filters button,
+  .top-actions button,
+  .action-row button,
+  .action-row select{
+    width:100%;
+    box-sizing:border-box;
+  }
+
+  .section{
+    width:95%;
+  }
+
+  .order-card{
+    padding:15px;
+  }
+
+}
