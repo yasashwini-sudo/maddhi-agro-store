@@ -239,28 +239,26 @@ try {
 
   const token = localStorage.getItem("token");
 
+  console.log("TOKEN:", token);
+
   if(!token){
-    document.getElementById("ordersContainer").innerHTML = `
-      <div style="text-align:center;padding:30px;color:red;">
-        Admin token missing. Please login again.
-      </div>
-    `;
-    return;
+    throw new Error("No token found");
   }
 
   const res = await fetch(`${API_URL}/api/orders/admin/all`,{
-    method: "GET",
+    method:"GET",
     headers:{
-      "Content-Type":"application/json",
-      Authorization:"Bearer "+token
+      Authorization:`Bearer ${token}`
     }
   });
 
-  if(!res.ok){
-    throw new Error("Failed to fetch orders");
-  }
+  console.log("STATUS:", res.status);
 
-  const orders = await res.json();
+  const data = await res.text();
+
+  console.log("RAW RESPONSE:", data);
+
+  const orders = JSON.parse(data);
 
   allOrders = orders || [];
   filteredOrders = orders || [];
@@ -271,11 +269,11 @@ try {
 
 } catch(err){
 
-  console.error(err);
+  console.error("LOAD ERROR:", err);
 
   document.getElementById("ordersContainer").innerHTML = `
-    <div style="text-align:center;padding:30px;color:red;">
-      Failed to load orders.
+    <div style="padding:30px;text-align:center;color:red;">
+      ${err.message}
     </div>
   `;
 }
