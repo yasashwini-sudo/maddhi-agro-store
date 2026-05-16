@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="saveToken()">Save Token</button>
+
+<script>
+
+function saveToken(){
+
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDcxNmU1ZmYyZDQ1ZWYyYjRiODU4OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE3Nzg4NTI1MjEsImV4cCI6MTc3OTQ1NzMyMX0.FK22Rt4uLD6zqbAfa4XNHXpQyecTyEH9lzTKEH7HT60";
+
+  localStorage.setItem("token", token);
+
+  sessionStorage.setItem("token", token);
+
+  alert("Token Saved");
+}
+
+</script>
+
+</body>
+</html>
