@@ -3,6 +3,7 @@ const crypto = require("crypto");
 const qs = require("querystring");
 
 exports.initiatePayment = async (req, res) => {
+  console.log("PAYMENT API HIT");
   try {
     const {
       amount,
@@ -60,19 +61,25 @@ exports.initiatePayment = async (req, res) => {
     // TOUCAN API CALL
     // ================================
 
-const response = await axios.post(
-  `${baseUrl}/api/auth/getpaymentsession`,
-  qs.stringify(payload),
-  {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    maxRedirects: 0,
-    validateStatus: function (status) {
-      return status >= 200 && status < 400;
-    },
-  }
-);
+    console.log("FINAL PAYLOAD:", payload);
+
+    console.log("CALLING TOUCAN API...");
+    
+    const response = await axios.post(
+      `${baseUrl}/api/auth/getpaymentsession`,
+      qs.stringify(payload),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        maxRedirects: 0,
+        validateStatus: function (status) {
+          return status >= 200 && status < 400;
+        },
+      }
+    );
+    
+    console.log("TOUCAN RESPONSE RECEIVED");
 
     // ================================
     // REDIRECT DIRECTLY TO PAYMENT PAGE
