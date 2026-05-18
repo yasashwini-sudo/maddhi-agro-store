@@ -250,7 +250,10 @@ if (redirectUrl) {
 
   console.log("FULL PAYMENT RESPONSE:", paymentData);
 
-  alert("Payment initiation failed ❌");
+  alert(
+  paymentData.error ||
+  "Payment gateway temporarily unavailable ❌"
+);
 }
 
 return;
