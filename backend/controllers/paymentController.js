@@ -94,14 +94,17 @@ exports.initiatePayment = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(
-      "PAYMENT ERROR:",
-      error.response?.data || error.message
-    );
+    console.log("FULL ERROR OBJECT:", error);
 
-    return res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message,
-    });
-  }
-};
+console.log("ERROR RESPONSE:", error.response);
+
+console.log("ERROR DATA:", error.response?.data);
+
+console.log("ERROR STATUS:", error.response?.status);
+
+console.log("ERROR MESSAGE:", error.message);
+return res.status(500).json({
+  success: false,
+  error: error.response?.data || error.message,
+  status: error.response?.status,
+});
