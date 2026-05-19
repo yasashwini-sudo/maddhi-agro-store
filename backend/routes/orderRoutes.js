@@ -20,7 +20,8 @@ router.post("/", auth, async (req, res) => {
       total: req.body.total || 0,  
       date: req.body.date || new Date(),  
       user: req.user.id,  
-      status: "Pending"  
+      status: "Pending",
+payment: req.body.payment || "COD"
     });  
 
     await newOrder.save();  

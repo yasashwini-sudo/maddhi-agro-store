@@ -2015,3 +2015,88 @@ h1 {
   }
 
 }
+
+.order-card{
+  background:#fff;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 5px 18px rgba(0,0,0,0.08);
+}
+
+.order-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+}
+
+.order-name{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:5px;
+}
+
+.order-phone{
+  color:#666;
+}
+
+.order-total{
+  font-size:22px;
+  font-weight:bold;
+  color:#1b5e20;
+  text-align:right;
+}
+
+.order-date{
+  color:#777;
+  font-size:14px;
+  margin-top:6px;
+}
+
+.order-items{
+  margin-top:20px;
+  border-top:1px solid #eee;
+  padding-top:15px;
+}
+
+.order-item{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.status-badge{
+  display:inline-block;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:600;
+  margin-top:10px;
+}
+
+.status-badge.pending{
+  background:#fff3cd;
+  color:#f57c00;
+}
+
+.status-badge.shipped{
+  background:#dbeafe;
+  color:#1565c0;
+}
+
+.status-badge.delivered{
+  background:#dcfce7;
+  color:#2e7d32;
+}
+
+@media(max-width:768px){
+
+  .order-header{
+    flex-direction:column;
+  }
+
+  .order-total{
+    text-align:left;
+  }
+}

@@ -63,32 +63,45 @@ async function loadOrders() {
     container.innerHTML = "";
 
     orders.forEach(order => {
+      
       container.innerHTML += `
   <div class="order-card">
 
     <div class="order-header">
+
       <div>
         <p class="order-name">${order.name}</p>
-        <p class="order-phone">${order.phone}</p>
+        <p class="order-phone">📞 ${order.phone}</p>
       </div>
 
       <div class="order-meta">
         <p class="order-total">₹${order.total}</p>
-        <p class="order-date">${new Date(order.date).toLocaleDateString()}</p>
+
+        <span class="status-badge ${order.status.toLowerCase()}">
+          ${order.status}
+        </span>
+
+        <p class="order-date">
+          ${new Date(order.date).toLocaleDateString()}
+        </p>
       </div>
+
     </div>
 
     <div class="order-items">
+
       ${order.items.map(i => `
         <div class="order-item">
           <span>${i.name}</span>
           <span>x ${i.quantity}</span>
         </div>
       `).join("")}
+
     </div>
 
   </div>
 `;
+
     });
 
   } catch (err) {

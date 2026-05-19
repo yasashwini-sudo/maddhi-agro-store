@@ -14,6 +14,8 @@ const orderSchema = new mongoose.Schema({
   ],
 
   total: Number,
+  
+  payment: String,
 
   user: {
     type: mongoose.Schema.Types.ObjectId,
