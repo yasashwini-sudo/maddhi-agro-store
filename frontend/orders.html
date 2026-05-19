@@ -76,6 +76,15 @@ async function loadOrders() {
 
       <div class="order-meta">
         <p class="order-total">₹${order.total}</p>
+        <p class="payment-mode">
+  ${
+    order.payment === "UPI"
+      ? "📱 UPI"
+      : order.payment === "Card"
+      ? "💳 Card"
+      : "💵 Cash on Delivery"
+  }
+</p>
 
         <span class="status-badge ${order.status.toLowerCase()}">
           ${order.status}

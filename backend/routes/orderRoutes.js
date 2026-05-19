@@ -18,6 +18,7 @@ router.post("/", auth, async (req, res) => {
       address: req.body.address,  
       items: req.body.items || [],  
       total: req.body.total || 0,  
+      payment: req.body.payment || "COD",
       date: req.body.date || new Date(),  
       user: req.user.id,  
       status: "Pending",
