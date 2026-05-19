@@ -21,7 +21,10 @@ exports.createProduct = async (req, res) => {
       price: req.body.price,
       description: description,
       category: req.body.category,
-      image: req.file ? req.file.filename : null
+
+stock: req.body.stock || 0,
+
+image: req.file ? req.file.filename : null
     });
 
     const savedProduct = await newProduct.save();
@@ -94,6 +97,9 @@ exports.updateProduct = async (req, res) => {
 
     const updatedData = {
       ...req.body,
+    
+      stock: req.body.stock || 0,
+    
       description: description
     };
 

@@ -35,6 +35,7 @@
     <p class="price" id="productPrice"></p>
 
     <p class="unit" id="productUnit"></p>
+    <p id="stockText"></p>
 
     <!-- ❌ REMOVED OBJECT PRINT ISSUE -->
     <p id="productDesc"></p>
@@ -45,8 +46,13 @@
       <li>✔ Retains nutrients & antioxidants</li>
     </ul>
 
-    <button onclick="addToCart(currentProduct)">Add to Cart</button>
-    <button onclick="buyNow(currentProduct)">Buy Now</button>
+    <button id="cartBtn" onclick="addToCart(currentProduct)">
+      Add to Cart
+    </button>
+    
+    <button id="buyBtn" onclick="buyNow(currentProduct)">
+      Buy Now
+    </button>
 
   </div>
 
@@ -121,8 +127,29 @@ else {
 
 document.getElementById("productUnit").innerText = unitText;
 
-document.getElementById("productUnit").innerText = unitText;
-  
+const stockEl = document.getElementById("stockText");
+
+if(product.stock <= 0){
+
+  stockEl.innerHTML =
+    "<span style='color:red;font-weight:bold;'>Out of Stock</span>";
+
+} else {
+
+  stockEl.innerHTML =
+    `<span style="color:green;font-weight:600;">
+      ${product.stock} items available
+    </span>`;
+}
+
+if(product.stock <= 0){
+
+document.getElementById("cartBtn").disabled = true;
+document.getElementById("buyBtn").disabled = true;
+
+document.getElementById("cartBtn").innerText = "Out of Stock";
+document.getElementById("buyBtn").style.display = "none";
+}
     // ✅ SHOW DESCRIPTION (TOP)
     document.getElementById("productDesc").innerText =
       product.description?.overview || "";
