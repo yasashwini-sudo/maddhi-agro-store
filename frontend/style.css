@@ -2128,3 +2128,16 @@ h1 {
   margin:auto;
   padding:20px;
 }
+
+
+@media (max-width: 768px){
+
+  body{
+    padding-top: 140px !important;
+  }
+
+  .cart-container{
+    padding-top: 10px !important;
+  }
+
+}
