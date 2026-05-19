@@ -24,11 +24,6 @@ exports.initiatePayment = async (req, res) => {
     const baseUrl = process.env.TOUCAN_BASE_URL;
     const merchantUrl = process.env.TOUCAN_MERCHANT_URL;
 
-    console.log("ENV CHECK:");
-    console.log("TERMINAL:", terminalId);
-    console.log("MERCHANT:", merchantNumber);
-    console.log("BASE URL:", baseUrl);
-
     // ================================
     // ORDER ID
     // ================================
@@ -61,15 +56,12 @@ exports.initiatePayment = async (req, res) => {
       Emailid: customerEmail,
     };
 
-    console.log("FINAL PAYLOAD:", payload);
-
     // ================================
     // TOUCAN API URL
     // ================================
-    const toucanUrl = `${baseUrl}/api/auth/getpaymentsession`;
+    const toucanUrl = ${baseUrl}/api/auth/getpaymentsession;
 
-    console.log("CALLING TOUCAN API:");
-    console.log(toucanUrl);
+    console.log("📡 CALLING TOUCAN API");
 
     // ================================
     // TOUCAN API CALL
@@ -94,16 +86,12 @@ exports.initiatePayment = async (req, res) => {
 
     console.log("✅ TOUCAN RESPONSE RECEIVED");
 
-    console.log("TOUCAN STATUS:", response.status);
-
-    console.log("TOUCAN HEADERS:", response.headers);
-
     // ================================
     // REDIRECT URL
     // ================================
     const redirectUrl = response.headers.location;
 
-    console.log("REDIRECT URL:", redirectUrl);
+    console.log("🔗 REDIRECT URL GENERATED");
 
     // ================================
     // SEND SUCCESS RESPONSE
@@ -115,19 +103,7 @@ exports.initiatePayment = async (req, res) => {
 
   } catch (error) {
 
-    console.log("❌ PAYMENT ERROR");
-
-    console.log("FULL ERROR OBJECT:", error);
-
-    console.log("ERROR RESPONSE:", error.response);
-
-    console.log("ERROR DATA:", error.response?.data);
-
-    console.log("ERROR STATUS:", error.response?.status);
-
-    console.log("ERROR HEADERS:", error.response?.headers);
-
-    console.log("ERROR MESSAGE:", error.message);
+    console.error("❌ PAYMENT ERROR:", error.message);
 
     return res.status(500).json({
       success: false,
