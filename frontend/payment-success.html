@@ -25,74 +25,87 @@
   <script>
 
     async function saveSuccessfulOrder() {
-
+  
       try {
-
-        // GET TOKEN
-        const token = localStorage.getItem("token");
-
-        // GET PENDING ORDER
-        const order = JSON.parse(localStorage.getItem("pendingOrder"));
-
-        // SAFETY CHECK
-        if (!order) {
-
+  
+        // PREVENT DUPLICATE SAVE
+        if (localStorage.getItem("orderSaved")) {
+  
           document.getElementById("statusText").innerText =
-            "No pending order found.";
-
+            "Order already placed successfully 🎉";
+  
           return;
         }
-
-        // SAVE ORDER TO DATABASE
+  
+        // GET TOKEN
+        const token = localStorage.getItem("token");
+  
+        // GET PENDING ORDER
+        const order = JSON.parse(
+          localStorage.getItem("pendingOrder")
+        );
+  
+        // SAFETY CHECK
+        if (!order) {
+  
+          document.getElementById("statusText").innerText =
+            "No pending order found.";
+  
+          return;
+        }
+  
+        // SAVE ORDER
         const res = await fetch(
           "https://maddhi-agro-store-j9pk.onrender.com/api/orders",
           {
             method: "POST",
-
+  
             headers: {
               "Content-Type": "application/json",
               Authorization: "Bearer " + token
             },
-
+  
             body: JSON.stringify(order)
           }
         );
-
+  
         const data = await res.json();
-
+  
         // SUCCESS
         if (res.ok) {
-
+  
+          // PREVENT DUPLICATE ORDER SAVE
+          localStorage.setItem("orderSaved", "true");
+  
           // CLEAR CART
           localStorage.removeItem("cart");
-
+  
           // REMOVE PENDING ORDER
           localStorage.removeItem("pendingOrder");
-
+  
           // FIRST ORDER FLAG
           localStorage.setItem("hasOrdered", "true");
-
+  
           document.getElementById("statusText").innerText =
             "Your order has been placed successfully 🎉";
-
+  
         } else {
-
+  
           document.getElementById("statusText").innerText =
             data.msg || "Order save failed ❌";
         }
-
+  
       } catch (err) {
-
+  
         console.error(err);
-
+  
         document.getElementById("statusText").innerText =
           "Something went wrong ❌";
       }
     }
-
-    // RUN
+  
     saveSuccessfulOrder();
-
+  
   </script>
 
 </body>

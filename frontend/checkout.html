@@ -243,6 +243,8 @@ if (redirectUrl) {
   // SAVE ORDER TEMP
   localStorage.setItem("pendingOrder", JSON.stringify(order));
 
+  localStorage.removeItem("orderSaved");
+
   // REDIRECT USING BROWSER
   window.location.href = redirectUrl;
 
