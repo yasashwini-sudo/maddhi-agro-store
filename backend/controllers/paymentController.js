@@ -109,11 +109,13 @@ console.log("PAYLOAD:", payload);
   } catch (error) {
 
     console.error("❌ PAYMENT ERROR:", error.message);
-
+    console.error("STATUS:", error.response?.status);
+    console.error("DATA:", error.response?.data);
+    console.error("HEADERS:", error.response?.headers);
+  
     return res.status(500).json({
       success: false,
       error: error.response?.data || error.message,
       status: error.response?.status,
     });
   }
-};
