@@ -59,7 +59,7 @@ exports.initiatePayment = async (req, res) => {
     // ================================
     // TOUCAN API URL
     // ================================
-    const toucanUrl = ${baseUrl}/api/auth/getpaymentsession;
+    const toucanUrl = `${baseUrl}/api/auth/getpaymentsession`;
 
     console.log("📡 CALLING TOUCAN API");
 

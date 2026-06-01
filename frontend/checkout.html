@@ -98,11 +98,46 @@
   // =======================
   // CHECK LOGIN (UPDATED UX)
   // =======================
-  const token = localStorage.getItem("token");
+  // =======================
+// CHECK LOGIN + TOKEN EXPIRY
+// =======================
+const token = localStorage.getItem("token");
 
-  if (!token) {
+if (!token) {
+
+  openAuth();
+
+} else {
+
+  try {
+
+    const payload = JSON.parse(
+      atob(token.split(".")[1])
+    );
+
+    const isExpired =
+      payload.exp * 1000 < Date.now();
+
+    if (isExpired) {
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      alert("Your session has expired. Please login again.");
+
+      openAuth();
+    }
+
+  } catch (err) {
+
+    console.error("Invalid token:", err);
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
     openAuth();
   }
+}
 
   // =======================
   // RENDER ORDER
@@ -278,6 +313,17 @@ return;
       });
 
       const data = await res.json();
+
+      if (res.status === 401) {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  alert("Your session has expired. Please login again.");
+
+  openAuth();
+
+  return;
+}
 
       if (res.ok) {
 
