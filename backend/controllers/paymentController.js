@@ -42,18 +42,15 @@ exports.initiatePayment = async (req, res) => {
     // ================================
     const payload = {
       t: terminalId,
-      m: merchantNumber,
       o: orderId,
       ta: String(amount),
       c: "INR",
       mac: macToken,
-      ha: hash,
       murl: merchantUrl,
-      surl: "https://maddhiagrofoodindia.com/payment-success.html",
-      furl: "https://maddhiagrofoodindia.com/payment-failed.html",
       name: customerName,
       phone: customerPhone,
       emailId: customerEmail,
+      ha: hash,
     };
 
     // ================================
