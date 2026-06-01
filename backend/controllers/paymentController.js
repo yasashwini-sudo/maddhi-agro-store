@@ -64,13 +64,17 @@ exports.initiatePayment = async (req, res) => {
     console.log("📡 CALLING TOUCAN API");
 
     // ================================
-    // TOUCAN API CALL
+    // DEBUG LOGS
     // ================================
     console.log("TOUCAN URL:", toucanUrl);
     console.log("BASE URL:", baseUrl);
-console.log("MID:", merchantNumber);
-console.log("TID:", terminalId);
-console.log("PAYLOAD:", payload);
+    console.log("MID:", merchantNumber);
+    console.log("TID:", terminalId);
+    console.log("PAYLOAD:", payload);
+
+    // ================================
+    // TOUCAN API CALL
+    // ================================
     const response = await axios.post(
       toucanUrl,
       qs.stringify(payload),
@@ -112,10 +116,11 @@ console.log("PAYLOAD:", payload);
     console.error("STATUS:", error.response?.status);
     console.error("DATA:", error.response?.data);
     console.error("HEADERS:", error.response?.headers);
-  
+
     return res.status(500).json({
       success: false,
       error: error.response?.data || error.message,
       status: error.response?.status,
     });
   }
+};
