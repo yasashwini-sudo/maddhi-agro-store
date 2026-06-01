@@ -68,9 +68,9 @@ exports.initiatePayment = async (req, res) => {
     // ================================
     console.log("TOUCAN URL:", toucanUrl);
     console.log("BASE URL:", baseUrl);
-console.log("TOUCAN URL:", toucanUrl);
 console.log("MID:", merchantNumber);
 console.log("TID:", terminalId);
+console.log("PAYLOAD:", payload);
     const response = await axios.post(
       toucanUrl,
       qs.stringify(payload),
