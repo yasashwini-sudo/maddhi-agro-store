@@ -52,8 +52,8 @@ exports.initiatePayment = async (req, res) => {
       surl: "https://maddhiagrofoodindia.com/payment-success.html",
       furl: "https://maddhiagrofoodindia.com/payment-failed.html",
       name: customerName,
-      Phone: customerPhone,
-      Emailid: customerEmail,
+      phone: customerPhone,
+      emailId: customerEmail,
     };
 
     // ================================
