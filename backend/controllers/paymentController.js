@@ -75,9 +75,15 @@ exports.initiatePayment = async (req, res) => {
     // ================================
     // TOUCAN API CALL
     // ================================
-    const response = await axios.post(
-      toucanUrl,
-      qs.stringify(payload),
+
+
+    const formData = qs.stringify(payload);
+
+console.log("FORM DATA:", formData);
+
+const response = await axios.post(
+  toucanUrl,
+  formData,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
