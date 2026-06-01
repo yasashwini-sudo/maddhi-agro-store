@@ -68,6 +68,8 @@ exports.initiatePayment = async (req, res) => {
     console.log("MID:", merchantNumber);
     console.log("TID:", terminalId);
     console.log("PAYLOAD:", payload);
+    console.log("AXIOS REQUEST STARTING");
+    console.log("TOUCAN RESPONSE RECEIVED");
 
     // ================================
     // TOUCAN API CALL
@@ -84,6 +86,8 @@ const response = await axios.post(
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
+  "User-Agent": "Mozilla/5.0",
+  "Accept": "*/*"
         },
 
         maxRedirects: 0,
