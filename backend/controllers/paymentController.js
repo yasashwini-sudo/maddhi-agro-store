@@ -42,15 +42,18 @@ exports.initiatePayment = async (req, res) => {
     // ================================
     const payload = {
       t: terminalId,
+      m: merchantNumber,
       o: orderId,
       ta: String(amount),
       c: "INR",
       mac: macToken,
+      ha: hash,
       murl: merchantUrl,
+      surl: "https://maddhiagrofoodindia.com/payment-success.html",
+      furl: "https://maddhiagrofoodindia.com/payment-failed.html",
       name: customerName,
       phone: customerPhone,
       emailId: customerEmail,
-      ha: hash,
     };
 
     // ================================
@@ -68,8 +71,6 @@ exports.initiatePayment = async (req, res) => {
     console.log("MID:", merchantNumber);
     console.log("TID:", terminalId);
     console.log("PAYLOAD:", payload);
-    console.log("AXIOS REQUEST STARTING");
-    console.log("TOUCAN RESPONSE RECEIVED");
 
     // ================================
     // TOUCAN API CALL
@@ -86,8 +87,6 @@ const response = await axios.post(
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-  "User-Agent": "Mozilla/5.0",
-  "Accept": "*/*"
         },
 
         maxRedirects: 0,
