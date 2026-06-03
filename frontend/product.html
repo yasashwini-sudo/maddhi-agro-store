@@ -134,12 +134,10 @@ if(product.stock <= 0){
   stockEl.innerHTML =
     "<span style='color:red;font-weight:bold;'>Out of Stock</span>";
 
-} else {
+  } else {
 
-  stockEl.innerHTML =
-    `<span style="color:green;font-weight:600;">
-      ${product.stock} items available
-    </span>`;
+stockEl.innerHTML = "";
+
 }
 
 if(product.stock <= 0){
