@@ -29,6 +29,8 @@ exports.initiatePayment = async (req, res) => {
     // ================================
     const orderId = Date.now().toString();
 
+    console.log("GENERATED ORDER ID:", orderId);
+
     // ================================
     // HASH GENERATION
     // ================================
