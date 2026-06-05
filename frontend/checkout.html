@@ -198,6 +198,10 @@ if (!token) {
 
     const name = document.getElementById("name").value.trim();
     const phone = document.getElementById("phone").value.trim();
+    if (!/^[0-9]{10}$/.test(phone)) {
+  alert("Please enter a valid 10 digit phone number");
+  return;
+}
     const address = document.getElementById("address").value.trim();
     const payment = document.getElementById("payment").value;
 
