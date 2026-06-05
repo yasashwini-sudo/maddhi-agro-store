@@ -55,19 +55,21 @@
         }
   
         // SAVE ORDER
-        const res = await fetch(
-          "https://maddhiagrofoodindia.com/api/orders",
-          {
-            method: "POST",
-  
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token
-            },
-  
-            body: JSON.stringify(order)
-          }
-        );
+        const API_URL = "https://maddhiagrofoodindia.com";
+
+const res = await fetch(
+  `${API_URL}/api/orders`,
+  {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+
+    body: JSON.stringify(order)
+  }
+);
   
         const data = await res.json();
   

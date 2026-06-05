@@ -1,5 +1,5 @@
 // ===== GLOBAL SAFE API =====
-window.API_URL ="https://maddhiagrofoodindia.com"
+window.API_URL = "https://maddhiagrofoodindia.com";
 
 // ===== GLOBAL PRODUCTS STORE =====
 window.allProducts = [];
@@ -255,11 +255,16 @@ window.toggleAuth = function () {
 
   const title = document.getElementById("authTitle");
   const nameField = document.getElementById("authName");
+  const phoneField = document.getElementById("authPhone");
 
   if (!title || !nameField) return;
 
   title.innerText = isSignup ? "Signup" : "Login";
   nameField.style.display = isSignup ? "block" : "none";
+
+if (phoneField) {
+  phoneField.style.display = isSignup ? "block" : "none";
+}
 };
 
 
@@ -267,19 +272,20 @@ window.toggleAuth = function () {
 // ===== SUBMIT AUTH =====
 window.submitAuth = async function () {
 
-  const name = document.getElementById("authName")?.value.trim();
-  const email = document.getElementById("authEmail")?.value.trim();
-  const password = document.getElementById("authPassword")?.value.trim();
+const name = document.getElementById("authName")?.value.trim();
+const phone = document.getElementById("authPhone")?.value.trim();
+const email = document.getElementById("authEmail")?.value.trim();
+const password = document.getElementById("authPassword")?.value.trim();
 
   const url = isSignup
     ? window.API_URL + "/api/register"
     : window.API_URL + "/api/login";
 
   const body = isSignup
-    ? { name, email, password }
-    : { email, password };
+  ? { name, phone, email, password }
+  : { email, password };
 
-  if (!email || !password || (isSignup && !name)) {
+  if (!email || !password || (isSignup && (!name || !phone))) {
     alert("Fill all fields");
     return;
   }

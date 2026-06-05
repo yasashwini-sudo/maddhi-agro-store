@@ -2,7 +2,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://maddhiagrofoodindia.com"
+      "dest": "https://maddhi-agro-store.onrender.com/api/$1"
     },
     {
       "handle": "filesystem"

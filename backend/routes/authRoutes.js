@@ -9,7 +9,7 @@ const User = require("../models/User");
 // REGISTER (FIXED)
 // ===============================
 router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, phone, email, password } = req.body;
 
   try {
     let user = await User.findOne({ email });
@@ -22,6 +22,7 @@ router.post("/register", async (req, res) => {
 
     user = new User({
       name,
+      phone,
       email,
       password: hashedPassword
     });
@@ -68,6 +69,7 @@ router.post("/login", async (req, res) => {
       token,
       user: {
         name: user.name,
+        phone: user.phone,
         email: user.email,
         isAdmin: user.isAdmin
       }
